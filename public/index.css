@@ -1,3 +1,66 @@
+@font-face {
+  font-family: 'SUIT';
+  src: url('public/fonts/SUIT-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SUIT';
+  src: url('public/fonts/SUIT-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SUIT';
+  src: url('public/fonts/SUIT-ExtraBold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SUIT';
+  src: url('public/fonts/SUIT-Light.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'SUIT';
+  src: url('public/fonts/SUIT-ExtraLight.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'SUIT';
+  src: url('public/fonts/SUIT-Heavy.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'SUIT';
+  src: url('public/fonts/SUIT-Medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'SUIT';
+  src: url('public/fonts/SUIT-SemiBold.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'SUIT';
+  src: url('public/fonts/SUIT-Thin.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
 html {
   text-align: center;
   color: #2c3e50;
@@ -9,6 +72,10 @@ html {
 
 [class*="btn"] {
   cursor: pointer;
+}
+
+.error-message {
+  color: crimson;
 }
 
 /* Dark color scheme */
