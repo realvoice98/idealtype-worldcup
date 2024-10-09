@@ -1,0 +1,18 @@
+html {
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'SUIT', Avenir, Helvetica, Arial, sans-serif;
+}
+
+[class*="btn"] {
+  cursor: pointer;
+}
+
+/* Dark color scheme */
+.dark {
+  background: #1b1d1f;
+  color: #d4e2fd;
+}
