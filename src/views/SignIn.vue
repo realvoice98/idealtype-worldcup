@@ -54,7 +54,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .signin-container {
     display: flex;
     justify-content: center;

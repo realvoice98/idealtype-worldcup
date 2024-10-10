@@ -53,7 +53,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .signup-container {
     display: flex;
     justify-content: center;
