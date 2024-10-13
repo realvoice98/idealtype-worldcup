@@ -11,16 +11,18 @@
         <div class="hashtag-text-area">
           <span class="hashtag" v-for="(hashtag, index) in hashtags" :key="index">{{ hashtag }}</span>
           <div class="input-hashtag">
-            <input v-model="inputHashtag"
-                   @input="startsWithHashSymbol"
-                   @keyup.enter="appendHashtag"
-                   @keyup.backspace="removeHashtag"
-                   type="text"
-                   placeholder="#태그 입력 (최대 10개)" />
+              <span v-show="hashtagValue.length > 0">#</span>
+              <input :value="hashtagValue"
+                     @input="onInputHashtag"
+                     @keyup.enter="appendHashtag"
+                     @keyup.space="appendHashtag"
+                     @keyup.backspace="removeHashtag"
+                     type="text"
+                     placeholder="#태그 입력 (최대 10개)" />
           </div>
-          <p class="warn-message" v-if="warnMessage">{{ warnMessage }}</p>
         </div>
       </div>
+      <p class="warn-message" v-if="warnMessage">{{ warnMessage }}</p>
       <div class="content-box">
         <div class="image-box"> <!-- 매 추가마다 image-box arr.append() -->
           <img src="" alt="이미지 영역"/>
@@ -43,7 +45,7 @@ export default {
     return {
       title: '',
       details: '',
-      inputHashtag: '',
+      hashtagValue: '',
       hashtags: [],
       warnMessage: '',
     };
@@ -53,38 +55,41 @@ export default {
       // Component 처리
     },
     /**
-     * 해시태그 입력 시 '#' 문자 자동 추가
+     * 태그 입력 도우미
      */
-    startsWithHashSymbol() {
-      // FIXME: 깔끔하지 못한 자동 추가 프로세스
-      if (!this.inputHashtag.startsWith('#')) {
-        this.inputHashtag = '#' + this.inputHashtag.replace(/^#+/, '');
-      }
+    onInputHashtag(event) {
+      // FIXME: 매끄럽지 않은 양방향 바인딩 상태
+      this.hashtagValue = event.target.value
+        .replace(/#/g, '') // '#' 미포함
+        .replaceAll(' ', '') // 공백 미포함
+        .toLowerCase(); // 영문 소문자로 통합
     },
     /**
      * 해시태그 입력창에서 텍스트 작성 후 Enter 입력 시, 작성한 텍스트로 해시태그 추가
      */
     appendHashtag() {
-      // FIXME: if depth 개선 (early return)
-      if (this.inputHashtag && this.hashtags.length < 10) {
-        const normalizedHashtag = this.inputHashtag.toLowerCase(); // 영문 입력은 소문자로 통합
-
-        if (this.hashtags.includes(normalizedHashtag)) {
-          this.warnMessage = '중복된 해시태그를 추가할 수 없습니다.';
-          return;
-        }
-        this.hashtags.push(normalizedHashtag);
-        this.inputHashtag = '';
-        this.warnMessage = '';
-      } else if (this.hashtags.length >= 10) {
+      if (!this.hashtagValue) return;
+      if (this.hashtags.length === 10) {
         this.warnMessage = '최대 10개의 해시태그만 추가할 수 있습니다.';
+        return;
       }
+      const hashtag = '#' + this.hashtagValue;
+      if (this.hashtags.includes(hashtag)) {
+        this.warnMessage = '중복된 해시태그를 추가할 수 없습니다.';
+        return;
+      }
+      this.hashtags.push(hashtag);
+      this.hashtagValue = '';
+      this.warnMessage = '';
     },
     /**
      * 해시태그 입력창에서 아무것도 작성하지 않은 상태로 Backspace 입력 시, 가장 최근에 추가된 태그 제거
      */
     removeHashtag() {
-      if (!this.inputHashtag) this.hashtags.pop();
+      if (!this.hashtagValue) this.hashtags.pop();
+      if (this.hashtags.length < 10) this.warnMessage = '';
+
+      // TODO: 기추가 태그 클릭 후 Backspace 입력 통해 선택적으로 제거
     },
   },
 }
@@ -134,6 +139,15 @@ export default {
   .input-hashtag {
     display: flex;
     align-items: center;
+  }
+
+  .input-hashtag span {
+    color: #757575;
+
+    /* FIXME: placeholder font style과 동일하게 적용해야 하는데
+        index.css 반영 사항이 제대로 적용되지 않고 있어서 임시로 사용 */
+    font-size: 14px;
+    font-family: '';
   }
 
   button {
