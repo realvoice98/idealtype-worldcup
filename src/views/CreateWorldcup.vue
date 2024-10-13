@@ -14,9 +14,9 @@
               <span v-show="hashtagValue.length > 0">#</span>
               <input :value="hashtagValue"
                      @input="onInputHashtag"
-                     @keyup.enter="appendHashtag"
-                     @keyup.space="appendHashtag"
-                     @keyup.backspace="removeHashtag"
+                     @keydown.enter="appendHashtag"
+                     @keydown.space="appendHashtag"
+                     @keydown.backspace="removeHashtag"
                      type="text"
                      placeholder="#태그 입력 (최대 10개)" />
           </div>
@@ -55,7 +55,8 @@ export default {
       // Component 처리
     },
     /**
-     * 태그 입력 도우미
+     * 해시태그 입력 처리 함수
+     * @param {Event} event 사용자 입력 값 접근을 위한 입력 이벤트 객체
      */
     onInputHashtag(event) {
       // FIXME: 매끄럽지 않은 양방향 바인딩 상태
@@ -65,7 +66,7 @@ export default {
         .toLowerCase(); // 영문 소문자로 통합
     },
     /**
-     * 해시태그 입력창에서 텍스트 작성 후 Enter 입력 시, 작성한 텍스트로 해시태그 추가
+     * 해시태그 추가 함수
      */
     appendHashtag() {
       if (!this.hashtagValue) return;
@@ -83,12 +84,21 @@ export default {
       this.warnMessage = '';
     },
     /**
-     * 해시태그 입력창에서 아무것도 작성하지 않은 상태로 Backspace 입력 시, 가장 최근에 추가된 태그 제거
+     * 해시태그 삭제 함수
+     *
+     * @param {Event} event 사용자 입력 값 접근을 위한 입력 이벤트 객체
      */
-    removeHashtag() {
-      if (!this.hashtagValue) this.hashtags.pop();
-      if (this.hashtags.length < 10) this.warnMessage = '';
-
+    removeHashtag(event) {
+      // 해시태그 지우기와 입력값 지우기의 로직 분리
+      if (this.hashtagValue === '') {
+        // hashtagValue가 빈 문자열일 때만 해시태그 삭제
+        this.hashtags.pop();
+        if (this.hashtags.length < 10) this.warnMessage = '';
+      } else {
+        // 입력된 값이 있으면 해당 값에서 한 글자만 삭제
+        event.preventDefault(); // 기본 동작 방지 (Backspace 중복 호출로 인해 2글자씩 지워지는 현상)
+        this.hashtagValue = this.hashtagValue.slice(0, -1);
+      }
       // TODO: 기추가 태그 클릭 후 Backspace 입력 통해 선택적으로 제거
     },
   },
