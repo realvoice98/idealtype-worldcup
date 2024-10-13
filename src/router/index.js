@@ -4,6 +4,7 @@ import Introduction from '@/views/Introduction.vue';
 import CreateWorldcup from "@/views/CreateWorldcup.vue";
 import SignIn from '@/views/SignIn.vue';
 import SignUp from '@/views/SignUp.vue';
+import AdminHome from '@/views/admin/Home.vue';
 
 const routes = [
   {
@@ -31,6 +32,11 @@ const routes = [
     name: 'SignUp',
     component: SignUp,
   },
+  {
+    path: '/admin-home',
+    name: 'AdminHome',
+    component: AdminHome,
+  }
 ];
 
 const router = createRouter({
