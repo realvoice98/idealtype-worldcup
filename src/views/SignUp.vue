@@ -21,6 +21,7 @@
 
 <script>
   import { auth, createUserWithEmailAndPassword } from '@/services/firebase/auth';
+  import { saveUserToDatabase } from '@services/firebase/db';
 
   export default {
     name: 'SignUp',
@@ -35,10 +36,17 @@
       /** Firebase Authentication 연동 회원가입 */
       async signUp() {
         try {
-          await createUserWithEmailAndPassword(auth, this.email, this.password);
+          const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password);
+          const user = userCredential.user;
+
+          await saveUserToDatabase(user);
+
+          // FIXME: 회원가입 완료 페이지로 랜딩
+          // FIXME: 해당 페이지 상단에서 멤버스 혜택 설명
+          // FIXME: 해당 페이지 하단에서 시작하기 버튼 제공, 클릭 시 자동 로그인(세션 60분) 및 홈으로 이동
           alert("회원가입 완료!");
-          // TODO: 자동 로그인 처리 (60분 간 세션 유지)
           location.href = origin;
+          // FIXME END
         } catch (e) {
           if (e.code === 'auth/email-already-in-use') {
             this.errorMessage = '이미 가입된 이메일입니다.';
