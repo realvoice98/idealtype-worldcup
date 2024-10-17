@@ -12,6 +12,7 @@
     "core-js": "^3.8.3",
     "firebase": "^10.14.0",
     "firebase-cli": "^1.2.0",
+    "scroll-out": "^2.2.12",
     "typeit": "^8.8.5",
     "vue": "^3.2.13",
     "vue-router": "^4.0.13"
