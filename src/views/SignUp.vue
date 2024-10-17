@@ -21,7 +21,7 @@
 
 <script>
   import { auth, createUserWithEmailAndPassword } from '@/services/firebase/auth';
-  import { saveUserToDatabase } from '@services/firebase/db';
+  import { saveUserToDatabase } from '@/services/firebase/db';
 
   export default {
     name: 'SignUp',
@@ -44,7 +44,6 @@
           // FIXME: 회원가입 완료 페이지로 랜딩
           // FIXME: 해당 페이지 상단에서 멤버스 혜택 설명
           // FIXME: 해당 페이지 하단에서 시작하기 버튼 제공, 클릭 시 자동 로그인(세션 60분) 및 홈으로 이동
-          alert("회원가입 완료!");
           location.href = origin;
           // FIXME END
         } catch (e) {
