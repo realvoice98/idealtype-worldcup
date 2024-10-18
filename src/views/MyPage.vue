@@ -1,70 +1,53 @@
 <template>
   <div class="mypage-container">
     <div class="mypage-contents">
+
       <div class="buttons" id="buttons1">
-        <img src="@/assets/like.png" class="button main-button"/>
-        <a href="https://www.youtube.com/watch?v=xcfft9RCM6I">
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a href="https://www.youtube.com/shorts/kQyCp9zOBk4">
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a href="https://www.youtube.com/watch?v=YjrtlDhUzm8">
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a href="https://www.youtube.com/watch?v=YjrtlDhUzm8">
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a href="https://www.youtube.com/watch?v=YjrtlDhUzm8">
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a href="https://www.youtube.com/watch?v=YjrtlDhUzm8">
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a href="https://www.youtube.com/watch?v=YjrtlDhUzm8">
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a href="https://www.youtube.com/watch?v=YjrtlDhUzm8">
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a href="https://www.youtube.com/watch?v=YjrtlDhUzm8">
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a href="https://www.youtube.com/watch?v=YjrtlDhUzm8">
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
+        <img src="@/assets/like.png" class="button main-button" />
+        <a v-for="(item, index) in like" :key="index" :href="item.href">
+          <img :src="item.src" class="button" />
         </a>
       </div>
+
       <div class="buttons" id="buttons2">
-        <img src="@/assets/bookmark.png" class="button main-button"/>
-        <a>
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a>
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a>
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
+        <img src="@/assets/bookmark.png" class="button main-button" />
+        <a v-for="(item, index) in bookmark" :key="index" :href="item.href">
+          <img :src="item.src" class="button" />
         </a>
       </div>
+
       <div class="buttons" id="buttons3">
-        <img src="@/assets/management.png" class="button main-button"/>
-        <a>
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a>
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
-        </a>
-        <a>
-          <img src="https://pimg.mk.co.kr/meet/neds/2015/01/image_readmed_2015_52308_14213907431725615.jpg" class="button">
+        <img src="@/assets/management.png" class="button main-button" />
+        <a v-for="(item, index) in myworldcup" :key="index" :href="item.href">
+          <img :src="item.src" class="button" />
         </a>
       </div>
+
     </div>
   </div>
 </template>
 
+
 <script>
 export default {
   name: 'MyPage',
+  //FIXME: DB데이터 불러오기
+  data() {
+    return {
+      like: [
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" },
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" }
+      ],
+      bookmark: [
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" },
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" }
+      ],
+      myworldcup: [
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" },
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" }
+      ]
+    };
+  },
   mounted() {
     this.setupHoverAnimation('buttons1');
     this.setupHoverAnimation('buttons2');
