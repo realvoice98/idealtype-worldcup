@@ -5,6 +5,7 @@ import CreateWorldcup from "@/views/CreateWorldcup.vue";
 import SignIn from '@/views/SignIn.vue';
 import SignUp from '@/views/SignUp.vue';
 import AdminHome from '@/views/admin/Home.vue';
+import MyPage from "@/views/MyPage.vue";
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: '/admin-home',
     name: 'AdminHome',
     component: AdminHome,
+  },
+  {
+    path: '/my-page',
+    name: 'MyPage',
+    component: MyPage,
   }
 ];
 
