@@ -1,13 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
+
+// views
 import Home from '@/views/Home.vue';
 import Introduction from '@/views/Introduction.vue';
 import CreateWorldcup from "@/views/CreateWorldcup.vue";
 import SignIn from '@/views/SignIn.vue';
 import SignUp from '@/views/SignUp.vue';
-import AdminHome from '@/views/admin/Home.vue';
 import MyPage from "@/views/MyPage.vue";
 
+// views/admin
+import BackOffice from '@/views/admin/BackOffice.vue';
+
 const routes = [
+  // views
   {
     path: '/',
     name: 'Home',
@@ -34,15 +39,17 @@ const routes = [
     component: SignUp,
   },
   {
-    path: '/admin-home',
-    name: 'AdminHome',
-    component: AdminHome,
-  },
-  {
     path: '/my-page',
     name: 'MyPage',
     component: MyPage,
-  }
+  },
+
+  // views/admin
+  {
+    path: '/bo',
+    component: BackOffice,
+    name: 'BackOffice',
+  },
 ];
 
 const router = createRouter({

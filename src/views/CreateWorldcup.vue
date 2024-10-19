@@ -24,8 +24,10 @@
       </div>
       <p class="warn-message" v-if="warnMessage">{{ warnMessage }}</p>
       <div class="content-box">
-        <div class="image-box"> <!-- 매 추가마다 image-box arr.append() -->
-          <img src="" alt="이미지 영역"/>
+        <div class="image-area"> <!-- 매 추가마다 image-box arr.append() -->
+          <div class="image-box">
+            <img src="" alt="이미지 영역"/>
+          </div>
         </div>
       </div>
       <button class="btn-create"> <!-- Component 처리 -->
@@ -158,6 +160,10 @@ export default {
         index.css 반영 사항이 제대로 적용되지 않고 있어서 임시로 사용 */
     font-size: 14px;
     font-family: '';
+  }
+
+  .image-area {
+    height: 10rem;
   }
 
   button {
