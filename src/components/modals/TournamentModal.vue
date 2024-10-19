@@ -10,14 +10,16 @@
       <div class="modal-description">
         {{description}}
       </div>
-      <div class="modal-tag">
-
+      <div class="modal-tags" >
+        <div class="tag-box" v-for="(item, index) in tags" :key="index">
+          #{{item.tag}}
+        </div>
       </div>
       <div class="modal-announcement">
         총 {{default_round}}개의 후보 중 무작위 {{select_round}}강으로 토너먼트가 시작됩니다.
       </div>
       <div class="modal-buttons">
-        <select v-model="select_round" @change="change" class="select-button">
+        <select v-model="select_round" @change="change" class="button select-button">
           <option v-for="(item, index) in round_list" :key="index">{{item.round}}</option>
         </select>
         <button class="button start-button">
@@ -33,13 +35,21 @@
 
 <script>
 export default {
-  //FIXME: 추후 DB 데이터에 맞게 round 값 수정하기
+  //FIXME: 추후 DB 데이터에 맞게 수정하기
   name: "TournamentModal",
   data() {
     return{
       title: "[고화질,움짤] 한국 여자 아이돌 월드컵 256강",
       description: "가장 매력있는 한국 여자 아이돌을 선택해주세요!!\n" +
           "추천 댓글 많이 달아주세요",
+      tags: [
+        {tag: "K-POP"},
+        {tag: "블랙핑크"},
+        {tag:"에스파"},
+        {tag:"뉴진스"},
+        {tag:"고화질"},
+        {tag:"뭉탱이"}
+      ],
       round_list:[
           {round:256},
         {round:128},
@@ -63,110 +73,97 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped>/*<-10년(욕 아님)*/
 .modal-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.5);
 }
 
 .modal-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display: block;
   padding: 15px 50px;
-  gap: 15px;
-  border: 1px black solid;
+  margin: 0 auto;
+  margin-top: 200px;
+  border: 1px solid black;
   background: #FFFFFF;
-  width: 40%;
-  height: 60%; /* 높이 */
+  width: 900px; /* 고정 너비로 변경 */
+  height: 500px; /* 고정 높이로 변경 */
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .modal-header {
-  flex: 1;
-  order: 0;
-  align-self: stretch;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .modal-title {
-  flex: 1;
-  order: 1;
-  align-self: stretch;
+  text-align: center;
   font-size: calc(1rem + 1vw);
+  margin-bottom: 20px;
 }
 
 .modal-description {
-  flex: 1;
-  order: 2;
-  align-self: stretch;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: calc(1rem + 0.5vw);
 }
 
-.modal-tag {
+.modal-tags {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 0px 10px;
-  gap: 10px;
-  flex: 1;
-  order: 3;
-  align-self: stretch;
+  flex-direction: row;
+  flex-wrap: wrap; /* 태그가 넘치면 다음 줄로 넘어가게 함 */
+  gap: 15px; /* 태그 사이 간격 */
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+.tag-box {
+  display: inline-block;
+  padding: 15px; /* 패딩을 늘려서 크기 키움 */
+  width: 10%; /* 태그 박스 크기 */
+  border: 2px solid #000000;
+  white-space: nowrap;
+  flex-shrink: 0; /* 태그 크기가 줄어들지 않도록 설정 */
 }
 
 .modal-announcement {
-  flex: 1;
-  order: 4;
-  align-self: stretch;
+  margin-bottom: 10px;
 }
 
 .modal-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 14px 10px;
-  gap: 30px;
-  flex: 1;
-  order: 5;
-  align-self: stretch;
+  text-align: center;
+  padding: 30px;
+}
+
+.button {
+  width: 180px;
+  height: 62px;
+  margin: 0 20px;
+  font-size: 20px;
 }
 
 .select-button {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 14px 24px;
-  gap: 10px;
-  margin: 0 auto;
-  width: 220px;
-  height: 72px;
+  padding: 14px 54px;
   background: #98B7D4;
   border: 1px solid #000000;
 }
 
 .start-button {
-  box-sizing: border-box;
-  margin: 0 auto;
-  width: 220px;
-  height: 74px;
   background: #98B7D4;
   border: 1px solid #000000;
 }
 
 .back-button {
-  box-sizing: border-box;
-  margin: 0 auto;
-  width: 220px;
-  height: 74px;
   background: #D8D8D8;
   border: 1px solid #000000;
 }
 </style>
+
