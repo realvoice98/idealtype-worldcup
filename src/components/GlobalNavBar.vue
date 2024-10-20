@@ -86,18 +86,13 @@ export default {
         await firebaseSignOut(auth); // Firebase에서 로그아웃 처리
         this.isLoggedIn = false; // 로그인 상태 업데이트
 
-        // 현재 경로의 메타 정보 확인
-        if (this.$route.meta.requiresAuth) {
-          //TODO
-          alert("로그인 필요함둥")
-          this.$router.push('/sign-in');
-        } else {
-          this.$router.push('/');
-        }
+        // 로그아웃 후 직접 라우터로 이동
+        this.$router.push('/'); // 메인 페이지로 이동
       } catch (error) {
         console.error('로그아웃 실패:', error);
       }
     }
+
 
 
   },
