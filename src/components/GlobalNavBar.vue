@@ -19,8 +19,11 @@
             <img class="btn-toggle-theme" :src="isDarkMode ? require('@/assets/light-mode-icon.png') : require('@/assets/dark-mode-icon.png')" alt="테마 변경" />
           </button>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="!isLoggedIn">
           <router-link class="nav-link" to="/sign-in">로그인</router-link>
+        </li>
+        <li class="nav-item" v-else>
+          <button class="nav-link" @click="signOut">로그아웃</button>
         </li>
       </ul>
     </div>
@@ -28,6 +31,10 @@
 </template>
 
 <script>
+import {auth} from '@/services/firebase/auth';
+import {onAuthStateChanged, signOut as firebaseSignOut} from 'firebase/auth';
+import {useRouter} from 'vue-router';
+
 export default {
   name: 'GNB',
   data() {
@@ -44,6 +51,11 @@ export default {
     const savedTheme = localStorage.getItem('theme');
     this.isDarkMode = savedTheme === 'dark';
     this.applyTheme(); // 테마 적용
+
+    // 사용자 인증 상태 확인
+    onAuthStateChanged(auth, (user) => {
+      this.isLoggedIn = !!user;
+    });
   },
   beforeUnmount() {
     window.removeEventListener('scroll', this.handleScroll);
@@ -51,14 +63,7 @@ export default {
   methods: {
     handleScroll() {
       const currentScrollPosition = window.scrollY;
-
-      // 스크롤 방향에 따라 네비게이션 표시/숨김 처리
-      if (currentScrollPosition > this.lastScrollPosition) {
-        this.isVisible = false; // 하단 방향 스크롤 시 상단탭 숨김
-      } else {
-        this.isVisible = true; // 상단 방향 스크롤 시 상단탭 표시
-      }
-
+      this.isVisible = currentScrollPosition <= this.lastScrollPosition; // 상단 방향 스크롤 시 상단탭 표시
       this.lastScrollPosition = currentScrollPosition; // 마지막 스크롤 위치 업데이트
     },
     toggleTheme() {
@@ -73,6 +78,15 @@ export default {
       } else {
         document.documentElement.classList.add('light-mode');
         document.documentElement.classList.remove('dark-mode');
+      }
+    },
+    async signOut() {
+      try {
+        await firebaseSignOut(auth); // Firebase에서 로그아웃 처리
+        this.isLoggedIn = false; // 로그인 상태 업데이트
+        this.$router.push('/sign-in'); // 로그인 페이지로 이동
+      } catch (error) {
+        console.error('로그아웃 실패:', error);
       }
     },
   },

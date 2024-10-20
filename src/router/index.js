@@ -43,6 +43,7 @@ const routes = [
     path: '/my-page',
     name: 'MyPage',
     component: MyPage,
+    meta: { requiresAuth: true },
   },
 
   // views/admin

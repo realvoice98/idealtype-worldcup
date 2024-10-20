@@ -24,7 +24,7 @@ export default {
 
     // 로컬 스토리지에서 테마 상태 가져오기
     const savedTheme = localStorage.getItem('theme');
-    this.isDarkMode = savedTheme === 'dark';
+    this.isDarkMode = savedTheme === 'light';
   },
   watch: {
     // route가 변경될 때마다 GNB 상태 확인
