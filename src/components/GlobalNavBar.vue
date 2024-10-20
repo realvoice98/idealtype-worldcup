@@ -33,7 +33,6 @@
 <script>
 import {auth} from '@/services/firebase/auth';
 import {onAuthStateChanged, signOut as firebaseSignOut} from 'firebase/auth';
-import {useRouter} from 'vue-router';
 
 export default {
   name: 'GNB',
@@ -42,6 +41,7 @@ export default {
       isVisible: true,         // 네비게이션의 표시 상태
       lastScrollPosition: 0,   // 마지막 스크롤 위치
       isDarkMode: true,       // 초기 상태는 라이트모드
+      isLoggedIn: false,
     };
   },
   mounted() {
@@ -80,15 +80,26 @@ export default {
         document.documentElement.classList.remove('dark-mode');
       }
     },
+
     async signOut() {
       try {
         await firebaseSignOut(auth); // Firebase에서 로그아웃 처리
         this.isLoggedIn = false; // 로그인 상태 업데이트
-        this.$router.push('/sign-in'); // 로그인 페이지로 이동
+
+        // 현재 경로의 메타 정보 확인
+        if (this.$route.meta.requiresAuth) {
+          //TODO
+          alert("로그인 필요함둥")
+          this.$router.push('/sign-in');
+        } else {
+          this.$router.push('/');
+        }
       } catch (error) {
         console.error('로그아웃 실패:', error);
       }
-    },
+    }
+
+
   },
 };
 </script>
