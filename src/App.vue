@@ -40,7 +40,10 @@ export default {
     checkGnbVisibility() {
       const url = this.$route.path; // 현재 route 경로
 
-      this.isGnbVisible = url !== '/admin-home'; // 관리자 페이지는 GNB 미노출
+      // FIXME: 현재 url 데이터로 GNB 노출 유무를 제어하고 있는데,
+      //  관리자 계정으로 bo url 접근인 경우
+      //  GNB 컴포넌트 자체에 대해서 전혀 고려하지 않는 별개의 페이지 환경으로 조성되어야 함
+      this.isGnbVisible = !url.startsWith('/bo'); // 관리자 페이지는 GNB 미노출
     },
   },
 
