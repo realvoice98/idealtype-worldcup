@@ -46,7 +46,7 @@ export function convertToValidNodeString(value) {
  * @param {string} value 유니크한 문자로 변환된 상태의 문자열
  * @return {string} 원본 문자열
  */
-export function restoreOriginalString(value) {
+export function restoreToOriginalString(value) {
   return value
     .replaceAll('__DOT__', '.' )
     .replaceAll('__DOLLAR__', '$')
