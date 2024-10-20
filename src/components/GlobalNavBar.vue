@@ -1,5 +1,5 @@
 <template>
-  <nav class="gnb">
+  <nav class="gnb" :class="{ show: isVisible }">
     <div class="gnb-container">
       <ul class="gnb-nav">
         <li class="nav-item">
@@ -16,7 +16,7 @@
         </li>
         <li class="nav-item">
           <button @click="toggleTheme">
-            <img class="btn-toggle-theme" src="" alt="테마 변경" />
+            <img class="btn-toggle-theme" :src="isDarkMode ? require('@/assets/light-mode-icon.png') : require('@/assets/dark-mode-icon.png')" alt="테마 변경" />
           </button>
         </li>
         <li class="nav-item">
@@ -28,46 +28,98 @@
 </template>
 
 <script>
-  import SignIn from "@/views/SignIn.vue";
+export default {
+  name: 'GNB',
+  data() {
+    return {
+      isVisible: true,         // 네비게이션의 표시 상태
+      lastScrollPosition: 0,   // 마지막 스크롤 위치
+      isDarkMode: false,       // 초기 상태는 라이트모드
+    };
+  },
+  mounted() {
+    window.addEventListener('scroll', this.handleScroll);
 
-  export default {
-    name: 'GNB',
-    components: {
-      SignIn,
+    // 로컬 스토리지에서 테마 상태 가져오기
+    const savedTheme = localStorage.getItem('theme');
+    this.isDarkMode = savedTheme === 'dark';
+    this.applyTheme(); // 테마 적용
+  },
+  beforeUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
+  methods: {
+    handleScroll() {
+      const currentScrollPosition = window.scrollY;
+
+      // 스크롤 방향에 따라 네비게이션 표시/숨김 처리
+      if (currentScrollPosition > this.lastScrollPosition) {
+        this.isVisible = false; // 하단 방향 스크롤 시 상단탭 숨김
+      } else {
+        this.isVisible = true; // 상단 방향 스크롤 시 상단탭 표시
+      }
+
+      this.lastScrollPosition = currentScrollPosition; // 마지막 스크롤 위치 업데이트
     },
-    methods: {
-      toggleTheme() {
-        // TODO: 다크모드/라이트모드 토글
-      },
+    toggleTheme() {
+      this.isDarkMode = !this.isDarkMode;
+      localStorage.setItem('theme', this.isDarkMode ? 'light' : 'dark');
+      this.applyTheme();
     },
-  };
+    applyTheme() {
+      if (this.isDarkMode) {
+        document.documentElement.classList.add('dark-mode');
+        document.documentElement.classList.remove('light-mode');
+      } else {
+        document.documentElement.classList.add('light-mode');
+        document.documentElement.classList.remove('dark-mode');
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
-  .gnb {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background-color: #333;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .5);
-  }
+.gnb {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: rgba(51, 51, 51, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
 
-  .gnb-nav {
-    display: flex;
-    gap: 2rem;
-  }
+.gnb.show {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-  .nav-item {
-    list-style-type: none;
-  }
+.gnb-nav {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
 
-  .nav-link {
-    color: white;
-    text-decoration: none;
-  }
+.nav-item {
+  list-style-type: none;
+}
 
-  button {
-    background: transparent;
-    border: none;
-  }
+.nav-link {
+  color: white;
+  text-decoration: none;
+}
+
+button {
+  background: transparent;
+  border: none;
+}
+
+.btn-toggle-theme {
+  width: 30px;
+  height: 30px;
+}
 </style>

@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <GlobalNavBar v-if="isGnbVisible" />
+  <div id="app" :class="{ 'dark-mode': isDarkMode, 'light-mode': !isDarkMode }">
+    <GlobalNavBar v-if="isGnbVisible" :isDarkMode="isDarkMode" @toggleTheme="toggleTheme" />
     <router-view />
   </div>
 </template>
@@ -16,10 +16,15 @@ export default {
   data() {
     return {
       isGnbVisible: true,
+      isDarkMode: true, // 초기 상태는 라이트모드
     };
   },
   mounted() {
     this.checkGnbVisibility();
+
+    // 로컬 스토리지에서 테마 상태 가져오기
+    const savedTheme = localStorage.getItem('theme');
+    this.isDarkMode = savedTheme === 'dark';
   },
   watch: {
     // route가 변경될 때마다 GNB 상태 확인
@@ -50,5 +55,21 @@ export default {
 <style>
 #app {
 
+}
+
+.dark-mode {
+  --background-color: #333;
+  --text-color: #fff;
+}
+
+.light-mode {
+  --background-color: #fff;
+  --text-color: #000;
+}
+
+html {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.5s, color 0.5s;
 }
 </style>
