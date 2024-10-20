@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { auth } from '@/services/firebase/auth'; // Firebase 인증 가져오기
-import { onAuthStateChanged } from 'firebase/auth';
 
 // views
 import Home from '@/views/Home.vue';
@@ -101,21 +99,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
-});
-
-router.beforeEach((to, from, next) => {
-  // 현재 사용자의 인증 상태 확인
-  onAuthStateChanged(auth, (user) => {
-    const isLoggedIn = !!user;
-
-    // 로그인 필요 여부 확인
-    if (to.meta.requiresAuth && !isLoggedIn) {
-      alert('로그인이 필요합니다!'); 
-      next({ name: 'SignIn' });
-    } else {
-      next();
-    }
-  });
 });
 
 export default router;
