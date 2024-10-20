@@ -33,7 +33,7 @@
       };
     },
     methods: {
-      /** Firebase Authentication 연동 회원가입 */
+      /** Firebase Auth 연동 회원가입 및 DB에 회원 데이터 추가 */
       async signUp() {
         try {
           const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password);

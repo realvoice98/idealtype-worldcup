@@ -10,6 +10,7 @@ import MyPage from "@/views/MyPage.vue";
 
 // views/admin
 import BackOffice from '@/views/admin/BackOffice.vue';
+import UserList from "@/components/admin/UserList.vue";
 
 const routes = [
   // views
@@ -47,9 +48,14 @@ const routes = [
   // views/admin
   {
     path: '/bo',
-    component: BackOffice,
     name: 'BackOffice',
+    component: BackOffice,
   },
+  {
+    path: '/bo/user-list',
+    name: 'UserList',
+    component: UserList,
+  }
 ];
 
 const router = createRouter({
