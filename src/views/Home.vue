@@ -1,22 +1,32 @@
 <template>
   <div class="main-container">
-    <div class="main-contents">
-      <h1>main home</h1>
-      <p v-if="user">
-        현재 로그인: {{ user.email }}
-      </p>
+    <!-- [D] v-for="record in worldcups / 5" -->
+    <div class="card-record">
+      <!-- [D] v-for="card in record" -->
+      <WorldcupCard />
+      <WorldcupCard />
+      <WorldcupCard />
+      <WorldcupCard />
     </div>
+
+<!--    <p v-if="user">현재 로그인: {{ user.email }}</p>-->
+
   </div>
 </template>
 
 <script>
 import { auth, onAuthStateChanged } from "@/services/firebase/auth";
+import WorldcupCard from "@/components/WorldcupCard.vue";
 
 export default {
   name: "Home",
+  components: {
+    WorldcupCard,
+  },
   data() {
     return {
-      user: null
+      user: null,
+      worldcups: [],
     };
   },
   created() {
@@ -35,9 +45,9 @@ export default {
     height: 75vh;
   }
 
-  .main-contents {
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  .card-record {
+    display: flex;
+    border-radius: 10px;
+    /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
   }
 </style>
