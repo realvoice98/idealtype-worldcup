@@ -16,7 +16,7 @@ export default {
   data() {
     return {
       isGnbVisible: true,
-      isDarkMode: true, // 초기 상태는 라이트모드
+      isDarkMode: false, // 초기 상태는 라이트모드
     };
   },
   mounted() {

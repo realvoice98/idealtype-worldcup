@@ -34,7 +34,7 @@ export default {
     return {
       isVisible: true,         // 네비게이션의 표시 상태
       lastScrollPosition: 0,   // 마지막 스크롤 위치
-      isDarkMode: false,       // 초기 상태는 라이트모드
+      isDarkMode: true,       // 초기 상태는 라이트모드
     };
   },
   mounted() {
