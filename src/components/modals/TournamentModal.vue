@@ -48,7 +48,7 @@ export default {
         {tag:"에스파"},
         {tag:"뉴진스"},
         {tag:"고화질"},
-        {tag:"뭉탱이"}
+        {tag:"뭉탱이"},
       ],
       round_list:[
           {round:256},
@@ -73,13 +73,17 @@ export default {
 }
 </script>
 
-<style scoped>/*<-10년(욕 아님)*/
+<style scoped>/*<-십년(욕 아님) 만질수록 이상해지는 새끼...*/
+
+/*
+TODO: 화면 비율에 따라 css 조절이 필요함.
+*/
+
 .modal-wrapper {
   display: block;
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
@@ -88,17 +92,16 @@ export default {
 .modal-container {
   display: block;
   padding: 15px 50px;
-  margin: 0 auto;
-  margin-top: 200px;
+  margin: 5% auto 0 auto;
   border: 1px solid black;
   background: #FFFFFF;
-  width: 900px; /* 고정 너비로 변경 */
-  height: 500px; /* 고정 높이로 변경 */
+  width: 60vw;
   overflow-y: auto;
   box-sizing: border-box;
 }
 
 .modal-header {
+  width: 100%;
   text-align: center;
   margin-bottom: 10px;
 }
@@ -119,16 +122,19 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap; /* 태그가 넘치면 다음 줄로 넘어가게 함 */
-  gap: 15px; /* 태그 사이 간격 */
+  gap: 15px;
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 10px;
 }
 
 .tag-box {
-  display: inline-block;
-  padding: 15px; /* 패딩을 늘려서 크기 키움 */
-  width: 10%; /* 태그 박스 크기 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  width: 8%;
+  font-size: 0.8vw;
   border: 2px solid #000000;
   white-space: nowrap;
   flex-shrink: 0; /* 태그 크기가 줄어들지 않도록 설정 */
@@ -144,14 +150,13 @@ export default {
 }
 
 .button {
-  width: 180px;
+  width: 20%;
   height: 62px;
-  margin: 0 20px;
+  margin: 0 30px;
   font-size: 20px;
 }
 
 .select-button {
-  padding: 14px 54px;
   background: #98B7D4;
   border: 1px solid #000000;
 }
@@ -165,5 +170,6 @@ export default {
   background: #D8D8D8;
   border: 1px solid #000000;
 }
+
 </style>
 
