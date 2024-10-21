@@ -24,12 +24,22 @@
       </div>
       <p class="warn-message" v-if="warnMessage">{{ warnMessage }}</p>
       <div class="content-box">
-        <div class="image-area"> <!-- 매 추가마다 image-box arr.append() -->
-          <div class="image-box">
-            <img src="" alt="이미지 영역"/>
+        <div class="image-area" @click="openModal"> <!-- 매 추가마다 image-box arr.append() -->
+          <div class="image-box" v-for="(image, index) in images" :key="index">
+            <img :src="image" alt="이미지 영역"/>
+          </div>
+          <div v-if="images.length === 0">
+            여기를 클릭해서 이미지를 등록해주세요.
           </div>
         </div>
       </div>
+
+      <ImageRegistModal
+        :is-visible="isModalVisible"
+        @update:isVisible="isModalVisible = $event"
+        @images-selected="addImages"
+      />
+
       <button class="btn-create"> <!-- Component 처리 -->
         <span>만들기</span>
       </button>
@@ -41,8 +51,11 @@
 </template>
 
 <script>
+import ImageRegistModal from "@/components/modals/ImageRegistModal.vue";
+
 export default {
   name: "CreateWorldcup",
+  components: {ImageRegistModal},
   data() {
     return {
       title: '',
@@ -50,6 +63,8 @@ export default {
       hashtagValue: '',
       hashtags: [],
       warnMessage: '',
+      isModalVisible: false,
+      images: [],
     };
   },
   methods: {
@@ -103,6 +118,12 @@ export default {
       }
       // TODO: 기추가 태그 클릭 후 Backspace 입력 통해 선택적으로 제거
     },
+    openModal() {
+      this.isModalVisible = true;
+    },
+    addImages(images) {
+      this.images.push(...images);
+    }
   },
 }
 </script>
@@ -164,6 +185,10 @@ export default {
 
   .image-area {
     height: 10rem;
+  }
+
+  .image-box{
+
   }
 
   button {
