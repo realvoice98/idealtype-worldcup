@@ -4,8 +4,8 @@
       <h2>이미지 등록</h2>
       <div class="modal-images">
         <div class="modal-image" v-for="(image, index) in selectedImages" :key="index">
-          <img :src="image" />
-          <button @click="removeImage(index)">지우기</button><!--필요없으면 지워도 될듯-->
+          <img :src="image.preview" />
+          <button @click="removeImage(index)">지우기</button>
         </div>
       </div>
       <input type="file" @change="onFileChange" accept="image/png, image/jpeg" multiple />
@@ -38,10 +38,8 @@ export default {
       const files = Array.from(event.target.files);
       this.errorMessage = '';
 
-      // Allowed extensions
       const allowedExtensions = ['png', 'jpg', 'jpeg'];
 
-      // Filter files based on allowed extensions
       const validFiles = files.filter(file => {
         const fileExtension = file.name.split('.').pop().toLowerCase();
         return allowedExtensions.includes(fileExtension);
@@ -52,12 +50,16 @@ export default {
         return;
       }
 
-      // Append valid images to selectedImages
       validFiles.forEach(file => {
-        const imageUrl = URL.createObjectURL(file);
-        this.selectedImages.push(imageUrl); // 이미지 URL 추가
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.selectedImages.push({ file, preview: e.target.result });
+        };
+        reader.readAsDataURL(file);
       });
     },
+
+
     confirmImages() {
       if (this.selectedImages.length > 0) {
         this.$emit('images-selected', this.selectedImages); // Emit all selected images

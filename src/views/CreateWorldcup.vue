@@ -26,7 +26,7 @@
       <div class="content-box">
         <div class="image-area" @click="openModal"> <!-- 매 추가마다 image-box arr.append() -->
           <div class="image-box" v-for="(image, index) in images" :key="index">
-            <img :src="image" alt="이미지 영역"/>
+            <img :src="image.preview" alt="이미지 영역" />
           </div>
           <div v-if="images.length === 0">
             여기를 클릭해서 이미지를 등록해주세요.
@@ -184,11 +184,16 @@ export default {
   }
 
   .image-area {
+    display: flex;
     height: 10rem;
+    flex-wrap: wrap;
+    cursor: pointer;
+    gap: 10px;
   }
 
-  .image-box{
-
+  .image-box img{
+    width: 100px;
+    height: 100px;
   }
 
   button {
