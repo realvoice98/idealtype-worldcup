@@ -40,7 +40,7 @@
         @images-selected="addImages"
       />
 
-      <button class="btn-create"> <!-- Component 처리 -->
+      <button class="btn-create" @click="saveWorldcup"> <!-- Component 처리 -->
         <span>만들기</span>
       </button>
       <button class="btn-back">  <!-- Component 처리 -->
@@ -52,6 +52,8 @@
 
 <script>
 import ImageRegistModal from "@/components/modals/ImageRegistModal.vue";
+import {auth, onAuthStateChanged} from "@/services/firebase/auth";
+import {saveWorldcupToDatabase} from "@/services/firebase/db";
 
 export default {
   name: "CreateWorldcup",
@@ -65,7 +67,17 @@ export default {
       warnMessage: '',
       isModalVisible: false,
       images: [],
+      user: null,
     };
+  },
+  created() {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // 사용자가 로그인된 상태라면
+        this.user = user;
+        //console.log("현재 로그인 중인 사용자:", user.uid);
+      }
+    });
   },
   methods: {
     goBack() {
@@ -123,6 +135,23 @@ export default {
     },
     addImages(images) {
       this.images.push(...images);
+    },
+    /**
+     * 월드컵 데이터 추가
+     * TODO: 테스트 해봐야됨
+     */
+    async saveWorldcup(){
+      try {
+        const worldcupData = {
+          title: this.title,
+          details: this.details,
+          hashtags: this.hashtags,
+          images: this.images.map(image => image.preview),
+        }
+        await saveWorldcupToDatabase(this.user.uid, worldcupData);
+      }catch (e){
+        this.errorMessage = `오류: ${e.message}`;
+      }
     }
   },
 }

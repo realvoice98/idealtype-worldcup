@@ -53,3 +53,25 @@ export async function getAllUsers() {
     return [];
   }
 }
+/**
+ * 월드컵 데이터 저장 함수
+ *@param{String} userID
+ *@param{Object} worldcupData
+ */
+export async function saveWorldcupToDatabase(userID, worldcupData){
+  try{
+    const worldcupID = formatDate(new Date(Date.now()));
+    await set(ref(db, `worldcups/${userID}/${worldcupID}`),{
+      title: worldcupData.title,
+      details: worldcupData.details,
+      hashtags: worldcupData.hashtags,
+      images: worldcupData.images,
+      createdAt: formatDate(new Date()),
+    });
+    alert("월드컵 생성 완료!");
+    console.log('월드컵 정보를 저장하였습니다.', worldcupData);
+  }catch (e){
+    alert("월드컵 생성 실패! 잠시 후 다시 시도해주세요.");
+    console.error('월드컵 정보를 저장하지 못했습니다.', e);
+  }
+}

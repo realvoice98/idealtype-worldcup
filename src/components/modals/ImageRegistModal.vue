@@ -92,13 +92,20 @@ export default {
 
     cropImage() {
       this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
+        // 현재 파일 이름과 동일한 이름으로 파일 생성
+        const originalFile = this.selectedImages[this.currentImageIndex].file;
+        const croppedFile = new File([blob], originalFile.name, { type: blob.type });
+
+        // FileReader로 미리보기 갱신
         const reader = new FileReader();
         reader.onload = (e) => {
-          // 현재 이미지 인덱스에 자른 이미지 저장
-          this.selectedImages[this.currentImageIndex].preview = e.target.result;
+          this.selectedImages[this.currentImageIndex] = {
+            file: croppedFile,  // 자른 파일 객체
+            preview: e.target.result,  // 미리보기 URL
+          };
           this.closeCropper();
         };
-        reader.readAsDataURL(blob);
+        reader.readAsDataURL(croppedFile);
       });
     },
 
