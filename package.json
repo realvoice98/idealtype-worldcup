@@ -15,6 +15,7 @@
     "scroll-out": "^2.2.12",
     "typeit": "^8.8.5",
     "vue": "^3.2.13",
+    "vue-cropperjs": "^5.0.0",
     "vue-router": "^4.0.13"
   },
   "devDependencies": {
