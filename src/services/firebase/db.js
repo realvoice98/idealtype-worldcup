@@ -75,3 +75,39 @@ export async function saveWorldcupToDatabase(userID, worldcupData){
     console.error('월드컵 정보를 저장하지 못했습니다.', e);
   }
 }
+
+/**
+ * 모든 월드컵 데이터를 가져오는 함수
+ * @returns {Promise<Object[]>} 모든 월드컵 객체가 담긴 하나의 배열 데이터
+ */
+export async function fetchAllWorldcups() {
+  try {
+    // TODO: DB로부터 모든 월드컵 데이터 가져오기 { Array<Object> }
+    return [
+      {
+        title: "[고화질, 움짤] 한국 여자 아이돌 월드컵 256강",
+        views: "1.9만회",
+        updatedAt: "1개월",
+        worldcupLink: "/worldcup?token0",
+      },
+      {
+        title: "내 아내로 삼고 싶은 애니 여캐 월드컵 1024강",
+        views: "3만회",
+        updatedAt: "2주",
+        worldcupLink: "/worldcup?token1",
+      },
+      {
+        title: "가장 역겨운 프로그래밍 언어 월드컵",
+        views: "1.2천회",
+        updatedAt: "6일",
+        worldcupLink: "/worldcup?token2",
+      },
+    ];
+  } catch(e) {
+    console.error('알 수 없는 오류: 월드컵 목록을 불러오지 못했습니다.');
+    return {
+      result: -1,
+      message: '알 수 없는 오류가 발생하여 월드컵 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요.',
+    }
+  }
+}

@@ -1,22 +1,22 @@
 <template>
   <div class="main-container">
-    <!-- [D] v-for="record in worldcups / 5" -->
-    <div class="card-record">
-      <!-- [D] v-for="card in record" -->
-      <WorldcupCard />
-      <WorldcupCard />
-      <WorldcupCard />
-      <WorldcupCard />
+    <div
+      v-for="(record, recordIndex) in chunkedWorldcups"
+      :key="recordIndex"
+      class="card-record"
+    >
+      <WorldcupCard
+        v-for="(card, cardIndex) in record"
+        :key="cardIndex"
+        :data="card"
+      />
     </div>
-
-<!--    <p v-if="user">현재 로그인: {{ user.email }}</p>-->
-
   </div>
 </template>
 
 <script>
-import { auth, onAuthStateChanged } from "@/services/firebase/auth";
 import WorldcupCard from "@/components/WorldcupCard.vue";
+import { fetchAllWorldcups } from "@/services/firebase/db.js";
 
 export default {
   name: "Home",
@@ -29,12 +29,23 @@ export default {
       worldcups: [],
     };
   },
-  created() {
-    onAuthStateChanged(auth, (user) => {
-      this.user = user;
-    });
+  async created() {
+    this.worldcups = await fetchAllWorldcups();
   },
-}
+  computed: {
+    /**
+     * 모든 월드컵 데이터를 하나의 레코드 당 5개의 카드를 가진 청크 형태로 나눠주는 함수
+     */
+    chunkedWorldcups() {
+      const chunkSize = 5;
+      const result = [];
+      for (let i = 0; i < this.worldcups.length; i += chunkSize) {
+        result.push(this.worldcups.slice(i, i + chunkSize));
+      }
+      return result;
+    },
+  },
+};
 </script>
 
 <style>
