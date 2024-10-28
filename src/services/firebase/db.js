@@ -10,6 +10,14 @@ import {  formatDate, convertToValidNodeString, restoreToOriginalString} from "@
 
 const db = getDatabase(firebaseApp);
 
+const language = 'ko'; // navigator.language: 사용자가 브라우저에 설정한 언어 속성 사용
+const numberFormat = new Intl.NumberFormat(language, {
+  notation: 'compact', // ex. 9744642 => 9.7M
+});
+const relativeTimeFormat = new Intl.RelativeTimeFormat(language, {
+  numeric: 'auto',
+})
+
 export async function saveUserToDatabase(user) {
   try {
     await set(ref(db, 'users/' + user.uid), {
@@ -53,14 +61,16 @@ export async function getAllUsers() {
     return [];
   }
 }
+
 /**
- * 월드컵 데이터 저장 함수
- *@param{String} userID
- *@param{Object} worldcupData
+ 월드컵 데이터 저장 함수
+ * @param user
+ * @param worldcupData 월드컵 상세 데이터
+ * @returns {Promise<void>} DB에 월드컵 데이터 추가
  */
-export async function saveWorldcupToDatabase(userID, worldcupData){
+export async function saveWorldcupToDatabase(user, worldcupData){
   const worldcupsRef = ref(db, 'worldcups');
-  const userRef = ref(db, `users/${userID}/myWorldcups`);
+  const userRef = ref(db, `users/${user.uid}/myWorldcups`);
 
   try {
     const newWorldcupRef = push(worldcupsRef); // push: unique ID 생성
@@ -70,23 +80,26 @@ export async function saveWorldcupToDatabase(userID, worldcupData){
     await set(newWorldcupRef, {
       title: worldcupData.title,
       details: worldcupData.details,
-      hashtags: worldcupData.hashtags,
+      hashtags: worldcupData.hashtags.map(item => convertToValidNodeString(item)),
       images: worldcupData.images,
       views: 0,
-      creator: userID, // FIXME: ID -> 닉네임으로 변경
+      creator: user.email, // TODO: email -> nickName (Sign-Up에서 닉네임 param 추가 선행되어야 함)
+      creatorId: user.uid,
       updatedAt: formatDate(new Date()),
     });
 
+    // FIXME: 이 부분 제대로 반영 안되고 있어 worldcups 참조에서만 추가되고 users 참조에서는 오류 반환됨
     // users.uid.myWorldcups.worldcupID
-    await set(ref(db, `${userRef}/${worldcupID}`), {
-      worldcupRef: newWorldcupRef, // title로 넣어야 할 지, id로 넣어야 할 지...
-    });
+    // await set(ref(db, `${userRef}/${worldcupID}`), {
+    //   worldcupRef: worldcupData.title, // title로 넣어야 할 지, id로 넣어야 할 지...
+    // });
+    // FIXME END
 
     alert("월드컵 생성 완료!");
     console.log('월드컵 정보를 저장하였습니다.', worldcupData);
   } catch(e) {
     alert("월드컵 생성 실패! 잠시 후 다시 시도해주세요.");
-    console.error('월드컵 정보를 저장하지 못했습니다.', e);
+    console.error('월드컵 정보를 저장하지 못했습니다.', e, worldcupData);
   }
 }
 
@@ -98,10 +111,6 @@ export async function fetchAllWorldcups() {
   // TODO: order by filter param: popular(인기순), latest(최신순), old(오래된순)
 
   const worldcupsRef = ref(db, 'worldcups');
-  const formatter = new Intl.NumberFormat(navigator.language, {
-    // navigator.language: 사용자가 브라우저에 설정한 언어 속성 사용
-    notation: 'compact' // ex. 9744642 => 9.7M
-  });
 
   try {
     const snapshot = await get(worldcupsRef);
@@ -109,12 +118,15 @@ export async function fetchAllWorldcups() {
     if (snapshot.exists()) {
       const worldcupsData = snapshot.val();
 
-      console.log(worldcupsData); // fixme: delete
+      // 마지막 업데이트 날짜 포맷
+      const today = new Date();
 
       return Object.keys(worldcupsData).map(key => ({
         ...worldcupsData[key], // child node data
-        views: formatter.format(worldcupsData.views),
-        worldcupID: key,
+        views: numberFormat.format(worldcupsData[key].views),
+
+        // FIXME: 10/29가 중간발표일이라 급하게 짠 코드이므로 다른 곳에서 활용하지는 마세요
+        updatedAt: relativeTimeFormat.format(Math.ceil((new Date(worldcupsData[key].updatedAt) - today) / (1000 * 60 * 60 * 24)), 'day'),
       }));
     } else {
       return [];

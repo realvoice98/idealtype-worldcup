@@ -15,7 +15,7 @@
       <span>{{ creator }}</span><!-- // TODO: 레벨 뱃지 아이콘 -->
     </div>
     <div class="card-description">
-      <span>조회수 {{ views }} · {{ updatedAt }}전 업데이트됨</span>
+      <span>조회수 {{ views }}회 · {{ updatedAt }} 업데이트됨</span>
       <button class="btn-like">
         <img :src="require('@/assets/like.png')" alt="" />
       </button>
