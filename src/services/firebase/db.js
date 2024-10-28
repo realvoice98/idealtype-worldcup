@@ -5,10 +5,18 @@
  */
 
 import { firebaseApp } from '@/services/firebase/config';
-import { getDatabase, ref, set, get, query, orderByChild, equalTo } from 'firebase/database';
+import { getDatabase, ref, set, get, push, query, orderByChild, equalTo } from 'firebase/database';
 import {  formatDate, convertToValidNodeString, restoreToOriginalString} from "@/common";
 
 const db = getDatabase(firebaseApp);
+
+const language = 'ko'; // navigator.language: 사용자가 브라우저에 설정한 언어 속성 사용
+const numberFormat = new Intl.NumberFormat(language, {
+  notation: 'compact', // ex. 9744642 => 9.7M
+});
+const relativeTimeFormat = new Intl.RelativeTimeFormat(language, {
+  numeric: 'auto',
+})
 
 export async function saveUserToDatabase(user) {
   try {
@@ -53,26 +61,45 @@ export async function getAllUsers() {
     return [];
   }
 }
+
 /**
- * 월드컵 데이터 저장 함수
- *@param{String} userID
- *@param{Object} worldcupData
+ 월드컵 데이터 저장 함수
+ * @param user
+ * @param worldcupData 월드컵 상세 데이터
+ * @returns {Promise<void>} DB에 월드컵 데이터 추가
  */
-export async function saveWorldcupToDatabase(userID, worldcupData){
-  try{
-    const worldcupID = formatDate(new Date(Date.now()));
-    await set(ref(db, `worldcups/${userID}/${worldcupID}`),{
+export async function saveWorldcupToDatabase(user, worldcupData){
+  const worldcupsRef = ref(db, 'worldcups');
+  const userRef = ref(db, `users/${user.uid}/myWorldcups`);
+
+  try {
+    const newWorldcupRef = push(worldcupsRef); // push: unique ID 생성
+    const worldcupID = newWorldcupRef.key; // 월드컵 ID
+
+    // worldcups.worldcupsID
+    await set(newWorldcupRef, {
       title: worldcupData.title,
       details: worldcupData.details,
-      hashtags: worldcupData.hashtags,
+      hashtags: worldcupData.hashtags.map(item => convertToValidNodeString(item)),
       images: worldcupData.images,
-      createdAt: formatDate(new Date()),
+      views: 0,
+      creator: user.email, // TODO: email -> nickName (Sign-Up에서 닉네임 param 추가 선행되어야 함)
+      creatorId: user.uid,
+      updatedAt: formatDate(new Date()),
     });
+
+    // FIXME: 이 부분 제대로 반영 안되고 있어 worldcups 참조에서만 추가되고 users 참조에서는 오류 반환됨
+    // users.uid.myWorldcups.worldcupID
+    // await set(ref(db, `${userRef}/${worldcupID}`), {
+    //   worldcupRef: worldcupData.title, // title로 넣어야 할 지, id로 넣어야 할 지...
+    // });
+    // FIXME END
+
     alert("월드컵 생성 완료!");
     console.log('월드컵 정보를 저장하였습니다.', worldcupData);
-  }catch (e){
+  } catch(e) {
     alert("월드컵 생성 실패! 잠시 후 다시 시도해주세요.");
-    console.error('월드컵 정보를 저장하지 못했습니다.', e);
+    console.error('월드컵 정보를 저장하지 못했습니다.', e, worldcupData);
   }
 }
 
@@ -81,28 +108,29 @@ export async function saveWorldcupToDatabase(userID, worldcupData){
  * @returns {Promise<Object[]>} 모든 월드컵 객체가 담긴 하나의 배열 데이터
  */
 export async function fetchAllWorldcups() {
+  // TODO: order by filter param: popular(인기순), latest(최신순), old(오래된순)
+
+  const worldcupsRef = ref(db, 'worldcups');
+
   try {
-    // TODO: DB로부터 모든 월드컵 데이터 가져오기 { Array<Object> }
-    return [
-      {
-        title: "[고화질, 움짤] 한국 여자 아이돌 월드컵 256강",
-        views: "1.9만회",
-        updatedAt: "1개월",
-        worldcupLink: "/worldcup?token0",
-      },
-      {
-        title: "내 아내로 삼고 싶은 애니 여캐 월드컵 1024강",
-        views: "3만회",
-        updatedAt: "2주",
-        worldcupLink: "/worldcup?token1",
-      },
-      {
-        title: "가장 역겨운 프로그래밍 언어 월드컵",
-        views: "1.2천회",
-        updatedAt: "6일",
-        worldcupLink: "/worldcup?token2",
-      },
-    ];
+    const snapshot = await get(worldcupsRef);
+
+    if (snapshot.exists()) {
+      const worldcupsData = snapshot.val();
+
+      // 마지막 업데이트 날짜 포맷
+      const today = new Date();
+
+      return Object.keys(worldcupsData).map(key => ({
+        ...worldcupsData[key], // child node data
+        views: numberFormat.format(worldcupsData[key].views),
+
+        // FIXME: 10/29가 중간발표일이라 급하게 짠 코드이므로 다른 곳에서 활용하지는 마세요
+        updatedAt: relativeTimeFormat.format(Math.ceil((new Date(worldcupsData[key].updatedAt) - today) / (1000 * 60 * 60 * 24)), 'day'),
+      }));
+    } else {
+      return [];
+    }
   } catch(e) {
     console.error('알 수 없는 오류: 월드컵 목록을 불러오지 못했습니다.');
     return {
