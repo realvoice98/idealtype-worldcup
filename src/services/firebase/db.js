@@ -88,12 +88,10 @@ export async function saveWorldcupToDatabase(user, worldcupData){
       updatedAt: formatDate(new Date()),
     });
 
-    // FIXME: 이 부분 제대로 반영 안되고 있어 worldcups 참조에서만 추가되고 users 참조에서는 오류 반환됨
-    // users.uid.myWorldcups.worldcupID
-    // await set(ref(db, `${userRef}/${worldcupID}`), {
-    //   worldcupRef: worldcupData.title, // title로 넣어야 할 지, id로 넣어야 할 지...
-    // });
-    // FIXME END
+    // users.uid.myWorldcups.title
+    await set(userRef, {
+      title: worldcupData.title, // TODO: title을 써야할 지... worldcupID를 써야할 지... 추후 마이페이지 작업 시 고려 대상
+    });
 
     alert("월드컵 생성 완료!");
     console.log('월드컵 정보를 저장하였습니다.', worldcupData);
