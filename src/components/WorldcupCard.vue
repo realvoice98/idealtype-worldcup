@@ -2,10 +2,11 @@
   <div class="card-container">
     <div class="card-thumbnails">
       <div class="card-thumbnail">
-        <img :src="require('@/assets/thumbnail-dummy.png')" alt=""/>
+        <br> <!-- TODO: 높이값 안맞아서 임시로 적용한 것. Storage 적용 시점에 dummy와 함께 폐기 -->
+        <img :src="require('@/assets/dummy/thumbnail-dummy3.png')" alt=""/>
       </div>
       <div class="card-thumbnail">
-        <img :src="require('@/assets/thumbnail-dummy.png')" alt=""/>
+        <img :src="require('@/assets/dummy/thumbnail-dummy2.jpg')" alt=""/>
       </div>
     </div>
     <h3 class="card-title">

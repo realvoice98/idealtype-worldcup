@@ -156,7 +156,8 @@ export default {
           images: this.images.map(image => image.preview),
         }
         await saveWorldcupToDatabase(this.user, worldcupData);
-      }catch (e){
+        location.href = '/';
+      } catch (e) {
         this.errorMessage = `오류: ${e.message}`;
       }
     }
