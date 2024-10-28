@@ -51,6 +51,7 @@ export default {
 <style>
   .main-container {
     display: flex;
+    flex-direction: column; /* 행 세로 배치 (chunkedWorldcups에서 record 나누기) */
     justify-content: center;
     align-items: center;
     height: 75vh;
@@ -58,7 +59,7 @@ export default {
 
   .card-record {
     display: flex;
-    border-radius: 10px;
     /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+    margin-bottom: 1rem; /* 행 간격 추가 */
   }
 </style>

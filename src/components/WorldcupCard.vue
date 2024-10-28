@@ -57,7 +57,7 @@
     padding: 15px;
     cursor: pointer;
     border: solid 1px #d0d0d0;
-    border-radius: 10%;
+    border-radius: 3%;
     max-width: 25rem; /* 카드 하나 당 고정 너비 */
     width: 100%;
     box-sizing: border-box;
