@@ -1,33 +1,56 @@
 <template>
   <div class="modal-overlay" v-if="isVisible" @click="closeModal">
     <div class="modal" @click.stop>
-      <h2>이미지 등록</h2>
-      <div class="modal-images" @click="triggerFileSelection">
-        <div class="modal-image" v-for="(image, index) in selectedImages" :key="index" @click.stop>
-          <div class="image-container">
-            <img :src="image.preview" @click="openCropper(index)" /><!--이미지 클릭시 크롭 모달 실행-->
-            <button class="remove-button" @click="removeImage(index)">지우기</button>
-          </div>
+      <div class="header">
+        <span>{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
+        <button class="close-button" @click="closeModal">X</button>
+      </div>
+
+      <div v-if="!cropperVisible && selectedImages.length > 0" class="main-image-container">
+        <button v-if="selectedImages.length > 1" class="arrow left-arrow" @click="previousImage">&lt;</button>
+
+        <div class="image-container" v-if="selectedImages.length > 0">
+          <img :src="selectedImages[currentImageIndex]?.preview" class="main-image" @click="openCropper(currentImageIndex)" />
+          <button class="remove-button" @click="removeImage(currentImageIndex)"> X </button>
+        </div>
+
+        <button v-if="selectedImages.length > 1" class="arrow right-arrow" @click="nextImage">&gt;</button>
+      </div>
+
+      <div v-if="cropperVisible" class="cropper-container">
+        <VueCropper
+            ref="cropper"
+            :src="cropperImage"
+            :aspect-ratio="1"
+            :view-mode="1"
+            :drag-mode="'move'"
+            :zoomable="false"
+            :movable="true"
+            class="vue-cropper"
+        />
+        <div class="cropper-buttons">
+          <button @click="cropImage">자르기</button>
+          <button @click="closeCropper">취소</button>
         </div>
       </div>
-      <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
-      <div class="modal-buttons">
-        <button @click="confirmImages">확인</button>
+
+      <div v-if="!cropperVisible" class="thumbnails">
+        <img
+            v-for="(image, index) in selectedImages"
+            :key="index"
+            :src="image.preview"
+            :class="{ 'active-thumbnail': index === currentImageIndex }"
+            @click="currentImageIndex = index"
+        />
+        <button v-if="selectedImages.length < 5" @click="triggerFileSelection">+ 추가</button>
+      </div>
+
+      <div class="modal-buttons" v-if="!cropperVisible">
+        <button @click="confirmImages">저장</button>
         <button @click="closeModal">취소</button>
       </div>
-    </div>
 
-    <!-- 크롭 모달 -->
-    <div v-if="cropperVisible" class="cropper-modal" @click.stop>
-      <VueCropper
-          ref="cropper"
-          :src="cropperImage"
-          :aspect-ratio="1"
-      />
-      <div class="cropper-buttons">
-        <button @click="cropImage">이미지 자르기</button>
-        <button @click="closeCropper">취소</button>
-      </div>
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
   </div>
 </template>
@@ -53,17 +76,15 @@ export default {
       errorMessage: '',
       cropperVisible: false,
       cropperImage: null,
-      currentImageIndex: null,
+      currentImageIndex: 0,
     };
   },
   mounted() {
-    // 모달이 열릴 때 파일 선택 창을 자동으로 띄움
     if (this.isVisible) {
       this.triggerFileSelection();
     }
   },
   watch: {
-    // 모달이 열릴 때마다 파일 선택 창을 트리거
     isVisible(newVal) {
       if (newVal) {
         this.triggerFileSelection();
@@ -72,7 +93,6 @@ export default {
   },
   methods: {
     triggerFileSelection() {
-      // 파일 선택 창을 트리거하기 위한 가상 파일 입력 생성
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = 'image/png, image/jpeg';
@@ -86,7 +106,6 @@ export default {
       this.errorMessage = '';
 
       const allowedExtensions = ['png', 'jpg', 'jpeg'];
-
       const validFiles = files.filter(file => {
         const fileExtension = file.name.split('.').pop().toLowerCase();
         return allowedExtensions.includes(fileExtension);
@@ -104,12 +123,18 @@ export default {
         };
         reader.readAsDataURL(file);
       });
+
+      // 첫 번째 이미지가 추가되면 currentImageIndex를 0으로 설정
+      if (this.selectedImages.length === 1) {
+        this.currentImageIndex = 0;
+      }
     },
 
     openCropper(index) {
-      this.cropperImage = this.selectedImages[index].preview;
-      this.currentImageIndex = index;
-      this.cropperVisible = true;
+      if (this.selectedImages && this.selectedImages[index]) {
+        this.cropperImage = this.selectedImages[index].preview; // 'preview'가 undefined인 경우를 방지
+        this.cropperVisible = true;
+      }
     },
 
     cropImage() {
@@ -132,7 +157,6 @@ export default {
     closeCropper() {
       this.cropperVisible = false;
       this.cropperImage = null;
-      this.currentImageIndex = null;
     },
 
     confirmImages() {
@@ -141,68 +165,97 @@ export default {
         this.closeModal();
       }
     },
+
     closeModal() {
       this.$emit('update:isVisible', false);
       this.selectedImages = [];
+      this.currentImageIndex = 0; // 모달을 닫을 때 currentImageIndex 초기화
     },
+
     removeImage(index) {
-      this.selectedImages.splice(index, 1);
+      // 배열에서 이미지 삭제
+      if (index >= 0 && index < this.selectedImages.length) {
+        this.selectedImages.splice(index, 1);
+
+        // 삭제 후, currentImageIndex가 유효한지 확인하고 인덱스를 조정
+        if (this.selectedImages.length === 0) {
+          this.currentImageIndex = 0;  // 모든 이미지가 삭제되면 첫 번째 이미지로 초기화
+        } else if (this.currentImageIndex >= this.selectedImages.length) {
+          this.currentImageIndex = this.selectedImages.length - 1; // 범위 내 인덱스로 조정
+        }
+      }
+    },
+
+    previousImage() {
+      if (this.selectedImages.length > 0) {
+        this.currentImageIndex = (this.currentImageIndex - 1 + this.selectedImages.length) % this.selectedImages.length;
+      }
+    },
+
+    nextImage() {
+      if (this.selectedImages.length > 0) {
+        this.currentImageIndex = (this.currentImageIndex + 1) % this.selectedImages.length;
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-/*TODO: CSS 다듬기*/
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 50vw;
+  max-width: 600px;
+  position: relative;
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.main-image-container {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.modal {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 40vw;
-  max-height: 80vh;
-}
-
-.modal-images {
-  display: flex;
-  flex-wrap: wrap;
-  width: 95%;
-  height: 40vh;
-  overflow-y: scroll;
-  border: 1px solid lightgray;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  overflow-x: auto;
-}
-
-.modal-image {
-  margin-right: 1rem;
-  margin-bottom: 1rem;
-}
-
 .image-container {
   position: relative;
-  flex: 0 0 calc(33.33% - 1rem); /* 이미지 너비를 3등분 */
-  margin-bottom: 1rem;
 }
 
-.image-container img {
+.main-image {
+  position: relative;
   width: 100%;
-  max-height: 150px;
-  display: block;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
   cursor: pointer;
 }
 
@@ -224,72 +277,120 @@ export default {
   opacity: 1;
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem; /* 버튼과 모달 내용 사이에 여백 추가 */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 1.5rem;
+  border-radius: 50%;
 }
 
-.error-message {
-  color: red;
+.left-arrow {
+  left: -20px;
 }
 
-.cropper-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: black;
-  opacity: 1;
+.right-arrow {
+  right: -20px;
 }
 
-.cropper-buttons {
+.thumbnails {
   display: flex;
   justify-content: center;
   margin-top: 1rem;
 }
 
+.thumbnails img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  margin: 0 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.thumbnails img.active-thumbnail {
+  border: 2px solid #333;
+  opacity: 1;
+}
+
+.cropper-container {
+  margin-top: 1rem;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vue-cropper {
+  width: 70vw;
+  height: 70vh;
+}
+
+.cropper-buttons {
+  position: absolute;
+  bottom: 20px;
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  gap: 20px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1.5rem;
+}
+
 .cropper-buttons button {
-  margin: 0 1rem;
-  padding: 0.5rem 1rem;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 150px;
 }
 
-h2{
-  color: black;
+.cropper-buttons button:hover {
+  background-color: #0056b3;
 }
 
-@media (max-width: 768px) {
-  .modal {
-    width: 90vw; /* 모바일에서 너비 90% */
-  }
-
-  .modal-images {
-    max-height: 150px; /* 모바일에서 최대 높이 조정 */
-  }
-
-  .image-container {
-    flex: 0 0 calc(50% - 1rem); /* 모바일에서 이미지 너비를 2등분 */
-  }
+.modal-buttons button,
+.cropper-buttons button {
+  padding: 0.7rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
 }
 
-@media (max-width: 480px) {
-  .modal {
-    width: 95vw; /* 매우 작은 화면에서 너비 95% */
-  }
+.modal-buttons button:first-child {
+  background-color: #4CAF50;
+  color: white;
+}
 
-  .modal-images {
-    max-height: 120px; /* 매우 작은 화면에서 최대 높이 조정 */
-  }
+.modal-buttons button:last-child {
+  background-color: #f44336;
+  color: white;
+}
 
-  .image-container {
-    flex: 0 0 100%; /* 매우 작은 화면에서 이미지 너비를 100% */
-  }
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 1rem;
 }
 </style>
-
 
