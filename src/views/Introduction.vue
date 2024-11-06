@@ -6,7 +6,7 @@
     <div class="intro-content">
       <section class="text-content left" data-scroll>
         <div class="image-container left" data-scroll>
-          <img src="@/assets/logo.png" alt="Left Image" />
+          <img src="@/assets/logo.png" alt="Left Image" class="intro-img"/>
         </div>
         <div class="text-box right">
           <h1 id="subtitle">Lorem ipsum</h1>
@@ -34,7 +34,7 @@
       </section>
       <section class="text-content right" data-scroll>
         <div class="image-container right" data-scroll>
-          <img src="https://v-llage.s3.ap-northeast-2.amazonaws.com/1669707438698_%ED%81%B4%EB%A6%AC%EC%85%B0.png" alt="right Image" />
+          <img src="https://v-llage.s3.ap-northeast-2.amazonaws.com/1669707438698_%ED%81%B4%EB%A6%AC%EC%85%B0.png" alt="right Image" class="intro-img"/>
         </div>
         <div class="text-box left">
           <h1 id="subtitle">Lorem ipsum</h1>
@@ -62,7 +62,7 @@
       </section>
       <section class="text-content left" data-scroll>
         <div class="image-container left" data-scroll>
-          <img src="https://velog.velcdn.com/images%2Fhing%2Fpost%2Fd06f8ff0-f27b-497e-9d5f-06a6706e0d59%2Fimage.png" alt="Left Image" />
+          <img src="https://velog.velcdn.com/images%2Fhing%2Fpost%2Fd06f8ff0-f27b-497e-9d5f-06a6706e0d59%2Fimage.png" alt="Left Image" class="intro-img" />
         </div>
         <div class="text-box right">
           <h1 id="subtitle">Lorem ipsum</h1>
@@ -157,6 +157,7 @@ export default {
  }
 
  .image-container {
+   width: 50vw;
    flex-shrink: 0;
    transition: opacity 1s ease, transform 1s ease;
  }
@@ -172,7 +173,7 @@ export default {
  }
 
  .image-container img {
-   width: 600px;
+   width: 40vw;
    height: auto;
    border-radius: 8px;
    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -189,6 +190,7 @@ export default {
 
  .text-box {
    flex: 1;
+   width: 40vw;
  }
 
  .text-box.left {
@@ -207,4 +209,11 @@ export default {
    flex-direction: row-reverse; /* 이미지를 오른쪽에, 텍스트를 왼쪽에 */
  }
 
+ h1 {
+   font-size: 3vw; /* 뷰포트 너비의 5% */
+ }
+
+ p {
+   font-size: 1vw; /* 뷰포트 너비의 2% */
+ }
 </style>
