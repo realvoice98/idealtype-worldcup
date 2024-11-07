@@ -3,14 +3,38 @@
     <div class="signup-content">
       <div class="header">회원가입</div>
       <form class="sign-up-form" @submit.prevent="signUp">
-        <div class="sign-up-line">
-          <div class="left" for="email">이메일</div>
-          <input class="right" v-model="email" type="email" placeholder="이메일" required />
+        <div class="sign-up-line email">
+          <div class="left">이메일</div>
+          <input class="right" v-model="email" type="email" placeholder="user@gmail.com" maxlength="30" required />
         </div>
-        <div class="sign-up-line">
-          <div class="left" for="password">비밀번호</div>
-          <input class="right" v-model="password" type="password" placeholder="비밀번호" required />
+        <div class="sign-up-line password">
+          <div class="left">비밀번호</div>
+          <input class="right" v-model="password" type="password" placeholder="********" required />
         </div>
+        <div class="sign-up-line nickname">
+          <div class="left">닉네임</div>
+          <input class="right" placeholder="홍길동" maxlength="10" required />
+        </div>
+        <div class="sign-up-line calendar">
+          <div class="left">생년월일</div>
+          <input class="right" placeholder="YYYY. MM. DD" maxlength="13" required />
+        </div>
+        <!-- // TODO: 버튼 형식의 input으로 개선중 - 신건호 -->
+        <div class="sign-up-line gender">
+          <div>
+            <ul class="gender-list">
+              <li class="radio-item">
+                <input class="blind" type="radio" value="M" />
+                <label for="gender0">남성</label>
+              </li>
+              <li class="radio-item">
+                <input class="blind" type="radio" value="F" />
+                <label for="gender1">여성</label>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- // TODO END: 버튼 형식의 input으로 개선중 - 신건호 -->
         <button class="signup-button" type="submit">회원가입</button>
       </form>
       <div class="bottom-container">
