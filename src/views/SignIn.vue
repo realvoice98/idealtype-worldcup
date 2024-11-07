@@ -4,18 +4,18 @@
       <div class="header">로그인</div>
       <form class="sign-in-form" @submit.prevent="signIn">
         <div class="sign-in-line">
-          <div class="left" for="email">이메일</div>
+          <div class="left">이메일</div>
           <input class="right" v-model="email" type="email" placeholder="이메일" required />
         </div>
         <div class="sign-in-line">
-          <div class="left" for="password">비밀번호</div>
+          <div class="left">비밀번호</div>
           <input class="right" v-model="password" type="password" placeholder="비밀번호" required />
         </div>
         <button class="login-button" type="submit">로그인</button>
       </form>
       <div class="bottom-container">
       <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
-      이상형 월드컵에 처음 오셨나요? <router-link class= "go-sign-up" to="/sign-up">회원가입하기d</router-link>
+      이상형 월드컵에 처음 오셨나요? <router-link class= "go-sign-up" to="/sign-up">회원가입하기</router-link>
     </div>
     </div>
   </div>
