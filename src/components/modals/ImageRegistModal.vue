@@ -1,61 +1,58 @@
 <template>
-  <div class="modal-overlay" v-if="isVisible" @click="closeModal">
-    <div class="modal" @click.stop>
-      <div class="header">
-        <span>{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
-        <button class="close-button" @click="closeModal">X</button>
-      </div>
-
-      <div v-if="!cropperVisible && selectedImages.length > 0" class="main-image-container">
-        <button v-if="selectedImages.length > 1" class="arrow left-arrow" @click="previousImage">&lt;</button>
-
-        <div class="image-container" v-if="selectedImages.length > 0">
-          <img :src="selectedImages[currentImageIndex]?.preview" class="main-image" @click="openCropper(currentImageIndex)" />
-          <button class="remove-button" @click="removeImage(currentImageIndex)"> X </button>
-        </div>
-
-        <button v-if="selectedImages.length > 1" class="arrow right-arrow" @click="nextImage">&gt;</button>
-      </div>
-
-      <div v-if="cropperVisible" class="cropper-container">
-        <VueCropper
-            ref="cropper"
-            :src="cropperImage"
-            :aspect-ratio="1"
-            :view-mode="1"
-            :drag-mode="'move'"
-            :zoomable="false"
-            :movable="true"
-            class="vue-cropper"
-        />
-        <div class="cropper-buttons">
-          <button @click="cropImage">자르기</button>
-          <button @click="closeCropper">취소</button>
-        </div>
-      </div>
-
-      <div v-if="!cropperVisible" class="thumbnails">
-        <img
-            v-for="(image, index) in selectedImages"
-            :key="index"
-            :src="image.preview"
-            :class="{ 'active-thumbnail': index === currentImageIndex }"
-            @click="currentImageIndex = index"
-        />
-        <button v-if="selectedImages.length < 5" @click="triggerFileSelection">+ 추가</button>
-      </div>
-
-      <div class="modal-buttons" v-if="!cropperVisible">
-        <button @click="confirmImages">저장</button>
-        <button @click="closeModal">취소</button>
-      </div>
-
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+  <div class="modal-overlay" v-if="isVisible">
+    <div class="header">
+      <span>{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
+      <button class="close-button" @click="closeModal">X</button>
     </div>
+
+    <div v-if="!cropperVisible && selectedImages.length > 0" class="main-image-container" @click.stop>
+      <button v-if="selectedImages.length > 1" class="arrow left-arrow" @click="previousImage">&lt;</button>
+
+      <div class="image-container">
+        <img :src="selectedImages[currentImageIndex]?.preview" class="main-image" @click="openCropper(currentImageIndex)" />
+        <button class="remove-button" @click="removeImage(currentImageIndex)"> X </button>
+      </div>
+
+      <button v-if="selectedImages.length > 1" class="arrow right-arrow" @click="nextImage">&gt;</button>
+    </div>
+
+    <div v-if="cropperVisible" class="cropper-container" @click.stop>
+      <VueCropper
+          ref="cropper"
+          :src="cropperImage"
+          :aspect-ratio="1"
+          :view-mode="1"
+          :drag-mode="'move'"
+          :zoomable="false"
+          :movable="true"
+          class="vue-cropper"
+      />
+      <div class="cropper-buttons">
+        <button @click="cropImage">자르기</button>
+        <button @click="closeCropper">취소</button>
+      </div>
+    </div>
+
+    <div v-if="!cropperVisible" class="thumbnails" @click.stop>
+      <img
+          v-for="(image, index) in selectedImages"
+          :key="index"
+          :src="image.preview"
+          :class="{ 'active-thumbnail': index === currentImageIndex }"
+          @click="currentImageIndex = index"
+      />
+      <button v-if="selectedImages.length < 5" @click="triggerFileSelection">+ 추가</button>
+    </div>
+
+    <div class="modal-buttons" v-if="!cropperVisible" @click.stop>
+      <button @click="confirmImages">확인</button>
+    </div>
+
+    <p v-if="errorMessage" class="error-message" @click.stop>{{ errorMessage }}</p>
   </div>
 </template>
 
-<script>
+<script>// TODO: 변경사항 경고 모달 추가하기
 import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
 
@@ -209,33 +206,29 @@ export default {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
-}
-
-.modal {
-  background: white;
   padding: 1.5rem;
-  border-radius: 8px;
-  width: 50vw;
-  max-width: 600px;
-  position: relative;
-  text-align: center;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  width: 100%;
+  max-width: 600px;
   margin-bottom: 1rem;
+  color: white;
 }
 
 .close-button {
   background: none;
   border: none;
   font-size: 1.2rem;
+  color: white;
   cursor: pointer;
 }
 
@@ -244,6 +237,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  max-width: 600px;
 }
 
 .image-container {
@@ -278,7 +273,7 @@ export default {
 }
 
 .arrow {
-  position: absolute;
+  position: fixed;
   top: 50%;
   transform: translateY(-50%);
   background: rgba(0, 0, 0, 0.5);
@@ -288,20 +283,23 @@ export default {
   cursor: pointer;
   font-size: 1.5rem;
   border-radius: 50%;
+  z-index: 1001;
 }
 
 .left-arrow {
-  left: -20px;
+  left: 10px;
 }
 
 .right-arrow {
-  right: -20px;
+  right: 10px;
 }
 
 .thumbnails {
   display: flex;
   justify-content: center;
   margin-top: 1rem;
+  width: 100%;
+  max-width: 600px;
 }
 
 .thumbnails img {
@@ -378,13 +376,8 @@ export default {
 }
 
 .modal-buttons button:first-child {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.modal-buttons button:last-child {
-  background-color: #f44336;
-  color: white;
+  background-color: white;
+  color: black;
 }
 
 .error-message {
