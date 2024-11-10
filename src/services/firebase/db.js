@@ -1,14 +1,10 @@
-/*
- * Firebase Realtime Database는 JSON 트리 구조를 사용하므로,
- * 경로 참조 시 아래와 같은 문자의 사용은 경로 탐색 구분자로 오인될 수 있어 허용하지 않는다.
- * '.', '$', '#', '[', ']', '/'
- */
-
 import { firebaseApp } from '@/services/firebase/config';
-import { getDatabase, ref, set, get, push, query, orderByChild, equalTo } from 'firebase/database';
-import {  formatDate, convertToValidNodeString, restoreToOriginalString} from '@/common';
+import { getDatabase, ref as dbRef, set, get, push, query, orderByChild, equalTo } from 'firebase/database';
+import { getStorage, ref as stRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { formatDate, convertToValidNodeString, restoreToOriginalString} from '@/common';
 
 const db = getDatabase(firebaseApp);
+const st = getStorage(firebaseApp);
 
 const language = 'ko'; // navigator.language: 사용자가 브라우저에 설정한 언어 속성 사용
 const numberFormat = new Intl.NumberFormat(language, {
@@ -16,14 +12,27 @@ const numberFormat = new Intl.NumberFormat(language, {
 });
 const relativeTimeFormat = new Intl.RelativeTimeFormat(language, {
   numeric: 'auto',
-})
+});
+
+
+
+/**
+ * Firebase Realtime Database
+ *
+ * JSON 트리 구조를 사용하므로, 경로 참조 시 아래와 같은 문자의 사용은
+ * 경로 탐색 구분자로 오인될 수 있어 허용하지 않는다.
+ * '.', '$', '#', '[', ']', '/'
+ *
+ * 따라서 위 문자가 포함된 값은 반드시 convertToValidNodeString()으로 포맷 후 db에 적재하고,
+ * 포맷된 값을 가져온 값은 restoreToOriginalString()으로 다시 원복하여 사용한다.
+ */
 
 /**
  * 회원가입 요청 처리 함수
  * @param {Object} user 회원가입 정보
  */
 export async function createUser(user) {
-  const userRef = ref(db, 'users/' + user.uid);
+  const userRef = dbRef(db, 'users/' + user.uid);
 
   try {
     await set(userRef, {
@@ -49,7 +58,7 @@ export async function createUser(user) {
  * @param {Object} user 유저 정보
  */
 export async function getUser(user) {
-  const userRef = ref(db, 'users/' + user.uid);
+  const userRef = dbRef(db, 'users/' + user.uid);
 
   try {
     const snapshot = await get(userRef);
@@ -74,7 +83,7 @@ export async function getUser(user) {
  * @returns {Promise<Array>} 모든 유저 정보 배열
  */
 export async function getAllUsers() {
-  const usersRef = ref(db, 'users');
+  const usersRef = dbRef(db, 'users');
 
   try {
     const snapshot = await get(usersRef);
@@ -98,22 +107,22 @@ export async function getAllUsers() {
 /**
  * 월드컵 생성 요청 처리 함수
  * @param {Object} user
- * @param {Object} worldcupData 월드컵 상세 데이터
+ * @param {Object} worldcup 월드컵 상세 데이터
  * @returns {Promise<void>} DB에 월드컵 데이터 추가
  */
-export async function createWorldcup(user, worldcupData) {
-  const worldcupsRef = ref(db, 'worldcups');
-  const myWorldcupsRef = ref(db, `users/${user.uid}/myWorldcups`);
+export async function createWorldcup(user, worldcup) {
+  const worldcupsRef = dbRef(db, 'worldcups');
+  const myWorldcupsRef = dbRef(db, `users/${user.uid}/myWorldcups`);
 
   try {
     const newWorldcupRef = push(worldcupsRef); // push: unique ID 생성
 
     // worldcups.worldcupsID
     await set(newWorldcupRef, {
-      title: worldcupData.title,
-      details: worldcupData.details,
-      hashtags: worldcupData.hashtags.map(item => convertToValidNodeString(item)),
-      images: worldcupData.images,
+      title: worldcup.title,
+      details: worldcup.details,
+      hashtags: worldcup.hashtags.map(item => convertToValidNodeString(item)),
+      images: worldcup.images,
       views: 0,
       creator: user.nickname,
       creatorId: user.uid,
@@ -126,10 +135,10 @@ export async function createWorldcup(user, worldcupData) {
     });
 
     alert("월드컵 생성 완료!");
-    console.log('월드컵 정보를 저장하였습니다.', worldcupData);
+    console.log('월드컵 정보를 저장하였습니다.', worldcup);
   } catch(e) {
     alert("월드컵 생성 실패! 잠시 후 다시 시도해주세요.");
-    console.error('월드컵 정보를 저장하지 못했습니다.', e, worldcupData);
+    console.error('월드컵 정보를 저장하지 못했습니다.', e, worldcup);
   }
 }
 
@@ -140,7 +149,7 @@ export async function createWorldcup(user, worldcupData) {
 export async function fetchAllWorldcups() {
   // TODO: order by filter param: popular(인기순), latest(최신순), old(오래된순)
 
-  const worldcupsRef = ref(db, 'worldcups');
+  const worldcupsRef = dbRef(db, 'worldcups');
 
   try {
     const snapshot = await get(worldcupsRef);
@@ -169,3 +178,12 @@ export async function fetchAllWorldcups() {
     }
   }
 }
+
+
+
+/**
+ * Firebase Storage
+ *
+ * 이미지, 오디오, 동영상의 원본 데이터는 Storage에 보관하고,
+ * Realtime DB에서는 Storage 노드의 참조 경로를 작성하여 원본 데이터에 접근한다.
+ */
