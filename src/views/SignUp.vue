@@ -17,7 +17,7 @@
         </div>
         <div class="sign-up-line birthday">
           <div class="left">생년월일</div>
-          <input class="right" v-model="birthday" placeholder="YYYY. MM. DD" maxlength="13" />
+          <input class="right" v-model="birthday" placeholder="YYYY-MM-DD" maxlength="10" />
         </div>
         <div class="sign-up-line gender">
           <div class="gender-list">
@@ -44,7 +44,7 @@
 
 <script>
   import { auth, createUserWithEmailAndPassword } from '@/services/firebase/auth';
-  import { saveUserToDatabase } from '@/services/firebase/db';
+  import { createUser } from '@/services/firebase/db';
 
   export default {
     name: 'SignUp',
@@ -67,15 +67,21 @@
 
         try {
           const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password);
-          const user = userCredential.user;
+          const user = {
+            uid: userCredential.user.uid,
+            email: this.email,
+            nickname: this.nickname,
+            birthday: this.birthday,
+            gender: this.gender,
+            metadata: userCredential.user.metadata,
+          }
 
-          await saveUserToDatabase(user);
+          await createUser(user);
 
-          // FIXME: 회원가입 완료 페이지로 랜딩
-          // FIXME: 해당 페이지 상단에서 멤버스 혜택 설명
-          // FIXME: 해당 페이지 하단에서 시작하기 버튼 제공, 클릭 시 자동 로그인(세션 60분) 및 홈으로 이동
+          // TODO: 회원가입 완료 페이지로 랜딩 + 자동 로그인 처리 (세션 60분)
+          //   해당 페이지 상단에서 멤버스 혜택 설명
+          //   해당 페이지 하단에서 시작하기 버튼 제공, 클릭 시 홈으로 이동
           location.href = origin;
-          // FIXME END
         } catch (e) {
           if (e.code === 'auth/email-already-in-use') {
             this.errorMessage = '이미 가입된 이메일입니다.';
@@ -105,7 +111,7 @@
           this.errorMessage = '닉네임을 입력해주세요.';
           return false;
         }
-        // TODO: nickname 비속어 필터링
+        // TODO: nickname 특수문자, 비속어 필터링
         if (!this.birthday) {
           this.errorMessage = '생년월일을 입력해주세요.';
           return false;

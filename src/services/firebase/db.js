@@ -18,13 +18,20 @@ const relativeTimeFormat = new Intl.RelativeTimeFormat(language, {
   numeric: 'auto',
 })
 
-export async function saveUserToDatabase(user) {
+/**
+ * 회원가입 요청 처리 함수
+ * @param {Object} user 회원가입 정보
+ */
+export async function createUser(user) {
   try {
     await set(ref(db, 'users/' + user.uid), {
       email: convertToValidNodeString(user.email),
+      nickname: user.nickname,
+      birthday: user.birthday,
+      gender: user.gender,
       createdAt: formatDate(new Date(user.metadata.creationTime)),
       lastLoginedAt: formatDate(new Date(user.metadata.lastSignInTime)),
-      emailVerified: true,
+      emailVerified: true,// TODO: 이메일 인증
       role: 'user', // 일반 사용자
     });
     alert("회원가입 완료!");
