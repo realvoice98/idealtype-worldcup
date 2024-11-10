@@ -21,17 +21,19 @@
         </div>
         <!-- // TODO: 버튼 형식의 input으로 개선중 - 신건호 -->
         <div class="sign-up-line gender">
-          <div>
-            <ul class="gender-list">
-              <li class="radio-item">
-                <input class="blind" type="radio" value="M" />
-                <label for="gender0">남성</label>
-              </li>
-              <li class="radio-item">
-                <input class="blind" type="radio" value="F" />
-                <label for="gender1">여성</label>
-              </li>
-            </ul>
+          <div class="gender-list">
+            <button
+              :class="['gender-btn', { selected: selectedGender === 'M' }]"
+              @click="selectGender('M')"
+            >
+              남성
+            </button>
+            <button
+              :class="['gender-btn', { selected: selectedGender === 'F'}]"
+              @click="selectGender('F')"
+            >
+              여성
+            </button>
           </div>
         </div>
         <!-- // TODO END: 버튼 형식의 input으로 개선중 - 신건호 -->
@@ -54,6 +56,7 @@
       return {
         email: '',
         password: '',
+        selectedGender: '',
         errorMessage: '',
       };
     },
@@ -81,6 +84,9 @@
           }
         }
       },
+      selectGender(gender) {
+        this.selectedGender = gender;
+      }
     },
   }
 </script>
@@ -105,7 +111,7 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 25px 35px;
   }
-  .sign-up-form{
+  .sign-up-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -126,6 +132,36 @@
         border: 1px solid #ccc;
       }
     }
+  }
+
+  .gender-list {
+    display: flex;
+    width: 100%;
+  }
+  .gender-btn {
+    flex: 1;
+    padding: 0.4rem;
+    border: 2px solid #ececec;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    transition: border-color 0.5s ease;
+  }
+  .gender-btn:first-child {
+    border-radius: 4px 0 0 4px;
+    border-right-width: 1px;
+  }
+  .gender-btn:last-child {
+    border-radius: 0 4px 4px 0;
+    border-left-width: 1px;
+  }
+  .gender-btn.selected:first-child {
+    border-color: #98B7D4;
+    border-right-width: 2px;
+  }
+  .gender-btn.selected:last-child {
+    border-color: #98B7D4;
+    border-left-width: 2px;
   }
 
   .signup-button {
