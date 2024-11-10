@@ -5,43 +5,39 @@
       <form class="sign-up-form" @submit.prevent="signUp">
         <div class="sign-up-line email">
           <div class="left">이메일</div>
-          <input class="right" v-model="email" type="email" placeholder="user@gmail.com" maxlength="30" required />
+          <input class="right" v-model="email" type="email" placeholder="user@gmail.com" maxlength="30" />
         </div>
         <div class="sign-up-line password">
           <div class="left">비밀번호</div>
-          <input class="right" v-model="password" type="password" placeholder="********" required />
+          <input class="right" v-model="password" type="password" placeholder="********" />
         </div>
         <div class="sign-up-line nickname">
           <div class="left">닉네임</div>
-          <input class="right" placeholder="홍길동" maxlength="10" required />
+          <input class="right" :value="nickname" @input="updateNickname" placeholder="홍길동" maxlength="10" />
         </div>
-        <div class="sign-up-line calendar">
+        <div class="sign-up-line birthday">
           <div class="left">생년월일</div>
-          <input class="right" placeholder="YYYY. MM. DD" maxlength="13" required />
+          <input class="right" v-model="birthday" placeholder="YYYY. MM. DD" maxlength="13" />
         </div>
-        <!-- // TODO: 버튼 형식의 input으로 개선중 - 신건호 -->
         <div class="sign-up-line gender">
           <div class="gender-list">
             <button
-              :class="['gender-btn', { selected: selectedGender === 'M' }]"
+              type="button"
+              :class="['gender-btn', { selected: gender === 'M' }]"
               @click="selectGender('M')"
-            >
-              남성
-            </button>
+            >남성</button>
             <button
-              :class="['gender-btn', { selected: selectedGender === 'F'}]"
+              type="button"
+              :class="['gender-btn', { selected: gender === 'F'}]"
               @click="selectGender('F')"
-            >
-              여성
-            </button>
+            >여성</button>
           </div>
         </div>
-        <!-- // TODO END: 버튼 형식의 input으로 개선중 - 신건호 -->
         <button class="signup-button" type="submit">회원가입</button>
       </form>
       <div class="bottom-container">
-      <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
-    </div>
+        <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -56,13 +52,19 @@
       return {
         email: '',
         password: '',
-        selectedGender: '',
+        nickname: '',
+        birthday: '',
+        gender: '',
         errorMessage: '',
       };
     },
     methods: {
-      /** Firebase Auth 연동 회원가입 및 DB에 회원 데이터 추가 */
+      /**
+       * Firebase Auth 연동 회원가입 및 DB에 회원 데이터 추가
+       */
       async signUp() {
+        if (!this.validate()) return;
+
         try {
           const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password);
           const user = userCredential.user;
@@ -84,10 +86,71 @@
           }
         }
       },
+      /**
+       * 회원가입 유효성 검사
+       * @returns {boolean}
+       */
+      validate() {
+        // TODO: 입력 값이 있는지만 체크하는 약한 검증 레벨임. 깊이 있는 검증 레벨로 개선 필요
+        if (!this.email) {
+          this.errorMessage = '이메일을 입력해주세요.';
+          return false;
+        }
+        if (!this.password) {
+          this.errorMessage = '비밀번호를 입력해주세요.';
+          return false;
+        }
+        // TODO: password 강도 체크
+        if (!this.nickname) {
+          this.errorMessage = '닉네임을 입력해주세요.';
+          return false;
+        }
+        // TODO: nickname 비속어 필터링
+        if (!this.birthday) {
+          this.errorMessage = '생년월일을 입력해주세요.';
+          return false;
+        }
+        // TODO: birthday 숫자, 공백, `.` 문자만 포함 (정규식)
+        if (!this.gender) {
+          this.errorMessage = '성별을 선택해주세요.';
+          return false;
+        }
+        return true;
+      },
       selectGender(gender) {
-        this.selectedGender = gender;
+        this.gender = gender; // 성별 버튼 선택 시 데이터 바인딩, 'M' 또는 'F'
+      },
+      updateNickname(e) {
+        this.nickname = e.target.value; // 닉네임 입력 값 양방향 바인딩
       }
     },
+    watch: {
+      email(value) {
+        if (value && this.errorMessage.includes('이메일')) {
+          this.errorMessage = '';
+        }
+      },
+      password(value) {
+        if (value && this.errorMessage.includes('비밀번호')) {
+          this.errorMessage = '';
+        }
+      },
+      nickname(value) {
+        if (value && this.errorMessage.includes('닉네임')) {
+          this.errorMessage = '';
+        }
+      },
+      birthday(value) {
+        if (value && this.errorMessage.includes('생년월일')) {
+          this.errorMessage = '';
+        }
+      },
+      gender(value) {
+        if (value && this.errorMessage.includes('성별')) {
+          this.errorMessage = '';
+        }
+      },
+    }
   }
 </script>
 
