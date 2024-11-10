@@ -93,127 +93,126 @@
 </template>
 
 <script>
-import TypeIt from "typeit";
-import ScrollOut from "scroll-out";
+  import TypeIt from "typeit";
+  import ScrollOut from "scroll-out";
 
-//TODO: 소개 페이지 텍스트를 하드코딩할지 의논 필요. 주기적으로 바꾸지 않으면 그냥 하드코딩이 나을 듯 싶음.
+  //TODO: 소개 페이지 텍스트를 하드코딩할지 의논 필요. 주기적으로 바꾸지 않으면 그냥 하드코딩이 나을 듯 싶음.
 
-export default {
-  name: "Introduction",
-  mounted() {
-    new TypeIt("#title", {
-      strings: "이상형 월드컵",
-      speed: 50,
-      waitUntilVisible: true,
-      loop: true
-    }).pause(2000).delete(7).type("Ideal Type World Cup").go();
+  export default {
+    name: "Introduction",
+    mounted() {
+      new TypeIt("#title", {
+        strings: "이상형 월드컵",
+        speed: 50,
+        waitUntilVisible: true,
+        loop: true
+      }).pause(2000).delete(7).type("Ideal Type World Cup").go();
 
-    ScrollOut({
-      onShown: function(el) {
-        if (el.querySelector('#subtitle')) {
-          new TypeIt(el.querySelector('#subtitle'), {
-            startDelay: 500,
-            cursor: false,
-          }).pause(2000).go();
+      ScrollOut({
+        onShown: function(el) {
+          if (el.querySelector('#subtitle')) {
+            new TypeIt(el.querySelector('#subtitle'), {
+              startDelay: 500,
+              cursor: false,
+            }).pause(2000).go();
+          }
+
+          if (el.querySelector(".scroll-image")) {
+            el.querySelector(".scroll-image").classList.add("animate-in");
+          }
         }
-
-        if (el.querySelector(".scroll-image")) {
-          el.querySelector(".scroll-image").classList.add("animate-in");
-        }
-      }
-    });
-  }
-};
+      });
+    }
+  };
 </script>
 
 <style scoped>
-
- .intro-container{
+  .intro-container{
    padding: 20px;
- }
+  }
 
- .intro-content{
+  .intro-content{
    padding: 10px;
- }
+  }
 
- .text-content {
+  .text-content {
    display: flex;
    align-items: center;
    margin-bottom: 300px;
- }
+  }
 
- [data-scroll] {
+  [data-scroll] {
    opacity: 0;
    will-change: transform, scale, opacity;
    transform: translateY(6rem) scale(1);
    transition: all 1.5s cubic-bezier(0.165, 0.84, 0.44, 1);
- }
- [data-scroll="in"] {
+  }
+  [data-scroll="in"] {
    opacity: 1;
    transform: translateY(0) scale(1);
- }
- [data-scroll="out"] {
+  }
+  [data-scroll="out"] {
    opacity: 0;
- }
+  }
 
- .image-container {
+  .image-container {
    width: 50vw;
    flex-shrink: 0;
    transition: opacity 1s ease, transform 1s ease;
- }
+  }
 
- .image-container.left {
+  .image-container.left {
    margin-right: 20px;
    transform: translateX(-20px);
- }
+  }
 
- .image-container.right {
+  .image-container.right {
    margin-left: 20px;
    transform: translateX(20px);
- }
+  }
 
- .image-container img {
+  .image-container img {
    width: 40vw;
    height: auto;
    border-radius: 8px;
    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
- }
+  }
 
- .image-container[data-scroll="in"] {
+  .image-container[data-scroll="in"] {
    opacity: 1;
    transform: translateX(0);
- }
+  }
 
- .image-container[data-scroll="out"] {
+  .image-container[data-scroll="out"] {
    opacity: 0;
- }
+  }
 
- .text-box {
+  .text-box {
    flex: 1;
    width: 40vw;
- }
+  }
 
- .text-box.left {
+  .text-box.left {
    text-align: left;
- }
+  }
 
- .text-box.right {
+  .text-box.right {
    text-align: right;
- }
+  }
 
- .text-content.left {
+  .text-content.left {
    flex-direction: row; /* 이미지를 왼쪽에, 텍스트를 오른쪽에 */
- }
+  }
 
- .text-content.right {
+  .text-content.right {
    flex-direction: row-reverse; /* 이미지를 오른쪽에, 텍스트를 왼쪽에 */
- }
+  }
 
- h1 {
+  h1 {
    font-size: 3vw; /* 뷰포트 너비의 5% */
- }
+  }
 
- p {
+  p {
    font-size: 1vw; /* 뷰포트 너비의 2% */
- }
+  }
 </style>

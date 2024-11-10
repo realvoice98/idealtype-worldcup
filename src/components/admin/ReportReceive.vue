@@ -4,7 +4,7 @@
 
 <script>
   export default {
-    name: "ReportReceive",
+    name: 'ReportReceive',
   }
 </script>
 

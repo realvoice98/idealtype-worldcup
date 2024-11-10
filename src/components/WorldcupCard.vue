@@ -26,7 +26,7 @@
 
 <script>
   export default {
-    name: "WorldcupCard",
+    name: 'WorldcupCard',
     props: {
       data: {
         type: Object,

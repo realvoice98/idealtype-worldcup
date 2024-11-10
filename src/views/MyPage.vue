@@ -31,20 +31,20 @@
 <script>
 export default {
   name: 'MyPage',
-  //FIXME: DB데이터 불러오기
+  // TODO: DB데이터 불러오기
   data() {
     return {
       like: [
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" },
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" }
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" },
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" }
       ],
       bookmark: [
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" },
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" }
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" },
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" }
       ],
       myworldcup: [
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" },
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "http://localhost:8080/" }
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" },
+        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" }
       ]
     };
   },

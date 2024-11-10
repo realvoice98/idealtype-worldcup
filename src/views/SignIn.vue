@@ -38,7 +38,7 @@
       async signIn() {
         try {
           await signInWithEmailAndPassword(auth, this.email, this.password);
-          location.href = origin;
+          this.$router.push('/');
 
           // TODO: 60분 간 세션 유지
 

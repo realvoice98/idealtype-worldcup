@@ -30,7 +30,7 @@
   import { getAllUsers } from '@/services/firebase/db.js'
 
   export default {
-    name: "UserList",
+    name: 'UserList',
     data() {
       return {
         users: [],

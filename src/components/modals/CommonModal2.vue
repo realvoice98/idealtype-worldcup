@@ -15,30 +15,30 @@
 </template>
 
 <script>
-export default {
-  name: "CommonModal",
-  props: {
-    visible: {
-      type: Boolean,
-      required: true,
+  export default {
+    name: "CommonModal",
+    props: {
+      visible: {
+        type: Boolean,
+        required: true,
+      },
+      title: {
+        type: String,
+      },
+      content: {
+        type: String,
+      },
+      buttons: {
+        type: Array,
+        default: () => [],
+      }
     },
-    title: {
-      type: String,
+    methods: {
+      closeModal() {
+        this.$emit('update:visible', false); // 부모 vue가 모달 visible 제어
+      }
     },
-    content: {
-      type: String,
-    },
-    buttons: {
-      type: Array,
-      default: () => [],
-    }
-  },
-  methods: {
-    closeModal() {
-      this.$emit('update:visible', false); // 부모 vue가 모달 visible 제어
-    }
-  },
-}
+  }
 </script>
 
 <style scoped>

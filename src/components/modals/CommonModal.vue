@@ -16,34 +16,34 @@
 </template>
 
 <script>
-export default {
-  name: "CommonModal",
-  props: {
-    openBtnText: {
-      type: String,
+  export default {
+    name: "CommonModal",
+    props: {
+      openBtnText: {
+        type: String,
+      },
+      title: {
+        type: String,
+      },
+      content: {
+        type: String,
+      },
+      buttons: {
+        type: Array,
+        default: () => [],
+      }
     },
-    title: {
-      type: String,
+    data() {
+      return {
+        isModalVisible: false,
+      };
     },
-    content: {
-      type: String,
+    methods: {
+      openModal() {
+        this.isModalVisible = !this.isModalVisible;
+      }
     },
-    buttons: {
-      type: Array,
-      default: () => [],
-    }
-  },
-  data() {
-    return {
-      isModalVisible: false,
-    };
-  },
-  methods: {
-    openModal() {
-      this.isModalVisible = !this.isModalVisible;
-    }
-  },
-}
+  }
 </script>
 
 <style scoped>

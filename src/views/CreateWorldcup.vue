@@ -78,13 +78,12 @@
         if (user) {
           // 사용자가 로그인된 상태라면
           this.user = user;
-          //console.log("현재 로그인 중인 사용자:", user.uid);
         } else {
           // TODO: 커스텀 모달로 수정 적용
           if (confirm('로그인 상태에서만 월드컵을 만들 수 있어요. 로그인하러 가시겠어요?')) {
-            location.href = 'sign-in'
+            this.$router.push('/sign-in');
           } else {
-            location.href = '/'
+            this.$router.push('/');
           }
         }
       });
@@ -164,8 +163,8 @@
           }
 
           await createWorldcup(user, worldcup);
-          location.href = '/';
-        } catch (e) {
+          this.$router.push('/');
+        } catch(e) {
           this.errorMessage = `오류: ${e.message}`;
         }
       },
