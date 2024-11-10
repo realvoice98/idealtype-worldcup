@@ -6,7 +6,7 @@
 
 import { firebaseApp } from '@/services/firebase/config';
 import { getDatabase, ref, set, get, push, query, orderByChild, equalTo } from 'firebase/database';
-import {  formatDate, convertToValidNodeString, restoreToOriginalString} from "@/common";
+import {  formatDate, convertToValidNodeString, restoreToOriginalString} from '@/common';
 
 const db = getDatabase(firebaseApp);
 
@@ -23,8 +23,10 @@ const relativeTimeFormat = new Intl.RelativeTimeFormat(language, {
  * @param {Object} user 회원가입 정보
  */
 export async function createUser(user) {
+  const userRef = ref(db, 'users/' + user.uid);
+
   try {
-    await set(ref(db, 'users/' + user.uid), {
+    await set(userRef, {
       email: convertToValidNodeString(user.email),
       nickname: user.nickname,
       birthday: user.birthday,
@@ -43,6 +45,31 @@ export async function createUser(user) {
 }
 
 /**
+ * 단일 유저 정보를 조회하는 함수
+ * @param {Object} user 유저 정보
+ */
+export async function getUser(user) {
+  const userRef = ref(db, 'users/' + user.uid);
+
+  try {
+    const snapshot = await get(userRef);
+
+    if (snapshot.exists) {
+      const userData = snapshot.val();
+      return {
+        ...userData,
+        email: restoreToOriginalString(userData.email),
+        emailVerified: userData.emailVerified ? 'Y' : 'N',
+      };
+    } else {
+      return null;
+    }
+  } catch(e) {
+    console.error('사용자 정보를 찾을 수 없습니다.');
+  }
+}
+
+/**
  * 전체 유저 정보를 조회하는 함수
  * @returns {Promise<Array>} 모든 유저 정보 배열
  */
@@ -54,7 +81,6 @@ export async function getAllUsers() {
 
     if (snapshot.exists()) {
       const usersData = snapshot.val();
-      console.log(usersData);
       return Object.keys(usersData).map(uid => ({
         ...usersData[uid], // 모든 데이터를 object 형식으로 먼저 뿌리고, 포맷이 필요한 값들만 오버라이딩
         email: restoreToOriginalString(usersData[uid].email),
@@ -70,18 +96,17 @@ export async function getAllUsers() {
 }
 
 /**
- 월드컵 데이터 저장 함수
- * @param user
- * @param worldcupData 월드컵 상세 데이터
+ * 월드컵 생성 요청 처리 함수
+ * @param {Object} user
+ * @param {Object} worldcupData 월드컵 상세 데이터
  * @returns {Promise<void>} DB에 월드컵 데이터 추가
  */
-export async function saveWorldcupToDatabase(user, worldcupData){
+export async function createWorldcup(user, worldcupData) {
   const worldcupsRef = ref(db, 'worldcups');
-  const userRef = ref(db, `users/${user.uid}/myWorldcups`);
+  const myWorldcupsRef = ref(db, `users/${user.uid}/myWorldcups`);
 
   try {
     const newWorldcupRef = push(worldcupsRef); // push: unique ID 생성
-    const worldcupID = newWorldcupRef.key; // 월드컵 ID
 
     // worldcups.worldcupsID
     await set(newWorldcupRef, {
@@ -90,14 +115,14 @@ export async function saveWorldcupToDatabase(user, worldcupData){
       hashtags: worldcupData.hashtags.map(item => convertToValidNodeString(item)),
       images: worldcupData.images,
       views: 0,
-      creator: user.email, // TODO: email -> nickName (Sign-Up에서 닉네임 param 추가 선행되어야 함)
+      creator: user.nickname,
       creatorId: user.uid,
       updatedAt: formatDate(new Date()),
     });
 
-    // users.uid.myWorldcups.title
-    await set(userRef, {
-      title: worldcupData.title, // TODO: title을 써야할 지... worldcupID를 써야할 지... 추후 마이페이지 작업 시 고려 대상
+    // users.uid.myWorldcups.id
+    await set(myWorldcupsRef, {
+      id: newWorldcupRef.key // 월드컵 ID
     });
 
     alert("월드컵 생성 완료!");

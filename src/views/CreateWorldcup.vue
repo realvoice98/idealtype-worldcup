@@ -18,13 +18,14 @@
                      @keydown.space="appendHashtag"
                      @keydown.backspace="removeHashtag"
                      type="text"
-                     placeholder="#태그 입력 (최대 10개)" />
+                     placeholder="#태그 입력 (최대 10개)"
+              />
           </div>
         </div>
       </div>
       <p class="warn-message" v-if="warnMessage">{{ warnMessage }}</p>
       <div class="content-box">
-        <div class="image-area" @click="openModal"> <!-- 매 추가마다 image-box arr.append() -->
+        <div class="image-area" @click="openModal">
           <div class="image-box" v-for="(image, index) in images" :key="index">
             <img :src="image.preview" alt="이미지 영역" />
           </div>
@@ -40,129 +41,136 @@
         @images-selected="addImages"
       />
 
-      <button class="btn-create" @click="saveWorldcup"> <!-- Component 처리 -->
+      <button class="btn-create" @click="createWorldcup"> <!-- Component 처리 -->
         <span>만들기</span>
       </button>
       <button class="btn-back">  <!-- Component 처리 -->
         <span>돌아가기</span>
       </button>
+      <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
     </div>
   </div>
 </template>
 
 <script>
-import ImageRegistModal from "@/components/modals/ImageRegistModal.vue";
-import {auth, onAuthStateChanged} from "@/services/firebase/auth";
-import {saveWorldcupToDatabase} from "@/services/firebase/db";
+  import ImageRegistModal from '@/components/modals/ImageRegistModal.vue';
+  import { auth, onAuthStateChanged } from '@/services/firebase/auth';
+  import { getUser, createWorldcup } from '@/services/firebase/db';
 
-export default {
-  name: "CreateWorldcup",
-  components: {ImageRegistModal},
-  data() {
-    return {
-      title: '',
-      details: '',
-      hashtagValue: '',
-      hashtags: [],
-      warnMessage: '',
-      isModalVisible: false,
-      images: [],
-      user: null,
-    };
-  },
-  created() {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // 사용자가 로그인된 상태라면
-        this.user = user;
-        //console.log("현재 로그인 중인 사용자:", user.uid);
-      } else {
-        // TODO: 커스텀 모달로 수정 적용
-        if (confirm('로그인 상태에서만 월드컵을 만들 수 있어요. 로그인하러 가시겠어요?')) {
-          location.href = 'sign-in'
+  export default {
+    name: 'CreateWorldcup',
+    components: { ImageRegistModal },
+    data() {
+      return {
+        title: '',
+        details: '',
+        hashtagValue: '',
+        hashtags: [],
+        isModalVisible: false,
+        images: [],
+        user: null,
+        warnMessage: '',
+        errorMessage: '',
+      };
+    },
+    created() {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // 사용자가 로그인된 상태라면
+          this.user = user;
+          //console.log("현재 로그인 중인 사용자:", user.uid);
         } else {
-          location.href = '/'
+          // TODO: 커스텀 모달로 수정 적용
+          if (confirm('로그인 상태에서만 월드컵을 만들 수 있어요. 로그인하러 가시겠어요?')) {
+            location.href = 'sign-in'
+          } else {
+            location.href = '/'
+          }
         }
-      }
-    });
-  },
-  methods: {
-    goBack() {
-      // Component 처리
+      });
     },
-    /**
-     * 해시태그 입력 처리 함수
-     * @param {Event} event 사용자 입력 값 접근을 위한 입력 이벤트 객체
-     */
-    onInputHashtag(event) {
-      // FIXME: 매끄럽지 않은 양방향 바인딩 상태
-      this.hashtagValue = event.target.value
-        .replace(/#/g, '') // '#' 미포함
-        .replaceAll(' ', '') // 공백 미포함
-        .toLowerCase(); // 영문 소문자로 통합
-    },
-    /**
-     * 해시태그 추가 함수
-     */
-    appendHashtag() {
-      if (!this.hashtagValue) return;
-      if (this.hashtags.length === 10) {
-        this.warnMessage = '최대 10개의 해시태그만 추가할 수 있습니다.';
-        return;
-      }
-      const hashtag = '#' + this.hashtagValue;
-      if (this.hashtags.includes(hashtag)) {
-        this.warnMessage = '중복된 해시태그를 추가할 수 없습니다.';
-        return;
-      }
-      this.hashtags.push(hashtag);
-      this.hashtagValue = '';
-      this.warnMessage = '';
-    },
-    /**
-     * 해시태그 삭제 함수
-     *
-     * @param {Event} event 사용자 입력 값 접근을 위한 입력 이벤트 객체
-     */
-    removeHashtag(event) {
-      // 해시태그 지우기와 입력값 지우기의 로직 분리
-      if (this.hashtagValue === '') {
-        // hashtagValue가 빈 문자열일 때만 해시태그 삭제
-        this.hashtags.pop();
-        if (this.hashtags.length < 10) this.warnMessage = '';
-      } else {
-        // 입력된 값이 있으면 해당 값에서 한 글자만 삭제
-        event.preventDefault(); // 기본 동작 방지 (Backspace 중복 호출로 인해 2글자씩 지워지는 현상)
-        this.hashtagValue = this.hashtagValue.slice(0, -1);
-      }
-      // TODO: 기추가 태그 클릭 후 Backspace 입력 통해 선택적으로 제거
-    },
-    openModal() {
-      this.isModalVisible = true;
-    },
-    addImages(images) {
-      this.images.push(...images);
-    },
-    /**
-     * 월드컵 데이터 추가
-     * TODO: 테스트 해봐야됨
-     */
-    async saveWorldcup(){
-      try {
-        const worldcupData = {
-          title: this.title,
-          details: this.details,
-          hashtags: this.hashtags,
-          images: this.images.map(image => image.preview),
+    methods: {
+      goBack() {
+        // Component 처리
+      },
+      /**
+       * 해시태그 입력 처리 함수
+       * @param {Event} e 사용자 입력 값 접근을 위한 입력 이벤트 객체
+       */
+      onInputHashtag(e) {
+        // FIXME: 매끄럽지 않은 양방향 바인딩 상태
+        this.hashtagValue = e.target.value
+          .replace(/#/g, '') // '#' 미포함
+          .replaceAll(' ', '') // 공백 미포함
+          .toLowerCase(); // 영문 소문자로 통합
+      },
+      /**
+       * 해시태그 추가 함수
+       */
+      appendHashtag() {
+        if (!this.hashtagValue) return;
+        if (this.hashtags.length === 10) {
+          this.warnMessage = '최대 10개의 해시태그만 추가할 수 있습니다.';
+          return;
         }
-        await saveWorldcupToDatabase(this.user, worldcupData);
-        location.href = '/';
-      } catch (e) {
-        this.errorMessage = `오류: ${e.message}`;
-      }
-    }
-  },
-}
+        const hashtag = '#' + this.hashtagValue;
+        if (this.hashtags.includes(hashtag)) {
+          this.warnMessage = '중복된 해시태그를 추가할 수 없습니다.';
+          return;
+        }
+        this.hashtags.push(hashtag);
+        this.hashtagValue = '';
+        this.warnMessage = '';
+      },
+      /**
+       * 해시태그 삭제 함수
+       * @param {Event} event 사용자 입력 값 접근을 위한 입력 이벤트 객체
+       */
+      removeHashtag(event) {
+        // 해시태그 지우기와 입력값 지우기의 로직 분리
+        if (this.hashtagValue === '') {
+          // hashtagValue가 빈 문자열일 때만 해시태그 삭제
+          this.hashtags.pop();
+          if (this.hashtags.length < 10) this.warnMessage = '';
+        } else {
+          // 입력된 값이 있으면 해당 값에서 한 글자만 삭제
+          event.preventDefault(); // 기본 동작 방지 (Backspace 중복 호출로 인해 2글자씩 지워지는 현상)
+          this.hashtagValue = this.hashtagValue.slice(0, -1);
+        }
+        // TODO: 기추가 태그 클릭 후 Backspace 입력 통해 선택적으로 제거
+      },
+      openModal() {
+        this.isModalVisible = true;
+      },
+      addImages(images) {
+        this.images.push(...images);
+      },
+      /**
+       * 월드컵 생성 요청 함수
+       */
+      async createWorldcup() {
+        try {
+          const userData = await getUser(this.user);
+          const user = {
+            ...userData,
+            uid: this.user.uid,
+          }
+
+          const worldcup = {
+            title: this.title,
+            details: this.details,
+            hashtags: this.hashtags,
+            images: this.images.map(image => image.preview),
+          }
+
+          await createWorldcup(user, worldcup);
+          location.href = '/';
+        } catch (e) {
+          this.errorMessage = `오류: ${e.message}`;
+        }
+      },
+    },
+  }
 </script>
 
 <style scoped>
