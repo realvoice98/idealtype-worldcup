@@ -193,6 +193,12 @@ export async function fetchAllWorldcups() {
  * @return {Promise<string>} 업로드된 이미지의 경로
  */
 export async function uploadImage(file, user) {
+  // if (!(file instanceof File || file instanceof Blob)) {
+  //   console.error('유효하지 않은 파일 객체입니다:', file);
+  //   throw new Error('파일 객체가 유효하지 않습니다.');
+  // }else{
+  //   console.error('유효한 파일 객체입니다:', file);
+  // }
   const storage = getStorage();
   const fileName = convertToValidNodeString(file.name);
   const storageRef = stRef(storage, `images/${user.uid}/${fileName}`);

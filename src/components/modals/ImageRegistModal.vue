@@ -55,6 +55,7 @@
 <script>// TODO: 변경사항 경고 모달 추가하기
   import VueCropper from 'vue-cropperjs';
   import 'cropperjs/dist/cropper.css';
+import {formatDate} from "@/common";
 
   export default {
     name: 'ImageRegistModal',
@@ -114,9 +115,19 @@
         }
 
         validFiles.forEach(file => {
+          const timestamp = formatDate(new Date());
+          const fileExtension = file.name.split('.').pop(); // 파일 확장자 추출
+          const uniqueFileName = `${file.name.replace(`.${fileExtension}`, '')}_${timestamp}.${fileExtension}`;
+
           const reader = new FileReader();
           reader.onload = (e) => {
-            this.selectedImages.push({ file, preview: e.target.result });
+            if (typeof e.target?.result === 'string') {
+              // 새 파일 객체 생성
+              const newFile = new File([file], uniqueFileName, { type: file.type });
+
+              // 새로운 파일 객체와 preview 이미지를 selectedImages에 추가
+              this.selectedImages.push({ file: newFile, preview: e.target.result, name: uniqueFileName });
+            }
           };
           reader.readAsDataURL(file);
         });
