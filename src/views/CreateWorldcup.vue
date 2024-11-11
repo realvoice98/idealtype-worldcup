@@ -55,7 +55,7 @@
 <script>
   import ImageRegistModal from '@/components/modals/ImageRegistModal.vue';
   import { auth, onAuthStateChanged } from '@/services/firebase/auth';
-  import { getUser, createWorldcup } from '@/services/firebase/db';
+  import { getUser, createWorldcup, uploadImage } from '@/services/firebase/db';
 
   export default {
     name: 'CreateWorldcup',
@@ -155,11 +155,18 @@
             uid: this.user.uid,
           }
 
+          //스토리지 저장 요청 후 경로 반환 TODO: 테스트 필요
+          const uploadedImages = await Promise.all(
+              this.images.map(async (image) => {
+                return await uploadImage(image.file, user);
+              })
+          );
+
           const worldcup = {
             title: this.title,
             details: this.details,
             hashtags: this.hashtags,
-            images: this.images.map(image => image.preview),
+            images: uploadedImages,
           }
 
           await createWorldcup(user, worldcup);

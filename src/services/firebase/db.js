@@ -179,11 +179,29 @@ export async function fetchAllWorldcups() {
   }
 }
 
-
-
 /**
  * Firebase Storage
  *
  * 이미지, 오디오, 동영상의 원본 데이터는 Storage에 보관하고,
  * Realtime DB에서는 Storage 노드의 참조 경로를 작성하여 원본 데이터에 접근한다.
  */
+
+/**
+ * 이미지 업로드 처리 후 경로 반환 함수
+ * @param {Object} user 유저 정보
+ * @param {File|Blob} file 파일 객체
+ * @return {Promise<string>} 업로드된 이미지의 경로
+ */
+export async function uploadImage(file, user) {
+  const storage = getStorage();
+  const fileName = convertToValidNodeString(file.name);
+  const storageRef = stRef(storage, `images/${user.uid}/${fileName}`);
+
+  try {
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
+  } catch (e) {
+    console.error('이미지 업로드 실패:', e);
+    throw new Error('이미지 업로드 중 오류가 발생했습니다.');
+  }
+}
