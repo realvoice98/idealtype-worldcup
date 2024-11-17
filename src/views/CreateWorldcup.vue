@@ -155,10 +155,10 @@
             uid: this.user.uid,
           }
 
-          //스토리지 저장 요청 후 경로 반환 TODO: 테스트 필요
+          // 스토리지 저장 요청 후 경로 반환
           const uploadedImages = await Promise.all(
               this.images.map(async (image) => {
-                return await uploadImage(image.file, user);
+                return await uploadImage(image.file, user.uid, this.title);
               })
           );
 

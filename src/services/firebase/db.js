@@ -188,26 +188,31 @@ export async function fetchAllWorldcups() {
 
 /**
  * 이미지 업로드 처리 후 경로 반환 함수
- * @param {Object} user 유저 정보
- * @param {File|Blob} file 파일 객체
- * @return {Promise<string>} 업로드된 이미지의 경로
+ * @param {File} image 이미지 파일 객체
+ * @param {Object} userId 사용자 UID
+ * @param {string} worldcupTitle 월드컵 제목
+ * @return {Promise<string>} 업로드된 이미지의 참조 경로
  */
-export async function uploadImage(file, user) {
-  // if (!(file instanceof File || file instanceof Blob)) {
-  //   console.error('유효하지 않은 파일 객체입니다:', file);
-  //   throw new Error('파일 객체가 유효하지 않습니다.');
-  // }else{
-  //   console.error('유효한 파일 객체입니다:', file);
-  // }
-  const storage = getStorage();
-  const fileName = convertToValidNodeString(file.name);
-  const storageRef = stRef(storage, `images/${user.uid}/${fileName}`);
+export async function uploadImage(image, userId, worldcupTitle) {
+  const fileName = convertToValidNodeString(image.name);
+
+  const worldcupsRef = stRef(st, `worldcups/${userId}/${worldcupTitle}/${fileName}`);
 
   try {
-    await uploadBytes(storageRef, file);
-    return await getDownloadURL(storageRef);
+    await uploadBytes(worldcupsRef, image);
+    return await getDownloadURL(worldcupsRef);
   } catch (e) {
     console.error('이미지 업로드 실패:', e);
     throw new Error('이미지 업로드 중 오류가 발생했습니다.');
   }
+
+  // NOTE: worldcupTitle 말고 worldcup UID를 참조할 수 있도록 하고 싶었는데,
+  //       그러려면 createWorldcup() 함수 내에서 생성되는 월드컵의 uid와 동일한 값을 써야하고,
+  //       그건 이 함수를 createWorldcup() 내에서 돌릴 수 있도록 해야한다는 의미.
+  //
+  //       근데 vue에서 가지고 있는 this.images를 vue 쪽 함수에서 이미즈를 Storage에 직통으로 처리하지 않고 (AS-IS)
+  //       createWorldcups param으로 경유해서 처리하는 경우... (TO-BE)
+  //       왜인지 자꾸 파일 타입이 누락되어서 구현 못했음...
+  //
+  //       개발 시간이 부족하므로 일단 클라 쪽에서 넘겨주는 title 값으로 구현.  <- FUCK
 }
