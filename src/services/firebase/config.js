@@ -5,7 +5,7 @@ const firebaseConfig = {
   authDomain: 'undefined-idealtype-worldcup.firebaseapp.com',
   databaseURL: 'https://undefined-idealtype-worldcup-default-rtdb.firebaseio.com',
   projectId: 'undefined-idealtype-worldcup',
-  storageBucket: 'undefined-idealtype-worldcup.appspot.com',
+  storageBucket: 'undefined-idealtype-worldcup.firebasestorage.app',
   messagingSenderId: '227787774992',
   appId: '1:227787774992:web:01510bab980d89ecd93e95'
 };
