@@ -122,7 +122,10 @@ export async function createWorldcup(user, worldcup) {
       title: worldcup.title,
       details: worldcup.details,
       hashtags: worldcup.hashtags.map(item => convertToValidNodeString(item)),
-      images: worldcup.images,
+      images: worldcup.images.map(image => ({
+        path: image.path, // 업로드된 이미지 경로
+        customName: image.customName, // 사용자 입력 이름
+      })),
       views: 0,
       creator: user.nickname,
       creatorId: user.uid,
@@ -194,7 +197,9 @@ export async function fetchAllWorldcups() {
  * @return {Promise<string>} 업로드된 이미지의 참조 경로
  */
 export async function uploadImage(image, userId, worldcupTitle) {
-  const fileName = convertToValidNodeString(image.name);
+  const fileName = image.customName
+      ? `${convertToValidNodeString(image.customName)}_${convertToValidNodeString(image.name)}`
+      : convertToValidNodeString(image.name);
 
   const worldcupsRef = stRef(st, `worldcups/${userId}/${worldcupTitle}/${fileName}`);
 
@@ -205,6 +210,7 @@ export async function uploadImage(image, userId, worldcupTitle) {
     console.error('이미지 업로드 실패:', e);
     throw new Error('이미지 업로드 중 오류가 발생했습니다.');
   }
+
 
   // NOTE: worldcupTitle 말고 worldcup UID를 참조할 수 있도록 하고 싶었는데,
   //       그러려면 createWorldcup() 함수 내에서 생성되는 월드컵의 uid와 동일한 값을 써야하고,

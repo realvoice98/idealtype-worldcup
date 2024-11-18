@@ -10,6 +10,13 @@
 
       <div class="image-container">
         <img :src="selectedImages[currentImageIndex]?.preview" class="main-image" @click="openCropper(currentImageIndex)" />
+        <input
+            :value="selectedImages[currentImageIndex]?.customName || ''"
+            @input="updateCustomName($event.target.value)"
+            type="text"
+            class="image-name-input"
+            placeholder="이미지 이름 입력"
+        />
         <button class="remove-button" @click="removeImage(currentImageIndex)"> X </button>
       </div>
 
@@ -126,7 +133,7 @@ import {formatDate} from "@/common";
               const newFile = new File([file], uniqueFileName, { type: file.type });
 
               // 새로운 파일 객체와 preview 이미지를 selectedImages에 추가
-              this.selectedImages.push({ file: newFile, preview: e.target.result, name: uniqueFileName });
+              this.selectedImages.push({ file: newFile, preview: e.target.result, name: uniqueFileName, customName: '', });
             }
           };
           reader.readAsDataURL(file);
@@ -168,10 +175,13 @@ import {formatDate} from "@/common";
       },
 
       confirmImages() {
-        if (this.selectedImages.length > 0) {
-          this.$emit('images-selected', this.selectedImages);
-          this.closeModal();
+        if (this.selectedImages.some((image) => !image.customName)) {
+          this.errorMessage = '모든 이미지에 이름을 입력해주세요.';
+          return;
         }
+
+        this.$emit('images-selected', this.selectedImages);
+        this.closeModal();
       },
 
       closeModal() {
@@ -203,6 +213,11 @@ import {formatDate} from "@/common";
       nextImage() {
         if (this.selectedImages.length > 0) {
           this.currentImageIndex = (this.currentImageIndex + 1) % this.selectedImages.length;
+        }
+      },
+      updateCustomName(value) {
+        if (this.selectedImages[this.currentImageIndex]) {
+          this.selectedImages[this.currentImageIndex].customName = value;
         }
       },
     },
@@ -395,6 +410,30 @@ import {formatDate} from "@/common";
     color: red;
     font-size: 0.9rem;
     margin-top: 1rem;
+  }
+
+  .image-name-input {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: calc(100% - 20px); /* 입력 필드 크기 */
+    border: none;
+    background: transparent;
+    color: transparent; /* 텍스트를 숨김 */
+    caret-color: white; /* 커서 색상 */
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    pointer-events: auto; /* 입력 가능 */
+  }
+
+  .image-name-input::placeholder {
+    color: rgba(255, 255, 255, 0.7); /* 플레이스홀더 색상 */
+    font-size: 16px;
+  }
+
+  .image-name-input:focus {
+    color: white; /* 포커스 시 텍스트가 보이도록 설정 */
   }
 </style>
 

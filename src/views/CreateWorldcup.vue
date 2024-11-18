@@ -142,7 +142,12 @@
         this.isModalVisible = true;
       },
       addImages(images) {
-        this.images.push(...images);
+        images.forEach((image) => {
+          this.images.push({
+            ...image,
+            customName: image.customName,
+          });
+        });
       },
       /**
        * 월드컵 생성 요청 함수
@@ -158,7 +163,11 @@
           // 스토리지 저장 요청 후 경로 반환
           const uploadedImages = await Promise.all(
               this.images.map(async (image) => {
-                return await uploadImage(image.file, user.uid, this.title);
+                const imagePath = await uploadImage(image.file, user.uid, this.title);
+                return {
+                  path: imagePath,
+                  customName: image.customName, // 사용자 입력 이름 포함
+                };
               })
           );
 
