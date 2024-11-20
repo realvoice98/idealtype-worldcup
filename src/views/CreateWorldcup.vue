@@ -25,8 +25,8 @@
       </div>
       <p class="warn-message" v-if="warnMessage">{{ warnMessage }}</p>
       <div class="content-box">
-        <div class="image-area" @click="openModal">
-          <div class="image-box" v-for="(image, index) in images" :key="index">
+        <div class="image-area" @click="openRegistModal">
+          <div class="image-box" v-for="(image, index) in images" :key="index" @click.stop="openDetailModal">
             <img :src="image.preview" alt="이미지 영역" />
           </div>
           <div v-if="images.length === 0">
@@ -36,9 +36,15 @@
       </div>
 
       <ImageRegistModal
-        :is-visible="isModalVisible"
-        @update:isVisible="isModalVisible = $event"
+        :is-visible="isRegistModalVisible"
+        @update:isVisible="isRegistModalVisible = $event"
         @images-selected="addImages"
+      />
+
+      <ImageDetailModal
+          :is-visible="isRegistDetailVisible"
+          @update:isVisible="isRegistDetailVisible = $event"
+          @images-selected="addImages"
       />
 
       <button class="btn-create" @click="createWorldcup"> <!-- Component 처리 -->
@@ -56,17 +62,19 @@
   import ImageRegistModal from '@/components/modals/ImageRegistModal.vue';
   import { auth, onAuthStateChanged } from '@/services/firebase/auth';
   import { getUser, createWorldcup, uploadImage } from '@/services/firebase/db';
+  import ImageDetailModal from "@/components/modals/ImageDetailModal.vue";
 
   export default {
     name: 'CreateWorldcup',
-    components: { ImageRegistModal },
+    components: {ImageDetailModal, ImageRegistModal },
     data() {
       return {
         title: '',
         details: '',
         hashtagValue: '',
         hashtags: [],
-        isModalVisible: false,
+        isRegistModalVisible: false,
+        isRegistDetailVisible: false,
         images: [],
         user: null,
         warnMessage: '',
@@ -138,8 +146,11 @@
         }
         // TODO: 기추가 태그 클릭 후 Backspace 입력 통해 선택적으로 제거
       },
-      openModal() {
-        this.isModalVisible = true;
+      openRegistModal() {
+        this.isRegistModalVisible = true;
+      },
+      openDetailModal() {
+        this.isRegistDetailVisible = true;
       },
       addImages(images) {
         images.forEach((image) => {
