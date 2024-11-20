@@ -2,6 +2,7 @@
   <div class="modal-overlay" v-if="isVisible">
     <div class="header">
       <span>{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
+      <button v-if="selectedImages.length < 5" @click="triggerFileSelection" class="add-button">+ 추가</button>
       <button class="close-button" @click="closeModal">X</button>
     </div>
 
@@ -48,7 +49,7 @@
           :class="{ 'active-thumbnail': index === currentImageIndex }"
           @click="currentImageIndex = index"
       />
-      <button v-if="selectedImages.length < 5" @click="triggerFileSelection">+ 추가</button>
+
     </div>
 
     <div class="modal-buttons" v-if="!cropperVisible" @click.stop>
@@ -225,215 +226,223 @@ import {formatDate} from "@/common";
 </script>
 
 <style scoped>
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 1.5rem;
-  }
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2vh;
+}
 
-  .header {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 600px;
-    margin-bottom: 1rem;
-    color: white;
-  }
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: 90vw;
+  margin-bottom: 2vh;
+  color: white;
+}
 
-  .close-button {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    color: white;
-    cursor: pointer;
-  }
+.header .add-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 1vw;
+  font-weight: bold;
+  width: 5vw;
+  height: 3vw;
+  color: white;
 
-  .main-image-container {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 600px;
-  }
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: all 0.3s ease;
+}
 
-  .image-container {
-    position: relative;
-  }
+.header .add-button:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+}
 
-  .main-image {
-    position: relative;
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover;
-    border-radius: 8px;
-    cursor: pointer;
-  }
+.header .add-button:active {
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+  transform: scale(0.95);
+}
 
-  .remove-button {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 5px;
-    border-radius: 3px;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-  }
+.close-button {
+  background: none;
+  border: none;
+  font-size: 2vw;
+  color: white;
+  cursor: pointer;
+}
 
-  .image-container:hover .remove-button {
-    opacity: 1;
-  }
+.main-image-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70vw;
+}
 
-  .arrow {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    padding: 0.5rem;
-    cursor: pointer;
-    font-size: 1.5rem;
-    border-radius: 50%;
-    z-index: 1001;
-  }
+.image-container {
+  position: relative;
+}
 
-  .left-arrow {
-    left: 10px;
-  }
+.main-image {
+  width: 60vw;
+  height: 60vh;
+  object-fit: cover;
+  border-radius: 1vw;
+  cursor: pointer;
+}
 
-  .right-arrow {
-    right: 10px;
-  }
+.remove-button {
+  position: absolute;
+  width: 2vw;
+  height: 2vw;
+  top: 1vh;
+  right: 1vh;
+  background-color: red;
+  font-size: 1vw;
+  color: white;
+  border: none;
+  padding: 0.5vh;
+  border-radius: 0.5vw;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
 
-  .thumbnails {
-    display: flex;
-    justify-content: center;
-    margin-top: 1rem;
-    width: 100%;
-    max-width: 600px;
-  }
+.image-container:hover .remove-button {
+  opacity: 1;
+}
 
-  .thumbnails img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    margin: 0 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.2s ease;
-  }
+.arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 1vh;
+  cursor: pointer;
+  font-size: 2vw;
+  border-radius: 50%;
+  z-index: 1001;
+}
 
-  .thumbnails img.active-thumbnail {
-    border: 2px solid #333;
-    opacity: 1;
-  }
+.left-arrow {
+  left: 5vw;
+}
 
-  .cropper-container {
-    margin-top: 1rem;
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.right-arrow {
+  right: 5vw;
+}
 
-  .vue-cropper {
-    width: 70vw;
-    height: 70vh;
-  }
+.thumbnails {
+  display: flex;
+  justify-content: center;
+  margin-top: 2vh;
+  width: 90vw;
+}
 
-  .cropper-buttons {
-    position: absolute;
-    bottom: 20px;
-    display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-    gap: 20px;
-  }
+.thumbnails img {
+  width: 7vw;
+  height: 7vw;
+  object-fit: cover;
+  margin: 0 1vw;
+  border-radius: 0.5vw;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
 
-  .modal-buttons {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 1.5rem;
-  }
+.thumbnails img.active-thumbnail {
+  border: 0.3vw solid #333;
+  opacity: 1;
+}
 
-  .cropper-buttons button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 150px;
-  }
+.cropper-container {
+  margin-top: 1vh;
+  width: 80vw;
+  height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .cropper-buttons button:hover {
-    background-color: #0056b3;
-  }
+.vue-cropper {
+  width: 70vw;
+  height: 70vh;
+}
 
-  .modal-buttons button,
-  .cropper-buttons button {
-    padding: 0.7rem 1.2rem;
-    font-size: 1rem;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-  }
+.cropper-buttons {
+  position: absolute;
+  bottom: 5vh;
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  gap: 2vw;
+}
 
-  .modal-buttons button:first-child {
-    background-color: white;
-    color: black;
-  }
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 2vh;
+}
 
-  .error-message {
-    color: red;
-    font-size: 0.9rem;
-    margin-top: 1rem;
-  }
+.cropper-buttons button,
+.modal-buttons button {
+  padding: 1vh 2vw;
+  font-size: 1.2vw;
+  cursor: pointer;
+  border: none;
+  border-radius: 0.5vw;
+}
 
-  .image-name-input {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    width: calc(100% - 20px); /* 입력 필드 크기 */
-    border: none;
-    background: transparent;
-    color: transparent; /* 텍스트를 숨김 */
-    caret-color: white; /* 커서 색상 */
-    font-size: 16px;
-    font-family: inherit;
-    outline: none;
-    pointer-events: auto; /* 입력 가능 */
-  }
+.cropper-buttons button:hover {
+  background-color: #0056b3;
+}
 
-  .image-name-input::placeholder {
-    color: rgba(255, 255, 255, 0.7); /* 플레이스홀더 색상 */
-    font-size: 16px;
-  }
+.error-message {
+  color: red;
+  font-size: 1vw;
+  margin-top: 1vh;
+}
 
-  .image-name-input:focus {
-    color: white; /* 포커스 시 텍스트가 보이도록 설정 */
-  }
+.image-name-input {
+  position: absolute;
+  bottom: 1vh;
+  left: 1vh;
+  width: calc(100% - 2vh);
+  border: none;
+  background: transparent;
+  color: transparent;
+  caret-color: white;
+  font-size: 1.2vw;
+  font-family: inherit;
+  outline: none;
+  pointer-events: auto;
+}
+
+.image-name-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2vw;
+}
+
+.image-name-input:focus {
+  color: white;
+}
 </style>
+
 
