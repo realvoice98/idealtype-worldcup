@@ -15,7 +15,7 @@
       </form>
       <div class="bottom-container">
       <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
-      이상형 월드컵에 처음 오셨나요? <router-link class= "go-sign-up" to="/sign-up">회원가입하기d</router-link>
+      이상형 월드컵에 처음 오셨나요? <router-link class= "go-sign-up" to="/sign-up">회원가입하기</router-link>
     </div>
     </div>
   </div>
@@ -55,74 +55,7 @@
 </script>
 
 <style scoped>
-  .header{
-    font-size: 35px;
-    padding:15px 10px;
-    font-weight: 700;
-  }
-
-  .signin-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 75vh;
-  }
-
-  .signin-content {
-    /* padding: 2rem; */
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 25px 35px;
-  }
-  .sign-in-form{
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    .sign-in-line{
-      display: flex;
-      gap: 10px;
-      .left{
-        flex:1;
-        justify-content: start;
-        display: flex;
-        align-items: center;
-      }
-      .right{
-        flex:3;
-        padding: 8px 10px;
-        border-radius: 3px;
-        border: 1px solid #ccc;
-      }
-    }
-  }
-
-  .login-button {
-    width: 100%;
-    /* margin-top: 1.5rem; */
-    background-color: #98B7D4;
-    border: none;
-    border-radius: 5px;
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  .login-button:hover{
-    color:white;
-    transition: 0.3s;
-  }
-
-  .bottom-container{
-    margin-top: 10px;
-    .go-sign-up {
-    /* color: black; */
-    text-decoration: none;
-    color: black;
-  }
-  .go-sign-up:hover{
-    /* color: black; */
-    color: #98B7D4;
-  }
-  }
+  
   
 
   

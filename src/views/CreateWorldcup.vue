@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="create-world-cup container">
     <div class="content">
       <div class="content-box">
         <input v-model="title" type="text" placeholder="제목을 입력해주세요" />
@@ -200,75 +200,5 @@
 </script>
 
 <style scoped>
-  .container {
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-    height: 75vh;
-  }
 
-  .content {
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-
-  .content-box {
-    border: 1px solid lightgray;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-  }
-
-  input {
-    border: none;
-    outline: none;
-  }
-
-  .content-box > input { /* FIXME: title, details 임시 선택자 */
-    width: 100%;
-  }
-
-  .hashtag-text-area {
-    height: auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-    box-sizing: border-box;
-    color: dimgray;
-    line-height: 22px;
-    padding: 8px;
-  }
-
-  .input-hashtag {
-    display: flex;
-    align-items: center;
-  }
-
-  .input-hashtag span {
-    color: #757575;
-
-    /* FIXME: placeholder font style과 동일하게 적용해야 하는데
-        index.css 반영 사항이 제대로 적용되지 않고 있어서 임시로 사용 */
-    font-size: 14px;
-    font-family: '';
-  }
-
-  .image-area {
-    display: flex;
-    height: 10rem;
-    flex-wrap: wrap;
-    cursor: pointer;
-    gap: 10px;
-  }
-
-  .image-box img{
-    width: 100px;
-    height: 100px;
-  }
-
-  button {
-    width: 100%;
-    margin-bottom: 1.5rem;
-  }
 </style>

@@ -10,7 +10,11 @@
       </div>
     </div>
     <h3 class="card-title">
-      <router-link id="card-title-link" :to="worldcupLink">{{ title }}</router-link>
+      <router-link id="card-title-link" :to="worldcupLink">
+        
+        {{ title }}
+        
+      </router-link>
     </h3>
     <div class="card-description">
       <span>{{ creator }}</span><!-- // TODO: 레벨 뱃지 아이콘 -->

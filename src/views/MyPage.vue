@@ -87,40 +87,4 @@ export default {
 </script>
 
 <style scoped>
-.mypage-container {
-  text-align: left;
-}
-
-.mypage-contents {
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.buttons {
-  display: flex;
-  position: relative;
-  width: 300px;
-  height: 100px;
-  margin: 1rem;
-}
-
-.button {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 0;
-}
-
-.main-button {
-  z-index: 1;
-  background-color: white;
-}
-
-img {
-  width: 50px;
-  height: 50px;
-}
 </style>
