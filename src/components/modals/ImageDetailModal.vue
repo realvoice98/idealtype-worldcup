@@ -260,19 +260,6 @@ export default {
   opacity: 1;
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 2vh;
-}
-
-.modal-buttons button {
-  padding: 1vh 2vw;
-  font-size: 1.2vw;
-  cursor: pointer;
-  border: none;
-  border-radius: 0.5vw;
-}
 
 .error-message {
   color: red;
