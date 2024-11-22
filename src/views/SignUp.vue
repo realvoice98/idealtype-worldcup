@@ -161,4 +161,103 @@
 </script>
 
 <style scoped>
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 75vh;
+}
+
+.header{
+    font-size: 35px;
+    padding:15px 10px;
+    font-weight: 700;
+  }
+
+  .signup-content {
+    /* padding: 2rem; */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 25px 35px;
+  }
+  .sign-up-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 290px;
+    .sign-up-line{
+      display: flex;
+      gap: 10px;
+      .left{
+        flex:1;
+        justify-content: start;
+        display: flex;
+        align-items: center;
+      }
+      .right{
+        flex:3;
+        padding: 8px 10px;
+        border-radius: 3px;
+        border: 1px solid #ccc;
+      }
+    }
+  }
+  
+  .gender-list {
+    display: flex;
+    width: 100%;
+  }
+  .gender-btn {
+    flex: 1;
+    padding: 0.4rem;
+    border: 2px solid #ececec;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    transition: border-color 0.5s ease;
+  }
+  .gender-btn:first-child {
+    border-radius: 4px 0 0 4px;
+    border-right-width: 1px;
+  }
+  .gender-btn:last-child {
+    border-radius: 0 4px 4px 0;
+    border-left-width: 1px;
+  }
+  .gender-btn.selected:first-child {
+    border-color: #98B7D4;
+    border-right-width: 2px;
+  }
+  .gender-btn.selected:last-child {
+    border-color: #98B7D4;
+    border-left-width: 2px;
+  }
+  
+  .signup-button {
+    width: 100%;
+    /* margin-top: 1.5rem; */
+    background-color: #98B7D4;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .signup-button:hover{
+    color:white;
+    transition: 0.3s;
+  }
+  
+  .bottom-container{
+    margin-top: 10px;
+    .go-sign-up {
+    /* color: black; */
+    text-decoration: none;
+    color: black;
+  }
+  .go-sign-up:hover{
+    /* color: black; */
+    color: #98B7D4;
+  }
+  }
 </style>

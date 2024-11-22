@@ -34,7 +34,7 @@ export default {
     this.worldcups = await fetchAllWorldcups();
     window.addEventListener("resize", this.updateWindowWidth); // 화면 크기 변경 이벤트 리스너 추가
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("resize", this.updateWindowWidth); // 이벤트 리스너 제거
   },
   methods: {
@@ -77,6 +77,21 @@ export default {
 
 
 <style>
+.main-container {
+  display: flex;
+  flex-direction: column; /* 행 세로 배치 (chunkedWorldcups에서 record 나누기) */
+  justify-content: center;
+  align-items: center;
+  /* height: 75vh; */
+  /* margin-top: 130px; */
+}
 
+.card-record {
+  display: flex;
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  /* margin-bottom: 1rem;  */
+  width: 100%;
+  justify-content: center;
+}
 
 </style>

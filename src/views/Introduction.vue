@@ -127,4 +127,92 @@
 </script>
 
 <style scoped>
+.intro-container{
+  padding: 20px;
+ }
+
+ .intro-content{
+    padding: 10px;
+   }
+  
+   .text-content {
+    display: flex;
+    align-items: center;
+    margin-bottom: 300px;
+   }
+  
+   [data-scroll] {
+    opacity: 0;
+    will-change: transform, scale, opacity;
+    transform: translateY(6rem) scale(1);
+    transition: all 1.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+   }
+   [data-scroll="in"] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+   }
+   [data-scroll="out"] {
+    opacity: 0;
+   }
+  
+   .image-container {
+    width: 50vw;
+    flex-shrink: 0;
+    transition: opacity 1s ease, transform 1s ease;
+   }
+  
+   .image-container.left {
+    margin-right: 20px;
+    transform: translateX(-20px);
+   }
+  
+   .image-container.right {
+    margin-left: 20px;
+    transform: translateX(20px);
+   }
+  
+   .image-container img {
+    width: 40vw;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+   }
+  
+   .image-container[data-scroll="in"] {
+    opacity: 1;
+    transform: translateX(0);
+   }
+  
+   .image-container[data-scroll="out"] {
+    opacity: 0;
+   }
+  
+   .text-box {
+    flex: 1;
+    width: 40vw;
+   }
+  
+   .text-box.left {
+    text-align: left;
+   }
+  
+   .text-box.right {
+    text-align: right;
+   }
+  
+   .text-content.left {
+    flex-direction: row; /* 이미지를 왼쪽에, 텍스트를 오른쪽에 */
+   }
+  
+   .text-content.right {
+    flex-direction: row-reverse; /* 이미지를 오른쪽에, 텍스트를 왼쪽에 */
+   }
+  
+   h1 {
+    font-size: 3vw; /* 뷰포트 너비의 5% */
+   }
+  
+   p {
+    font-size: 1vw; /* 뷰포트 너비의 2% */
+   }
 </style>

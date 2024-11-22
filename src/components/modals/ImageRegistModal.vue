@@ -227,18 +227,11 @@
 
 <style scoped>
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(5px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
   padding: 2vh;
 }
 
@@ -395,14 +388,7 @@
   gap: 2vw;
 }
 
-.modal-buttons {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 2vh;
-}
-
-.cropper-buttons button,
-.modal-buttons button {
+.cropper-buttons button {
   padding: 1vh 2vw;
   font-size: 1.2vw;
   cursor: pointer;

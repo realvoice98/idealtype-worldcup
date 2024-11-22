@@ -135,8 +135,5 @@
     border: none;
   }
 
-  .btn-toggle-theme {
-    width: 30px;
-    height: 30px;
-  }
+
 </style>

@@ -96,15 +96,6 @@
     margin-right: 1rem; /* 텍스트가 아무리 길어져도 버튼과 약간의 이격 거리 유지 */
   }
 
-  .btn-like {
-    background: transparent;
-    border: none;
-  }
-  .btn-like > img {
-    width: 24px;
-    height: 24px;
-  }
-
   a {
     color: black;
     text-decoration: none;
