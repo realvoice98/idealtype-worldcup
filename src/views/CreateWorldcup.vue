@@ -34,39 +34,45 @@
           </div>
         </div>
       </div>
+      <div class="button-container">
+        <CommonButton variant="theme" @click="createWorldcup">
+          만들기
+        </CommonButton>
+        <CommonButton variant="primary" @click="this.moveToPreviousPage">
+          돌아가기
+        </CommonButton>
+      </div>
+      <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
 
       <ImageRegistModal
         :is-visible="isRegistModalVisible"
         @update:isVisible="isRegistModalVisible = $event"
         @images-selected="addImages"
       />
-
       <ImageDetailModal
-          :is-visible="isRegistDetailVisible"
-          @update:isVisible="isRegistDetailVisible = $event"
-          @images-selected="addImages"
+        :is-visible="isRegistDetailVisible"
+        @update:isVisible="isRegistDetailVisible = $event"
+        @images-selected="addImages"
       />
-
-      <button class="btn-create" @click="createWorldcup"> <!-- Component 처리 -->
-        <span>만들기</span>
-      </button>
-      <button class="btn-back">  <!-- Component 처리 -->
-        <span>돌아가기</span>
-      </button>
-      <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
     </div>
   </div>
 </template>
 
 <script>
-  import ImageRegistModal from '@/components/modals/ImageRegistModal.vue';
   import { auth, onAuthStateChanged } from '@/services/firebase/auth';
   import { getUser, createWorldcup, uploadImage } from '@/services/firebase/db';
-  import ImageDetailModal from "@/components/modals/ImageDetailModal.vue";
+
+  import ImageRegistModal from '@/components/modals/ImageRegistModal.vue';
+  import ImageDetailModal from '@/components/modals/ImageDetailModal.vue';
+  import CommonButton from '@/components/buttons/CommonButton.vue';
 
   export default {
     name: 'CreateWorldcup',
-    components: {ImageDetailModal, ImageRegistModal },
+    components: {
+      ImageRegistModal,
+      ImageDetailModal,
+      CommonButton,
+    },
     data() {
       return {
         title: '',
@@ -97,9 +103,6 @@
       });
     },
     methods: {
-      goBack() {
-        // Component 처리
-      },
       /**
        * 해시태그 입력 처리 함수
        * @param {Event} e 사용자 입력 값 접근을 위한 입력 이벤트 객체
@@ -266,10 +269,11 @@
     width: 100px;
     height: 100px;
   }
-  
-  button {
-    width: 100%;
-    margin-bottom: 1.5rem;
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
   }
 }
 </style>
