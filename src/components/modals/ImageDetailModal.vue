@@ -40,8 +40,6 @@
 </template>
 
 <script>
-import { formatDate } from "@/common";
-
 export default {
   name: 'ImageDetailModal',
   props: {
@@ -49,67 +47,57 @@ export default {
       type: Boolean,
       required: true,
     },
+    modelValue: { // v-model로 바인딩된 데이터
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
-      selectedImages: [],
-      errorMessage: '',
+      selectedImages: [...this.modelValue], // v-model로 받은 데이터를 로컬 상태로 복사
       currentImageIndex: 0,
     };
   },
+  watch: {
+    selectedImages(newVal) {
+      this.currentImageIndex = newVal.length > 0 ? 0 : -1;
+    },
+  },
   methods: {
     triggerFileSelection() {
+      // 동적으로 파일 입력 엘리먼트 생성
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
-      fileInput.accept = 'image/png, image/jpeg';
-      fileInput.multiple = false;  // 다중 파일 업로드 비활성화
+      fileInput.accept = 'image/png, image/jpeg';  // 이미지 파일만 선택 가능
+      fileInput.multiple = false;  // 여러 파일 선택은 불가
       fileInput.addEventListener('change', this.onFileChange);
-      fileInput.click();  // 클릭을 통해 파일 선택 대화상자 열기
+      fileInput.click();  // 파일 탐색기 열기
     },
-
     onFileChange(event) {
-      const file = event.target.files[0];  // 단일 파일만 선택
-      this.errorMessage = '';
+      const file = event.target.files[0]; // 첫 번째 파일만 선택
 
-      if (!file) return;
-
-      const allowedExtensions = ['png', 'jpg', 'jpeg'];
-      const fileExtension = file.name.split('.').pop().toLowerCase();
-
-      if (!allowedExtensions.includes(fileExtension)) {
-        this.errorMessage = '유효한 파일이 없습니다. PNG 또는 JPG/JPEG 파일만 선택할 수 있습니다.';
-        return;
+      if (file) {
+        // 선택된 파일을 읽어서 메인 이미지로 설정
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          // 현재 메인 이미지를 선택된 파일로 교체
+          this.selectedImages[this.currentImageIndex].preview = e.target.result;
+        };
+        reader.readAsDataURL(file);  // 파일을 Data URL로 읽기
       }
-
-      const timestamp = formatDate(new Date());
-      const uniqueFileName = `${file.name.replace(`.${fileExtension}`, '')}_${timestamp}.${fileExtension}`;
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (typeof e.target?.result === 'string') {
-          const newFile = new File([file], uniqueFileName, { type: file.type });
-          this.selectedImages[this.currentImageIndex] = { file: newFile, preview: e.target.result, name: uniqueFileName, customName: '', };
-        }
-      };
-      reader.readAsDataURL(file);
     },
-
-    confirmImages() {
-      if (this.selectedImages.some((image) => !image.customName)) {
-        this.errorMessage = '모든 이미지에 이름을 입력해주세요.';
-        return;
+    updateCustomName(value) {
+      if (this.selectedImages[this.currentImageIndex]) {
+        this.selectedImages[this.currentImageIndex].customName = value;
       }
-
-      this.$emit('images-selected', this.selectedImages);
+    },
+    confirmImages() {
+      this.$emit('update:modelValue', this.selectedImages); // 수정된 데이터를 부모로 전달
       this.closeModal();
     },
-
     closeModal() {
       this.$emit('update:isVisible', false);
-      this.selectedImages = [];
-      this.currentImageIndex = 0;  // 모달을 닫을 때 currentImageIndex 초기화
     },
-
     removeImage(index) {
       if (index >= 0 && index < this.selectedImages.length) {
         this.selectedImages.splice(index, 1);
@@ -120,27 +108,20 @@ export default {
         }
       }
     },
-
     previousImage() {
       if (this.selectedImages.length > 0) {
         this.currentImageIndex = (this.currentImageIndex - 1 + this.selectedImages.length) % this.selectedImages.length;
       }
     },
-
     nextImage() {
       if (this.selectedImages.length > 0) {
         this.currentImageIndex = (this.currentImageIndex + 1) % this.selectedImages.length;
       }
     },
-
-    updateCustomName(value) {
-      if (this.selectedImages[this.currentImageIndex]) {
-        this.selectedImages[this.currentImageIndex].customName = value;
-      }
-    },
   },
 };
 </script>
+
 
 <style scoped>
 .modal-overlay {

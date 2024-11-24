@@ -52,7 +52,7 @@
       <ImageDetailModal
         :is-visible="isRegistDetailVisible"
         @update:isVisible="isRegistDetailVisible = $event"
-        @images-selected="addImages"
+        v-model="images"
       />
     </div>
   </div>
