@@ -38,7 +38,7 @@
 <style scoped>
   .sidebar-container {
     flex: 1;
-    background-color: #98B7D4;
+    background-color: var(--theme);
     padding: 1rem;
   }
 

@@ -103,7 +103,7 @@
     left: 0;
     right: 0;
     z-index: 1000;
-    background-color: #98B7D4;
+    background-color: var(--theme);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     opacity: 0;
     transform: translateY(-100%);

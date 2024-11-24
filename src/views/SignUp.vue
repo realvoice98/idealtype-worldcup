@@ -225,18 +225,18 @@
     border-left-width: 1px;
   }
   .gender-btn.selected:first-child {
-    border-color: #98B7D4;
+    border-color: var(--theme);
     border-right-width: 2px;
   }
   .gender-btn.selected:last-child {
-    border-color: #98B7D4;
+    border-color: var(--theme);
     border-left-width: 2px;
   }
   
   .signup-button {
     width: 100%;
     /* margin-top: 1.5rem; */
-    background-color: #98B7D4;
+    background-color: var(--theme);
     border: none;
     border-radius: 5px;
     padding: 10px;
@@ -257,7 +257,7 @@
   }
   .go-sign-up:hover{
     /* color: black; */
-    color: #98B7D4;
+    color: var(--theme);
   }
   }
 </style>

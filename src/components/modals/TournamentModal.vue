@@ -2,7 +2,7 @@
   <div class="modal-wrapper">
     <div class="modal-container">
       <div class="modal-header">
-        <img src="@/assets/trophy.png">
+        <img src="@/assets/trophy.png" alt="">
       </div>
       <div class="modal-title">
         {{title}}
@@ -158,17 +158,17 @@
   }
 
   .select-button {
-    background: #98B7D4;
+    background: var(--theme);
     border: 1px solid #000000;
   }
 
   .start-button {
-    background: #98B7D4;
+    background: var(--theme);
     border: 1px solid #000000;
   }
 
   .back-button {
-    background: #D8D8D8;
+    background: var(--theme);
     border: 1px solid #000000;
   }
 

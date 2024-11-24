@@ -57,6 +57,6 @@
   }
 
   th {
-    background-color: #98B7D4;
+    background-color: var(--theme);
   }
 </style>

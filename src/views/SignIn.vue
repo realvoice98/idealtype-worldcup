@@ -97,7 +97,7 @@
     .login-button {
       width: 100%;
       /* margin-top: 1.5rem; */
-      background-color: #98B7D4;
+      background-color: var(--theme);
       border: none;
       border-radius: 5px;
       padding: 10px;
@@ -118,7 +118,7 @@
     }
     .go-sign-up:hover{
       /* color: black; */
-      color: #98B7D4;
+      color: var(--theme);
     }
     }
   
