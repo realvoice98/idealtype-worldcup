@@ -187,6 +187,9 @@ export async function fetchAllWorldcups() {
  *
  * 이미지, 오디오, 동영상의 원본 데이터는 Storage에 보관하고,
  * Realtime DB에서는 Storage 노드의 참조 경로를 작성하여 원본 데이터에 접근한다.
+ *
+ * 파일 업로드 시, 파일명은 클라이언트에서 전달해준 원본 파일명을 별도 가공 없이 그대로 사용하며,
+ * JSON 구조가 아니므로 RTDB와 달리 convertValidNodeString()로 래핑하지 않는다.
  */
 
 /**
@@ -197,9 +200,7 @@ export async function fetchAllWorldcups() {
  * @return {Promise<string>} 업로드된 이미지의 참조 경로
  */
 export async function uploadImage(image, userId, worldcupTitle) {
-  const fileName = image.customName
-      ? `${convertToValidNodeString(image.customName)}_${convertToValidNodeString(image.name)}`
-      : convertToValidNodeString(image.name);
+  const fileName = image.customName ? `${image.customName}_${image.name}` : image.name;
 
   const worldcupsRef = stRef(st, `worldcups/${userId}/${worldcupTitle}/${fileName}`);
 
@@ -210,7 +211,6 @@ export async function uploadImage(image, userId, worldcupTitle) {
     console.error('이미지 업로드 실패:', e);
     throw new Error('이미지 업로드 중 오류가 발생했습니다.');
   }
-
 
   // NOTE: worldcupTitle 말고 worldcup UID를 참조할 수 있도록 하고 싶었는데,
   //       그러려면 createWorldcup() 함수 내에서 생성되는 월드컵의 uid와 동일한 값을 써야하고,
