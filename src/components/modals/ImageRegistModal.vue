@@ -2,8 +2,11 @@
   <div class="modal-overlay" v-if="isVisible">
     <div class="header">
       <span>{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
-      <button v-if="selectedImages.length < 5" @click="triggerFileSelection" class="add-button">+ 추가</button>
-      <button class="close-button" @click="closeModal">X</button>
+      <div class="button-group" v-if="!cropperVisible" @click.stop>
+        <button v-if="selectedImages.length < 5" @click="triggerFileSelection" class="button">+ 추가</button>
+        <button @click="confirmImages" class="button">확인</button>
+      </div>
+      <button class="button close" @click="closeModal">X</button>
     </div>
 
     <div v-if="!cropperVisible && selectedImages.length > 0" class="main-image-container" @click.stop>
@@ -50,10 +53,6 @@
           @click="currentImageIndex = index"
       />
 
-    </div>
-
-    <div class="modal-buttons" v-if="!cropperVisible" @click.stop>
-      <button @click="confirmImages">확인</button>
     </div>
 
     <p v-if="errorMessage" class="error-message" @click.stop>{{ errorMessage }}</p>
@@ -238,40 +237,42 @@
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 90vw;
   margin-bottom: 2vh;
   color: white;
 }
 
-.header .add-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem 1rem;
-  font-size: 1vw;
-  font-weight: bold;
-  width: 5vw;
-  height: 3vw;
-  color: white;
-
+.header .button {
+  background: none;
   border: none;
-  border-radius: 5px;
+  font-size: 2vw;
+  color: white;
   cursor: pointer;
-  margin-left: 1rem;
   transition: all 0.3s ease;
 }
 
-.header .add-button:hover {
+.header .button-group {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.header .button.close {
+  margin-left: auto;
+}
+
+.header .button:hover {
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
   transform: scale(1.05);
 }
 
-.header .add-button:active {
+.header .button:active {
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
   transform: scale(0.95);
 }
 
-.close-button {
+.button.close {
   background: none;
   border: none;
   font-size: 2vw;
@@ -412,13 +413,12 @@
   left: 1vh;
   width: calc(100% - 2vh);
   border: none;
-  background: transparent;
-  color: transparent;
-  caret-color: white;
-  font-size: 1.2vw;
-  font-family: inherit;
-  outline: none;
-  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.5vh;
+  border-radius: 0.5vw;
+  font-size: 1vw;
+  box-sizing: border-box;
 }
 
 .image-name-input::placeholder {

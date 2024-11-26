@@ -2,9 +2,11 @@
   <div class="modal-overlay" v-if="isVisible">
     <div class="header">
       <span class="image-index">{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
-      <button class="close-button" @click="confirmImages">확인</button>
-      <button class="close-button" @click="triggerFileSelection">이미지 변경</button>
-      <button class="close-button" @click="closeModal">X</button>
+      <div class="button-group">
+        <button class="button" @click="confirmImages">확인</button>
+        <button class="button" @click="triggerFileSelection">이미지 변경</button>
+      </div>
+      <button class="button close" @click="closeModal">X</button>
     </div>
 
     <div v-if="selectedImages.length > 0" class="main-image-container" @click.stop>
@@ -54,13 +56,12 @@ export default {
   },
   data() {
     return {
-      selectedImages: [...this.modelValue], // v-model로 받은 데이터를 로컬 상태로 복사
       currentImageIndex: 0,
     };
   },
-  watch: {
-    selectedImages(newVal) {
-      this.currentImageIndex = newVal.length > 0 ? 0 : -1;
+  computed: {
+    selectedImages() {
+      return this.modelValue; // 항상 부모의 v-model 데이터를 참조
     },
   },
   methods: {
@@ -135,23 +136,33 @@ export default {
 
 .header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   width: 90vw;
   margin-bottom: 2vh;
   color: white;
 }
 
-.header .close-button {
+.header .button {
   background: none;
   border: none;
   font-size: 2vw;
   color: white;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.header .button-group {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.header .button.close {
+  margin-left: auto;
 }
 
 .image-index {
-  flex-grow: 1;
   text-align: center;
   font-size: 1.5vw;
 }
