@@ -3,10 +3,12 @@
     <div class="header">
       <span class="image-index">{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
       <div class="button-group">
-        <button class="button" @click="confirmImages">확인</button>
         <button class="button" @click="triggerFileSelection">이미지 변경</button>
+        <button class="button" @click="confirmImages">확인</button>
       </div>
-      <button class="button close" @click="closeModal">X</button>
+      <button class="button close" @click="closeModal">
+        <img src="@/assets/x_icon.png" alt="close_icon">
+      </button>
     </div>
 
     <div v-if="selectedImages.length > 0" class="main-image-container" @click.stop>
@@ -21,7 +23,9 @@
             class="image-name-input"
             placeholder="이미지 이름 입력"
         />
-        <button class="remove-button" @click="removeImage(currentImageIndex)">X</button>
+        <button class="remove-button" @click="removeImage(currentImageIndex)">
+          <img src="@/assets/x_icon.png" alt="x">
+        </button>
       </div>
 
       <button v-if="selectedImages.length > 1" class="arrow right-arrow" @click="nextImage">&gt;</button>
@@ -162,6 +166,21 @@ export default {
   margin-left: auto;
 }
 
+.header .button:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+}
+
+.header .button:active {
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+  transform: scale(0.95);
+}
+
+.header .button.close img{
+  width: 3vw;
+  height: 3.5vh;
+}
+
 .image-index {
   text-align: center;
   font-size: 1.5vw;
@@ -193,7 +212,6 @@ export default {
   top: 1vh;
   right: 1vh;
   background-color: red;
-  font-size: 1vw;
   color: white;
   border: none;
   padding: 0.5vh;
@@ -201,6 +219,11 @@ export default {
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
+}
+
+.remove-button img{
+  width: 1vw;
+  height: 1vw;
 }
 
 .image-container:hover .remove-button {
@@ -211,7 +234,7 @@ export default {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
+  background: none;
   color: white;
   border: none;
   padding: 1vh;

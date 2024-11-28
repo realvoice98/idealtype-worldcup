@@ -3,10 +3,12 @@
     <div class="header">
       <span>{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
       <div class="button-group" v-if="!cropperVisible" @click.stop>
-        <button v-if="selectedImages.length < 5" @click="triggerFileSelection" class="button">+ 추가</button>
+        <button @click="triggerFileSelection" class="button">+ 추가</button>
         <button @click="confirmImages" class="button">확인</button>
       </div>
-      <button class="button close" @click="closeModal">X</button>
+      <button class="button close" @click="closeModal">
+        <img src="@/assets/x_icon.png" alt="x">
+      </button>
     </div>
 
     <div v-if="!cropperVisible && selectedImages.length > 0" class="main-image-container" @click.stop>
@@ -21,7 +23,9 @@
             class="image-name-input"
             placeholder="이미지 이름 입력"
         />
-        <button class="remove-button" @click="removeImage(currentImageIndex)"> X </button>
+        <button class="remove-button" @click="removeImage(currentImageIndex)">
+          <img src="@/assets/x_icon.png" alt="x">
+        </button>
       </div>
 
       <button v-if="selectedImages.length > 1" class="arrow right-arrow" @click="nextImage">&gt;</button>
@@ -280,6 +284,11 @@
   cursor: pointer;
 }
 
+.header .button.close img{
+  width: 3vw;
+  height: 3.5vh;
+}
+
 .main-image-container {
   position: relative;
   display: flex;
@@ -307,7 +316,6 @@
   top: 1vh;
   right: 1vh;
   background-color: red;
-  font-size: 1vw;
   color: white;
   border: none;
   padding: 0.5vh;
@@ -315,6 +323,11 @@
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
+}
+
+.remove-button img{
+  width: 1vw;
+  height: 1vw;
 }
 
 .image-container:hover .remove-button {
