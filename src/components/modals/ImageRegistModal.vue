@@ -50,13 +50,12 @@
 
     <div v-if="!cropperVisible" class="thumbnails" @click.stop>
       <img
-          v-for="(image, index) in selectedImages"
+          v-for="(image, index) in displayedThumbnails"
           :key="index"
           :src="image.preview"
-          :class="{ 'active-thumbnail': index === currentImageIndex }"
+          :class="{ 'active-thumbnail': index === currentImageIndex % 5 }"
           @click="currentImageIndex = index"
       />
-
     </div>
 
     <p v-if="errorMessage" class="error-message" @click.stop>{{ errorMessage }}</p>
@@ -87,6 +86,13 @@
         cropperImage: null,
         currentImageIndex: 0,
       };
+    },
+    computed: {
+      displayedThumbnails() {
+        const thumbnails = this.selectedImages;
+        const startIndex = Math.floor(this.currentImageIndex / 5) * 5;
+        return thumbnails.slice(startIndex, startIndex + 5);
+      }
     },
     mounted() {
       if (this.isVisible) {
@@ -338,7 +344,7 @@
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
+  background: none;
   color: white;
   border: none;
   padding: 1vh;
@@ -425,22 +431,14 @@
   bottom: 1vh;
   left: 1vh;
   width: calc(100% - 2vh);
+  height: 8vh;
   border: none;
   background: rgba(0, 0, 0, 0.5);
   color: white;
   padding: 0.5vh;
   border-radius: 0.5vw;
-  font-size: 1vw;
+  font-size: 2vw;
   box-sizing: border-box;
-}
-
-.image-name-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1.2vw;
-}
-
-.image-name-input:focus {
-  color: white;
 }
 </style>
 

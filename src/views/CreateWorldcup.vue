@@ -26,7 +26,7 @@
       <p class="warn-message" v-if="warnMessage">{{ warnMessage }}</p>
       <div class="content-box">
         <div class="image-area" @click="openRegistModal">
-          <div class="image-box" v-for="(image, index) in images" :key="index" @click.stop="openDetailModal">
+          <div class="image-box" v-for="(image, index) in images" :key="index" @click.stop="openDetailModal(index)">
             <img :src="image.preview" alt="이미지 영역" />
           </div>
           <div v-if="images.length === 0">
@@ -52,6 +52,7 @@
       <ImageDetailModal
         :is-visible="isRegistDetailVisible"
         @update:isVisible="isRegistDetailVisible = $event"
+        :initialIndex="selectedImageIndex"
         v-model="images"
       />
     </div>
@@ -85,6 +86,7 @@
         user: null,
         warnMessage: '',
         errorMessage: '',
+        selectedImageIndex: 0,
       };
     },
     created() {
@@ -152,7 +154,8 @@
       openRegistModal() {
         this.isRegistModalVisible = true;
       },
-      openDetailModal() {
+      openDetailModal(index) {
+        this.selectedImageIndex = index;
         this.isRegistDetailVisible = true;
       },
       addImages(images) {

@@ -33,11 +33,11 @@
 
     <div class="thumbnails" @click.stop>
       <img
-          v-for="(image, index) in selectedImages"
+          v-for="(image, index) in thumbnailList"
           :key="index"
           :src="image.preview"
-          :class="{ 'active-thumbnail': index === currentImageIndex }"
-          @click="currentImageIndex = index"
+          :class="{ 'active-thumbnail': image.isActive }"
+          @click="updateCurrentIndex(index)"
       />
     </div>
 
@@ -57,18 +57,52 @@ export default {
       type: Array,
       required: true,
     },
+    initialIndex: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
-      currentImageIndex: 0,
+      currentImageIndex: this.initialIndex,
     };
+  },
+  watch: {
+    initialIndex(newIndex) {
+      this.currentImageIndex = newIndex;
+    },
   },
   computed: {
     selectedImages() {
       return this.modelValue; // 항상 부모의 v-model 데이터를 참조
     },
+    thumbnailList() {
+      const total = this.selectedImages.length;
+      const range = 2;
+      let result = [];
+
+      if (total <= 5) {
+        result = this.selectedImages.map((image, index) => ({
+          ...image,
+          isActive: index === this.currentImageIndex,
+        }));
+      } else {
+        for (let i = -range; i <= range; i++) {
+          const index = (this.currentImageIndex + i + total) % total;
+          result.push({
+            ...this.selectedImages[index],
+            isActive: index === this.currentImageIndex,
+          });
+        }
+      }
+      return result;
+    },
   },
   methods: {
+    updateCurrentIndex(thumbnailIndex) {
+      const total = this.selectedImages.length;
+      this.currentImageIndex = (this.currentImageIndex + (thumbnailIndex - 2) + total) % total;
+    },
     triggerFileSelection() {
       // 동적으로 파일 입력 엘리먼트 생성
       const fileInput = document.createElement('input');
@@ -88,7 +122,7 @@ export default {
           // 현재 메인 이미지를 선택된 파일로 교체
           this.selectedImages[this.currentImageIndex].preview = e.target.result;
         };
-        reader.readAsDataURL(file);  // 파일을 Data URL로 읽기
+        reader.readAsDataURL(file);
       }
     },
     updateCustomName(value) {
@@ -123,6 +157,7 @@ export default {
         this.currentImageIndex = (this.currentImageIndex + 1) % this.selectedImages.length;
       }
     },
+
   },
 };
 </script>
@@ -287,12 +322,13 @@ export default {
   bottom: 1vh;
   left: 1vh;
   width: calc(100% - 2vh);
+  height: 8vh;
   border: none;
   background: rgba(0, 0, 0, 0.5);
   color: white;
   padding: 0.5vh;
   border-radius: 0.5vw;
-  font-size: 1vw;
+  font-size: 2vw;
   box-sizing: border-box;
 }
 </style>
