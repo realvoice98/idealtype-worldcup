@@ -160,15 +160,13 @@ export async function fetchAllWorldcups() {
     if (snapshot.exists()) {
       const worldcupsData = snapshot.val();
 
-      // 마지막 업데이트 날짜 포맷
-      const today = new Date();
-
       return Object.keys(worldcupsData).map(key => ({
         ...worldcupsData[key], // child node data
+        thumbnails: worldcupsData[key].images.slice(0, 2),
         views: numberFormat.format(worldcupsData[key].views),
-
-        // FIXME: 10/29가 중간발표일이라 급하게 짠 코드이므로 다른 곳에서 활용하지는 마세요
-        updatedAt: relativeTimeFormat.format(Math.ceil((new Date(worldcupsData[key].updatedAt) - today) / (1000 * 60 * 60 * 24)), 'day'),
+        updatedAt: relativeTimeFormat.format(
+          Math.ceil((new Date(worldcupsData[key].updatedAt) - new Date()) / (1000 * 60 * 60 * 24)), 'day'
+        ),
       }));
     } else {
       return [];
