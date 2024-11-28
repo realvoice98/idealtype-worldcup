@@ -2,18 +2,17 @@
   <div class="card-container">
     <div class="card-thumbnails">
       <div class="card-thumbnail">
-        <br> <!-- TODO: 높이값 안맞아서 임시로 적용한 것. Storage 적용 시점에 dummy와 함께 폐기 -->
-        <img :src="require('@/assets/dummy/thumbnail-dummy3.png')" alt=""/>
+        <img :src="thumbnails[0].path" alt=""/>
+        <p>{{ thumbnails[0].customName }}</p>
       </div>
       <div class="card-thumbnail">
-        <img :src="require('@/assets/dummy/thumbnail-dummy2.jpg')" alt=""/>
+        <img :src="thumbnails[1].path" alt=""/>
+        <p>{{ thumbnails[1].customName }}</p>
       </div>
     </div>
     <h3 class="card-title">
       <router-link id="card-title-link" :to="worldcupLink">
-        
         {{ title }}
-        
       </router-link>
     </h3>
     <div class="card-description">
@@ -37,6 +36,9 @@
       },
     },
     computed: {
+      thumbnails() {
+        return this.data.thumbnails;
+      },
       title() {
         return this.data.title;
       },
