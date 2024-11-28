@@ -134,6 +134,8 @@ export async function createWorldcup(user, worldcup) {
 
     // users.uid.myWorldcups.id
     await set(myWorldcupsRef, {
+      // FIXME: 현재는 월드컵을 등록할 때마다 가장 최근에 등록한 월드컵의 UID로 필드가 초기화됨.
+      //  초기화가 아닌 배열 push 형식으로 append 되어야 함
       id: newWorldcupRef.key // 월드컵 ID
     });
 
@@ -161,8 +163,9 @@ export async function fetchAllWorldcups() {
       const worldcupsData = snapshot.val();
 
       return Object.keys(worldcupsData).map(key => ({
+        worldcupId: key,
         ...worldcupsData[key], // child node data
-        thumbnails: worldcupsData[key].images.slice(0, 2),
+        thumbnails: worldcupsData[key].images.slice(0, 2), // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
         views: numberFormat.format(worldcupsData[key].views),
         updatedAt: relativeTimeFormat.format(
           Math.ceil((new Date(worldcupsData[key].updatedAt) - new Date()) / (1000 * 60 * 60 * 24)), 'day'

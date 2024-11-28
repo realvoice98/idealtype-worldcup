@@ -52,7 +52,7 @@
         return this.data.updatedAt;
       },
       worldcupLink() {
-        return `/worldcup?${this.data.worldcupID}`;
+        return `/worldcup?${this.data.worldcupId}`;
       }
     }
   };
