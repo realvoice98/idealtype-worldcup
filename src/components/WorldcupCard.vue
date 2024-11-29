@@ -28,6 +28,8 @@
 </template>
 
 <script>
+
+
   export default {
     name: 'WorldcupCard',
     props: {
@@ -78,6 +80,7 @@
   .card-thumbnail > img {
     width: 10rem;
     border-radius: 7%;
+    height: 200px;
   }
 
   .card-title {
@@ -86,6 +89,9 @@
     -webkit-line-clamp: 2; /* 개행 최대 2줄 */
     overflow: hidden; /* 최대 길이 초과 텍스트는 ... 처리 */
     text-align: left; /* 텍스트 좌측 정렬 */
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   .card-description {
@@ -102,4 +108,12 @@
     color: black;
     text-decoration: none;
   }
+
+  .card-title a {
+  display: inline-block;
+  width: 100%; /* 부모의 너비를 따라감 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>

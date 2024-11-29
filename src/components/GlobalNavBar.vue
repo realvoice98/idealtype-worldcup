@@ -15,6 +15,9 @@
           <router-link class="nav-link" to="/my-page">마이페이지</router-link>
         </li>
         <li class="nav-item">
+          <router-link class="nav-link" to="/worldcup-result">랭크</router-link>
+        </li>
+        <li class="nav-item">
           <button @click="toggleTheme">
             <img class="btn-toggle-theme" :src="isDarkMode ? require('@/assets/light-mode-icon.png') : require('@/assets/dark-mode-icon.png')" alt="테마 변경" />
           </button>

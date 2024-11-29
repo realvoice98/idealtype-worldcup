@@ -7,6 +7,7 @@ import CreateWorldcup from '@/views/CreateWorldcup.vue';
 import SignIn from '@/views/SignIn.vue';
 import SignUp from '@/views/SignUp.vue';
 import MyPage from '@/views/MyPage.vue';
+import WorldcupResult from '@/views/WorldCupResult.vue';
 
 // views/admin
 import BackOffice from '@/views/admin/BackOffice.vue';
@@ -49,6 +50,11 @@ const routes = [
     name: 'MyPage',
     component: MyPage,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/worldcup-result',
+    name: 'WorldcupResult',
+    component: WorldcupResult
   },
 
   // views/admin
