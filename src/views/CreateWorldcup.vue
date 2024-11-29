@@ -170,6 +170,24 @@
        * 월드컵 생성 요청 함수
        */
       async createWorldcup() {
+        // 유효성 검사
+        if (!this.title.trim()) {
+          this.errorMessage = '제목을 입력해주세요.';
+          return;
+        }
+        if (!this.details.trim()) {
+          this.errorMessage = '상세 설명을 입력해주세요.';
+          return;
+        }
+        if (this.hashtags.length === 0) {
+          this.errorMessage = '해시태그를 1개 이상 입력해주세요.';
+          return;
+        }
+        if (this.images.length < 2) {
+          this.errorMessage = '이미지는 최소 2개 이상 등록해야 합니다.';
+          return;
+        }
+
         try {
           const userData = await getUser(this.user);
           const user = {
@@ -197,7 +215,7 @@
 
           await createWorldcup(user, worldcup);
           this.$router.push('/');
-        } catch(e) {
+        } catch (e) {
           this.errorMessage = `오류: ${e.message}`;
         }
       },
