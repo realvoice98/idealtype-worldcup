@@ -165,7 +165,7 @@ export async function fetchAllWorldcups() {
       return Object.keys(worldcupsData).map(key => ({
         worldcupId: key,
         ...worldcupsData[key], // child node data
-        thumbnails: worldcupsData[key].images, // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
+        thumbnails: worldcupsData[key].images.slice(0, 2), // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
         title: restoreToOriginalString(worldcupsData[key].title),
         views: numberFormat.format(worldcupsData[key].views),
         updatedAt: relativeTimeFormat.format(

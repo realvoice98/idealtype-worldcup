@@ -1,0 +1,1 @@
+const comma = (num) => String(num).replace(/\B(?=(\d{3})+(?!\d))/g, ',');

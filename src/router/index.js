@@ -15,8 +15,9 @@ import Dashboard from '@/components/admin/Dashboard.vue';
 import UserList from '@/components/admin/UserList.vue';
 import WorldcupManagement from "@/components/admin/WorldcupManagement.vue";
 import ReportReceive from '@/components/admin/ReportReceive.vue';
-import Questions from '@/components/admin/Questions.vue'
+import Questions from '@/components/admin/Questions.vue';
 import Settings from '@/components/admin/Settings.vue';
+import WorldcupDetail from '@/views/WorldcupDetail.vue';
 
 const routes = [
   // views
@@ -55,6 +56,11 @@ const routes = [
     path: '/worldcup-result',
     name: 'WorldcupResult',
     component: WorldcupResult
+  },
+  {
+    // path: `/worldcup?${worldcupId}`, // TODO: 이거 어떻게 라우터에서 매개변수 받아올 수 있는지...
+    // name: 'WorldcupDetail',
+    // component: WorldcupDetail,
   },
 
   // views/admin
