@@ -10,6 +10,7 @@
   "dependencies": {
     "@firebase/auth": "^1.7.9",
     "core-js": "^3.8.3",
+    "dompurify": "^3.2.2",
     "firebase": "^10.14.0",
     "firebase-cli": "^1.2.0",
     "scroll-out": "^2.2.12",
