@@ -119,7 +119,7 @@ export async function createWorldcup(user, worldcup) {
 
     // worldcups.worldcupsID
     await set(newWorldcupRef, {
-      title: worldcup.title,
+      title: convertToValidNodeString(worldcup.title),
       details: worldcup.details,
       hashtags: worldcup.hashtags.map(item => convertToValidNodeString(item)),
       images: worldcup.images.map(image => ({
@@ -165,7 +165,8 @@ export async function fetchAllWorldcups() {
       return Object.keys(worldcupsData).map(key => ({
         worldcupId: key,
         ...worldcupsData[key], // child node data
-        thumbnails: worldcupsData[key].images.slice(0, 2), // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
+        thumbnails: worldcupsData[key].images, // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
+        title: restoreToOriginalString(worldcupsData[key].title),
         views: numberFormat.format(worldcupsData[key].views),
         updatedAt: relativeTimeFormat.format(
           Math.ceil((new Date(worldcupsData[key].updatedAt) - new Date()) / (1000 * 60 * 60 * 24)), 'day'
@@ -175,7 +176,7 @@ export async function fetchAllWorldcups() {
       return [];
     }
   } catch(e) {
-    console.error('알 수 없는 오류: 월드컵 목록을 불러오지 못했습니다.');
+    console.error('알 수 없는 오류: 월드컵 목록을 불러오지 못했습니다.', e);
     return {
       result: -1,
       message: '알 수 없는 오류가 발생하여 월드컵 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요.',
