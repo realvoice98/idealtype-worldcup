@@ -1,9 +1,11 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
+import DOMPurifyPlugin from './plugins/dompurify';
 
 createApp(App)
   .use(router)
+  .use(DOMPurifyPlugin)
   .mixin({
     methods: {
       /**
