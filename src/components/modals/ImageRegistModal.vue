@@ -100,6 +100,16 @@
       }
     },
     watch: {
+      'selectedImages': {
+        handler(newImages) {
+          newImages.forEach((image, index) => {
+            if (image.customName) {
+              this.selectedImages[index].customName = image.customName.replace(/[\\\/:*?"<>|]/g, '');
+            }
+          });
+        },
+        deep: true,
+      },
       isVisible(newVal) {
         if (newVal) {
           this.triggerFileSelection();

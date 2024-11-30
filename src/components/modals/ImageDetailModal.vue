@@ -68,6 +68,16 @@ export default {
     };
   },
   watch: {
+    'selectedImages': {
+      handler(newImages) {
+        newImages.forEach((image, index) => {
+          if (image.customName) {
+            this.selectedImages[index].customName = image.customName.replace(/[\\\/:*?"<>|]/g, '');
+          }
+        });
+      },
+      deep: true,
+    },
     initialIndex(newIndex) {
       this.currentImageIndex = newIndex;
     },

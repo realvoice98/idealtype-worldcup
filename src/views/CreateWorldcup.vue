@@ -53,7 +53,8 @@
         :is-visible="isRegistDetailVisible"
         @update:isVisible="isRegistDetailVisible = $event"
         :initialIndex="selectedImageIndex"
-        v-model="images"
+        :modelValue="imagesCopy"
+        @update:modelValue="updateImages"
       />
     </div>
   </div>
@@ -83,6 +84,7 @@
         isRegistModalVisible: false,
         isRegistDetailVisible: false,
         images: [],
+        imagesCopy: [],
         user: null,
         warnMessage: '',
         errorMessage: '',
@@ -156,6 +158,7 @@
       },
       openDetailModal(index) {
         this.selectedImageIndex = index;
+        this.imagesCopy = JSON.parse(JSON.stringify(this.images));
         this.isRegistDetailVisible = true;
       },
       addImages(images) {
@@ -165,6 +168,9 @@
             customName: image.customName,
           });
         });
+      },
+      updateImages(updatedImages) {
+        this.images = JSON.parse(JSON.stringify(updatedImages));  // 자식에서 변경된 배열을 받아서 업데이트
       },
       /**
        * 월드컵 생성 요청 함수
