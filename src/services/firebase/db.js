@@ -151,25 +151,45 @@ export async function createWorldcup(user, worldcup) {
  * 모든 월드컵 데이터를 가져오는 함수
  * @returns {Promise<Object[]>} 모든 월드컵 객체가 담긴 하나의 배열 데이터
  */
-export async function fetchAllWorldcups() {
-  // TODO: order by filter param: popular(인기순), latest(최신순), old(오래된순)
 
-  const worldcupsRef = dbRef(db, 'worldcups');
+export async function fetchAllWorldcups(filter) {
+  const worldcupsRef = dbRef(db, "worldcups");
+
+  let worldcupsQuery;
+  if (filter === "popular") {
+    worldcupsQuery = query(worldcupsRef, orderByChild("views")); // 조회수 기준 정렬
+  } else if (filter === "latest") {
+    worldcupsQuery = query(worldcupsRef, orderByChild("updatedAt")); // 업데이트 기준 정렬
+  }
 
   try {
-    const snapshot = await get(worldcupsRef);
+    const snapshot = await get(worldcupsQuery);
 
     if (snapshot.exists()) {
       const worldcupsData = snapshot.val();
 
-      return Object.keys(worldcupsData).map(key => ({
+      // 데이터를 배열로 변환
+      const worldcupsArray = Object.keys(worldcupsData).map((key) => ({
         worldcupId: key,
         ...worldcupsData[key], // child node data
         thumbnails: worldcupsData[key].images.slice(0, 2), // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
         title: restoreToOriginalString(worldcupsData[key].title),
-        views: numberFormat.format(worldcupsData[key].views),
+        views: Number(worldcupsData[key].views), // 조회수는 숫자로 변환
+        updatedAt: new Date(worldcupsData[key].updatedAt), // Date 객체로 변환
+      }));
+
+      if (filter === "popular") {
+        worldcupsArray.sort((a, b) => b.views - a.views);
+      } else if (filter === "latest") {
+        worldcupsArray.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      }
+
+      // 포맷 적용 후 반환
+      return worldcupsArray.map((worldcup) => ({
+        ...worldcup,
+        views: numberFormat.format(worldcup.views),
         updatedAt: relativeTimeFormat.format(
-          Math.ceil((new Date(worldcupsData[key].updatedAt) - new Date()) / (1000 * 60 * 60 * 24)), 'day'
+          Math.ceil((new Date(worldcup.updatedAt) - new Date()) / (1000 * 60 * 60 * 24)), "day"
         ),
       }));
     } else {

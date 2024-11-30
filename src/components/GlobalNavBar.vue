@@ -1,5 +1,5 @@
 <template>
-  <nav class="gnb" :class="{ show: isVisible }">
+  <nav class="gnb" >
     <div class="gnb-container">
       <ul class="gnb-nav">
         <li class="nav-item">
@@ -29,6 +29,22 @@
           <button class="nav-link" @click="signOut">로그아웃</button>
         </li>
       </ul>
+
+      <ul class="gnb-nav-filter" v-show="gnbNavFilterVisible && $route.path === '/'">
+        <li class="nav-item">
+          <button class="btn-toggle" :class="{'active': isPopularityActive}" @click="setSortOrder('popular')">인기순</button>
+        </li>
+        <li class="nav-item">
+          <button class="btn-toggle" :class="{'active': !isPopularityActive}" @click="setSortOrder('latest')">최신순</button>
+        </li>
+        <li class="nav-item">
+          <input v-model="searchQuery" type="text" class="search-input" placeholder="검색어 입력"/>
+        </li>
+        <li class="nav-item">
+          <button class="btn-search" @click="searchWorldcups">검색</button>
+        </li>
+      </ul>
+
     </div>
   </nav>
 </template>
@@ -36,15 +52,19 @@
 <script>
   import { auth } from '@/services/firebase/auth';
   import { onAuthStateChanged, signOut } from 'firebase/auth';
+  import WorldcupCard from "@/components/WorldcupCard.vue";
+  import { fetchAllWorldcups } from "@/services/firebase/db.js";
 
   export default {
     name: 'GNB',
     data() {
       return {
-        isVisible: true,         // 네비게이션의 표시 상태
-        lastScrollPosition: 0,   // 마지막 스크롤 위치
-        isDarkMode: true,       // 초기 상태는 라이트모드
-        isLoggedIn: false,
+        lastScrollPosition: 0,      // 마지막 스크롤 위치
+        isDarkMode: true,           // 초기 상태는 라이트모드
+        isLoggedIn: false,          // 로그인 상태
+        gnbNavFilterVisible: true, // 초기 상태는 true
+        searchQuery: '',
+        isPopularityActive: true,
       };
     },
     mounted() {
@@ -66,8 +86,14 @@
     methods: {
       handleScroll() {
         const currentScrollPosition = window.scrollY;
-        this.isVisible = currentScrollPosition <= this.lastScrollPosition; // 상단 방향 스크롤 시 상단탭 표시
-        this.lastScrollPosition = currentScrollPosition; // 마지막 스크롤 위치 업데이트
+
+        if (currentScrollPosition > this.lastScrollPosition) {
+          this.gnbNavFilterVisible = false;
+        } else {
+          this.gnbNavFilterVisible = true;
+        }
+
+        this.lastScrollPosition = currentScrollPosition;
       },
       toggleTheme() {
         this.isDarkMode = !this.isDarkMode;
@@ -95,6 +121,28 @@
           console.error('로그아웃 실패:', e);
         }
       },
+      setSortOrder(order) {
+        if (order === 'popular') {
+          this.isPopularityActive = true;
+          this.sortByPopularity();
+        } else if (order === 'latest') {
+          this.isPopularityActive = false;
+          this.sortByNewest();
+        }
+        this.$emit('updateSortOrder', order);
+      },
+      // 인기순 정렬 함수
+      sortByPopularity() {
+        fetchAllWorldcups('popular');
+      },
+      // 최신순 정렬 함수
+      sortByNewest() {
+        fetchAllWorldcups('latest');
+      },
+      // 검색 기능
+      searchWorldcups() {
+        console.log(this.searchQuery);
+      },
     },
   };
 </script>
@@ -106,21 +154,19 @@
     left: 0;
     right: 0;
     z-index: 1000;
-    background-color: var(--theme);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    transform: translateY(-100%);
-    transition: transform 0.5s ease, opacity 0.5s ease;
-  }
-
-  .gnb.show {
-    opacity: 1;
-    transform: translateY(0);
+    background-color: var(--theme);
   }
 
   .gnb-nav {
     display: flex;
     gap: 2rem;
+    align-items: center;
+  }
+
+  .gnb-nav-filter {
+    display: flex;
+    gap: 1rem;
     align-items: center;
   }
 
@@ -138,5 +184,34 @@
     border: none;
   }
 
+  .btn-toggle {
+    padding: 0.5rem 1rem;
+    background-color: var(--theme);
+    color: white;
+    cursor: pointer;
+  }
+
+  .btn-toggle.active {
+    font-weight: bold;
+    font-size: 1.02rem;
+  }
+
+
+  .search-input {
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 350px;
+    margin-left: 50px;
+  }
+
+  .btn-search {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
 
 </style>

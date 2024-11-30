@@ -1,4 +1,5 @@
 <template>
+  <GlobalNavBar @updateSortOrder="fetchWorldcupsData" />
   <div class="main-container">
     <div
       v-for="(record, recordIndex) in chunkedWorldcups"
@@ -17,21 +18,24 @@
 <script>
 import WorldcupCard from "@/components/WorldcupCard.vue";
 import { fetchAllWorldcups } from "@/services/firebase/db.js";
+import GlobalNavBar from "@/components/GlobalNavBar.vue";
 
 export default {
   name: "Home",
   components: {
     WorldcupCard,
+    GlobalNavBar,
   },
   data() {
     return {
       user: null,
       worldcups: [],
       windowWidth: window.innerWidth, // 화면 크기 저장
+      currentFilter: "popular", // 초기값은 인기순
     };
   },
   async created() {
-    this.worldcups = await fetchAllWorldcups();
+    await this.fetchWorldcups(this.currentFilter);
     window.addEventListener("resize", this.updateWindowWidth); // 화면 크기 변경 이벤트 리스너 추가
   },
   beforeUnmount() {
@@ -40,6 +44,14 @@ export default {
   methods: {
     updateWindowWidth() {
       this.windowWidth = window.innerWidth; // 화면 크기 갱신
+    },
+    async fetchWorldcups(filter) {
+      this.currentFilter = filter; // 필터 상태 업데이트
+      this.worldcups = await fetchAllWorldcups(filter);
+    },
+    async fetchWorldcupsData(order) {
+      this.currentFilter = order;
+      await this.fetchWorldcups(order);
     },
   },
   computed: {
@@ -83,7 +95,7 @@ export default {
   justify-content: center;
   align-items: center;
   /* height: 75vh; */
-  /* margin-top: 130px; */
+  margin-top: 100px;
 }
 
 .card-record {
