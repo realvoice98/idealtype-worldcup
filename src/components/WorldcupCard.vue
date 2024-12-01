@@ -11,11 +11,9 @@
         <p>{{ thumbnails[1].customName }}</p>
       </div>
     </div>
-    <h3 class="card-title">
-      <router-link id="card-title-link" :to="worldcupLink">
+      <router-link class="card-title" id="card-title-link" :to="worldcupLink">
         {{ title }}
       </router-link>
-    </h3>
     <div class="card-description">
       <span>{{ creator }}</span><!-- // TODO: 레벨 뱃지 아이콘 -->
     </div>
@@ -62,26 +60,41 @@
 </script>
 
 <style scoped>
+
   .card-container {
     margin: 1rem;
     padding: 15px;
-    cursor: pointer;
+    /* cursor: pointer; */
     border: solid 1px #d0d0d0;
     border-radius: 3%;
     max-width: 25rem; /* 카드 하나 당 고정 너비 */
     width: 100%;
     box-sizing: border-box;
+    
   }
   .card-thumbnails {
     display: flex;
     justify-content: space-between;
     gap: 0.5rem; /* 2개 썸네일 이미지 사이 간격 */
     max-width: 100%;
+    min-height: 260px;
   }
+
   .card-thumbnail > img {
     width: 10rem;
     border-radius: 7%;
     height: 200px;
+  }
+
+  .card-thumbnail {
+    flex: 1;
+    p{
+      display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin: 6px 0px;
+    }
   }
 
   .card-title {
@@ -91,8 +104,11 @@
     overflow: hidden; /* 최대 길이 초과 텍스트는 ... 처리 */
     text-align: left; /* 텍스트 좌측 정렬 */
     width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
+    /* overflow: hidden;
+    white-space: nowrap; */
+    min-height: 60px;
+    font-size: 20px;
+    font-weight: 600;
   }
 
   .card-description {
@@ -110,11 +126,5 @@
     text-decoration: none;
   }
 
-  .card-title a {
-  display: inline-block;
-  width: 100%; /* 부모의 너비를 따라감 */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+
 </style>
