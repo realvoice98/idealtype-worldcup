@@ -35,10 +35,10 @@
         </div>
       </div>
       <div class="button-container">
-        <CommonButton variant="theme" @click="createWorldcup">
+        <CommonButton variant="primary" :onclick="createWorldcup">
           만들기
         </CommonButton>
-        <CommonButton variant="primary" @click="this.moveToPreviousPage">
+        <CommonButton variant="white" :onclick="this.moveToPreviousPage">
           돌아가기
         </CommonButton>
       </div>

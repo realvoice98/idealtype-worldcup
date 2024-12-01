@@ -41,7 +41,7 @@
           <input v-model="searchQuery" type="text" class="search-input" placeholder="검색어 입력"/>
         </li>
         <li class="nav-item">
-          <button class="btn-search" @click="searchWorldcups">검색</button>
+          <CommonButton variant="white" :onclick="searchWorldcups">검색</CommonButton>
         </li>
       </ul>
 
@@ -52,11 +52,14 @@
 <script>
   import { auth } from '@/services/firebase/auth';
   import { onAuthStateChanged, signOut } from 'firebase/auth';
-  import WorldcupCard from "@/components/WorldcupCard.vue";
-  import { fetchAllWorldcups } from "@/services/firebase/db.js";
+  import { fetchAllWorldcups } from '@/services/firebase/db.js';
+  import CommonButton from '@/components/buttons/CommonButton.vue';
 
   export default {
     name: 'GNB',
+    components: {
+      CommonButton,
+    },
     data() {
       return {
         lastScrollPosition: 0,      // 마지막 스크롤 위치
@@ -196,22 +199,12 @@
     font-size: 1.02rem;
   }
 
-
   .search-input {
     padding: 0.5rem;
     border-radius: 5px;
     border: 1px solid #ccc;
     width: 350px;
     margin-left: 50px;
-  }
-
-  .btn-search {
-    padding: 0.5rem 1rem;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
   }
 
 </style>

@@ -2,6 +2,9 @@
   <button
     type="button"
     :class="`btn-${variant}`"
+    :disabled="disabled"
+    @click="onClick"
+    :style="style"
   >
     <slot></slot>
   </button>
@@ -13,8 +16,20 @@
     props: {
       variant: {
         type: String,
-        default: 'primary', // primary, theme
+        default: 'primary', // primary, gray, white, transparent
       },
+      disabled: {
+        type: Boolean,
+        default: false,
+      },
+      onClick: {
+        type: Function,
+        default: () => {},
+      },
+      style: {
+        type: Object,
+        default: () => ({}),
+      }
     },
   };
 </script>
@@ -28,13 +43,17 @@
     font-size: 1rem;
     font-weight: bold;
   }
-
   .btn-primary {
-    background-color: transparent;
-  }
-
-  .btn-theme {
     background-color: var(--theme);
     color: white;
+  }
+  .btn-gray {
+    background-color: lightgray;
+  }
+  .btn-white {
+    background-color: #f8f8f8;
+  }
+  .btn-transparent {
+    background-color: transparent;
   }
 </style>
