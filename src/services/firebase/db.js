@@ -205,6 +205,33 @@ export async function fetchAllWorldcups(filter) {
 }
 
 /**
+ * 현재 진입한 월드컵에 대한 진행 이력이 존재하는지 체크하는 함수
+ * @param {Object} user 현재 유저 정보
+ * @param {String} wldcupId 현재 진입한 월드컵의 UID
+ * @returns {Boolean} 현재 진입한 월드컵에 대한 진행 이력 유무
+ */
+export async function checkInProgressWldcup(user, wldcupId) {
+  const inProgressWldcupRef = dbRef(db, `users/${user.uid}/inProgressWldcups`);
+  
+  // TODO: query()를 통해 wldcupId와 매칭되는 값만 추출하여 return
+
+  try {
+    const snapshot = await get(inProgressWldcupRef);
+
+    if (snapshot.exists()) {
+      const inProgressWldcupData = snapshot.val();
+
+      // TODO: 테스트
+      return Object.keys(inProgressWldcupData).filter(wldcupId => inProgressWldcupData[wldcupId].id === wldcupId);
+    } else {
+      return false;
+    }
+  } catch (e) {
+    console.error('오류: 진행 중인 월드컵 목록을 불러오지 못했습니다.', e);
+  }
+}
+
+/**
  * Firebase Storage
  *
  * 이미지, 오디오, 동영상의 원본 데이터는 Storage에 보관하고,

@@ -11,9 +11,9 @@
         <p>{{ thumbnails[1].customName }}</p>
       </div>
     </div>
-      <router-link class="card-title" id="card-title-link" :to="worldcupLink">
-        {{ title }}
-      </router-link>
+    <router-link class="card-title" id="card-title-link" :to="worldcupLink">
+      {{ title }}
+    </router-link>
     <div class="card-description">
       <span>{{ creator }}</span><!-- // TODO: 레벨 뱃지 아이콘 -->
     </div>
@@ -27,8 +27,6 @@
 </template>
 
 <script>
-
-
   export default {
     name: 'WorldcupCard',
     props: {
@@ -53,7 +51,7 @@
         return this.data.updatedAt;
       },
       worldcupLink() {
-        return `/worldcup?${this.data.worldcupId}`;
+        return `/worldcup/${this.data.worldcupId}`;
       }
     }
   };

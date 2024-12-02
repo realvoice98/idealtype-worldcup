@@ -58,9 +58,9 @@ const routes = [
     component: WorldcupResult
   },
   {
-    // path: `/worldcup?${worldcupId}`, // TODO: 이거 어떻게 라우터에서 매개변수 받아올 수 있는지...
-    // name: 'WorldcupDetail',
-    // component: WorldcupDetail,
+    path: '/worldcup/:id',
+    name: 'WorldcupDetail',
+    component: WorldcupDetail,
   },
 
   // views/admin
