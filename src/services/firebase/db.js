@@ -112,7 +112,6 @@ export async function getAllUsers() {
  */
 export async function createWldcup(user, wldcup) {
   const wldcupsRef = dbRef(db, 'wldcups');
-  const myWldcupsRef = dbRef(db, `users/${user.uid}/myWldcups`);
 
   try {
     const newWldcupRef = push(wldcupsRef); // push: unique ID 생성
@@ -132,12 +131,10 @@ export async function createWldcup(user, wldcup) {
       updatedAt: formatDate(new Date()),
     });
 
-    // users.uid.myWldcups.wldcupId[]
-    await set(myWldcupsRef, {
-      // FIXME: 현재는 월드컵을 등록할 때마다 가장 최근에 등록한 월드컵의 UID로 필드가 초기화됨.
-      //  초기화가 아닌 배열 push 형식으로 append 되어야 함
-      id: newWldcupRef.key // 월드컵 ID
-    });
+    // users.uid.myWldcups.wldcupId
+    const wldcupId = newWldcupRef.key;
+    const myWldcupsRef = dbRef(db, `users/${user.uid}/myWldcups/${wldcupId}`);
+    await set(myWldcupsRef, true); // Object.key() 통해서 실제 데이터 경로 참조위한 key 값만 사용할 것이므로 value는 flag로 주입
 
     alert("월드컵 생성 완료!");
     console.log('월드컵 정보를 저장하였습니다.', wldcup);
