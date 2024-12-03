@@ -107,22 +107,22 @@ export async function getAllUsers() {
 /**
  * 월드컵 생성 요청 처리 함수
  * @param {Object} user
- * @param {Object} worldcup 월드컵 상세 데이터
+ * @param {Object} wldcup 월드컵 상세 데이터
  * @returns {Promise<void>} DB에 월드컵 데이터 추가
  */
-export async function createWorldcup(user, worldcup) {
-  const worldcupsRef = dbRef(db, 'worldcups');
-  const myWorldcupsRef = dbRef(db, `users/${user.uid}/myWorldcups`);
+export async function createWldcup(user, wldcup) {
+  const wldcupsRef = dbRef(db, 'wldcups');
+  const myWldcupsRef = dbRef(db, `users/${user.uid}/myWldcups`);
 
   try {
-    const newWorldcupRef = push(worldcupsRef); // push: unique ID 생성
+    const newWldcupRef = push(wldcupsRef); // push: unique ID 생성
 
-    // worldcups.worldcupsID
-    await set(newWorldcupRef, {
-      title: convertToValidNodeString(worldcup.title),
-      details: worldcup.details,
-      hashtags: worldcup.hashtags.map(item => convertToValidNodeString(item)),
-      images: worldcup.images.map(image => ({
+    // wldcups.wldcupID
+    await set(newWldcupRef, {
+      title: convertToValidNodeString(wldcup.title),
+      details: wldcup.details,
+      hashtags: wldcup.hashtags.map(item => convertToValidNodeString(item)),
+      images: wldcup.images.map(image => ({
         path: image.path, // 업로드된 이미지 경로
         customName: image.customName, // 사용자 입력 이름
       })),
@@ -132,18 +132,18 @@ export async function createWorldcup(user, worldcup) {
       updatedAt: formatDate(new Date()),
     });
 
-    // users.uid.myWorldcups.id
-    await set(myWorldcupsRef, {
+    // users.uid.myWldcups.wldcupId[]
+    await set(myWldcupsRef, {
       // FIXME: 현재는 월드컵을 등록할 때마다 가장 최근에 등록한 월드컵의 UID로 필드가 초기화됨.
       //  초기화가 아닌 배열 push 형식으로 append 되어야 함
-      id: newWorldcupRef.key // 월드컵 ID
+      id: newWldcupRef.key // 월드컵 ID
     });
 
     alert("월드컵 생성 완료!");
-    console.log('월드컵 정보를 저장하였습니다.', worldcup);
+    console.log('월드컵 정보를 저장하였습니다.', wldcup);
   } catch(e) {
     alert("월드컵 생성 실패! 잠시 후 다시 시도해주세요.");
-    console.error('월드컵 정보를 저장하지 못했습니다.', e, worldcup);
+    console.error('월드컵 정보를 저장하지 못했습니다.', e, wldcup);
   }
 }
 
@@ -151,45 +151,44 @@ export async function createWorldcup(user, worldcup) {
  * 모든 월드컵 데이터를 가져오는 함수
  * @returns {Promise<Object[]>} 모든 월드컵 객체가 담긴 하나의 배열 데이터
  */
+export async function fetchAllWldcups(filter) {
+  const wldcupsRef = dbRef(db, "wldcups");
 
-export async function fetchAllWorldcups(filter) {
-  const worldcupsRef = dbRef(db, "worldcups");
-
-  let worldcupsQuery;
+  let wldcupsQuery;
   if (filter === "popular") {
-    worldcupsQuery = query(worldcupsRef, orderByChild("views")); // 조회수 기준 정렬
+    wldcupsQuery = query(wldcupsRef, orderByChild("views")); // 조회수 기준 정렬
   } else if (filter === "latest") {
-    worldcupsQuery = query(worldcupsRef, orderByChild("updatedAt")); // 업데이트 기준 정렬
+    wldcupsQuery = query(wldcupsRef, orderByChild("updatedAt")); // 업데이트 기준 정렬
   }
 
   try {
-    const snapshot = await get(worldcupsQuery);
+    const snapshot = await get(wldcupsQuery);
 
     if (snapshot.exists()) {
-      const worldcupsData = snapshot.val();
+      const wldcupsData = snapshot.val();
 
       // 데이터를 배열로 변환
-      const worldcupsArray = Object.keys(worldcupsData).map((key) => ({
-        worldcupId: key,
-        ...worldcupsData[key], // child node data
-        thumbnails: worldcupsData[key].images.slice(0, 2), // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
-        title: restoreToOriginalString(worldcupsData[key].title),
-        views: Number(worldcupsData[key].views), // 조회수는 숫자로 변환
-        updatedAt: new Date(worldcupsData[key].updatedAt), // Date 객체로 변환
+      const wldcupsArray = Object.keys(wldcupsData).map((key) => ({
+        wldcupId: key,
+        ...wldcupsData[key], // child node data
+        thumbnails: wldcupsData[key].images.slice(0, 2), // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
+        title: restoreToOriginalString(wldcupsData[key].title),
+        views: Number(wldcupsData[key].views), // 조회수는 숫자로 변환
+        updatedAt: new Date(wldcupsData[key].updatedAt), // Date 객체로 변환
       }));
 
       if (filter === "popular") {
-        worldcupsArray.sort((a, b) => b.views - a.views);
+        wldcupsArray.sort((a, b) => b.views - a.views);
       } else if (filter === "latest") {
-        worldcupsArray.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        wldcupsArray.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
       }
 
       // 포맷 적용 후 반환
-      return worldcupsArray.map((worldcup) => ({
-        ...worldcup,
-        views: numberFormat.format(worldcup.views),
+      return wldcupsArray.map((wldcup) => ({
+        ...wldcup,
+        views: numberFormat.format(wldcup.views),
         updatedAt: relativeTimeFormat.format(
-          Math.ceil((new Date(worldcup.updatedAt) - new Date()) / (1000 * 60 * 60 * 24)), "day"
+          Math.ceil((new Date(wldcup.updatedAt) - new Date()) / (1000 * 60 * 60 * 24)), "day"
         ),
       }));
     } else {
@@ -245,29 +244,19 @@ export async function checkInProgressWldcup(user, wldcupId) {
  * 이미지 업로드 처리 후 경로 반환 함수
  * @param {File} image 이미지 파일 객체
  * @param {Object} userId 사용자 UID
- * @param {string} worldcupTitle 월드컵 제목
+ * @param {string} wldcupTitle 월드컵 제목
  * @return {Promise<string>} 업로드된 이미지의 참조 경로
  */
-export async function uploadImage(image, userId, worldcupTitle) {
+export async function uploadImage(image, userId, wldcupTitle) {
   const fileName = image.customName ? `${image.customName}_${image.name}` : image.name;
 
-  const worldcupsRef = stRef(st, `worldcups/${userId}/${worldcupTitle}/${fileName}`);
+  const wldcupsRef = stRef(st, `wldcups/${userId}/${wldcupTitle}/${fileName}`);
 
   try {
-    await uploadBytes(worldcupsRef, image);
-    return await getDownloadURL(worldcupsRef);
+    await uploadBytes(wldcupsRef, image);
+    return await getDownloadURL(wldcupsRef);
   } catch (e) {
     console.error('이미지 업로드 실패:', e);
     throw new Error('이미지 업로드 중 오류가 발생했습니다.');
   }
-
-  // NOTE: worldcupTitle 말고 worldcup UID를 참조할 수 있도록 하고 싶었는데,
-  //       그러려면 createWorldcup() 함수 내에서 생성되는 월드컵의 uid와 동일한 값을 써야하고,
-  //       그건 이 함수를 createWorldcup() 내에서 돌릴 수 있도록 해야한다는 의미.
-  //
-  //       근데 vue에서 가지고 있는 this.images를 vue 쪽 함수에서 이미즈를 Storage에 직통으로 처리하지 않고 (AS-IS)
-  //       createWorldcups param으로 경유해서 처리하는 경우... (TO-BE)
-  //       왜인지 자꾸 파일 타입이 누락되어서 구현 못했음...
-  //
-  //       개발 시간이 부족하므로 일단 클라 쪽에서 넘겨주는 title 값으로 구현.  <- FUCK
 }

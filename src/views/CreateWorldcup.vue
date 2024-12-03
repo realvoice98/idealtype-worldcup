@@ -1,5 +1,5 @@
 <template>
-  <div class="create-world-cup container">
+  <div class="create-wldcup container">
     <div class="content">
       <div class="content-box">
         <input v-model="title" type="text" placeholder="제목을 입력해주세요" />
@@ -35,7 +35,7 @@
         </div>
       </div>
       <div class="button-container">
-        <CommonButton variant="primary" :onclick="createWorldcup">
+        <CommonButton variant="primary" :onclick="createWldcup">
           만들기
         </CommonButton>
         <CommonButton variant="white" :onclick="this.moveToPreviousPage">
@@ -62,7 +62,7 @@
 
 <script>
   import { auth, onAuthStateChanged } from '@/services/firebase/auth';
-  import { getUser, createWorldcup, uploadImage } from '@/services/firebase/db';
+  import { getUser, createWldcup, uploadImage } from '@/services/firebase/db';
 
   import ImageRegistModal from '@/components/modals/ImageRegistModal.vue';
   import ImageDetailModal from '@/components/modals/ImageDetailModal.vue';
@@ -175,7 +175,7 @@
       /**
        * 월드컵 생성 요청 함수
        */
-      async createWorldcup() {
+      async createWldcup() {
         // 유효성 검사
         if (!this.title.trim()) {
           this.errorMessage = '제목을 입력해주세요.';
@@ -219,88 +219,85 @@
             images: uploadedImages,
           }
 
-          await createWorldcup(user, worldcup);
+          await createWldcup(user, worldcup);
           this.$router.push('/');
         } catch (e) {
           this.errorMessage = `오류: ${e.message}`;
         }
       },
     },
-  }
+  };
 </script>
 
 <style scoped>
-.container {
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  height: 75vh;
-}
-.create-world-cup{
-  .content {
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .content-box {
-    border: 1px solid lightgray;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-  }
-  
-  input {
-    border: none;
-    outline: none;
-  }
-  
-  .content-box > input { /* FIXME: title, details 임시 선택자 */
+  .container {
     width: 100%;
-  }
-  
-  .hashtag-text-area {
-    height: auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-    box-sizing: border-box;
-    color: dimgray;
-    line-height: 22px;
-    padding: 8px;
-  }
-  
-  .input-hashtag {
-    display: flex;
-    align-items: center;
-  }
-  
-  .input-hashtag span {
-    color: #757575;
-  
-    /* FIXME: placeholder font style과 동일하게 적용해야 하는데
-        index.css 반영 사항이 제대로 적용되지 않고 있어서 임시로 사용 */
-    font-size: 14px;
-    font-family: '';
-  }
-  
-  .image-area {
-    display: flex;
-    height: 10rem;
-    flex-wrap: wrap;
-    cursor: pointer;
-    gap: 10px;
-  }
-  
-  .image-box img{
-    width: 100px;
-    height: 100px;
-  }
-
-  .button-container {
-    display: flex;
     justify-content: center;
-    gap: 1.5rem;
+    align-items: center;
+    height: 75vh;
   }
-}
+  .create-wldcup {
+    .content {
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .content-box {
+      border: 1px solid lightgray;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+    }
+
+    input {
+      border: none;
+      outline: none;
+    }
+
+    .content-box > input {
+      width: 100%;
+    }
+
+    .hashtag-text-area {
+      height: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      box-sizing: border-box;
+      color: dimgray;
+      line-height: 22px;
+      padding: 8px;
+    }
+
+    .input-hashtag {
+      display: flex;
+      align-items: center;
+    }
+
+    .input-hashtag span {
+      color: #757575;
+      font-size: 14px;
+      font-family: '';
+    }
+
+    .image-area {
+      display: flex;
+      height: 10rem;
+      flex-wrap: wrap;
+      cursor: pointer;
+      gap: 10px;
+    }
+
+    .image-box img{
+      width: 100px;
+      height: 100px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+  }
 </style>

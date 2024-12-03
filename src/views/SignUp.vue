@@ -2,24 +2,24 @@
   <div class="signup-container">
     <div class="signup-content">
       <div class="header">회원가입</div>
-      <form class="sign-up-form" @submit.prevent="signUp">
-        <div class="sign-up-line email">
+      <form class="signup-form" @submit.prevent="signUp">
+        <div class="signup-line email">
           <div class="left">이메일</div>
           <input class="right" v-model="email" type="email" placeholder="user@gmail.com" maxlength="30" />
         </div>
-        <div class="sign-up-line password">
+        <div class="signup-line password">
           <div class="left">비밀번호</div>
           <input class="right" v-model="password" type="password" placeholder="********" />
         </div>
-        <div class="sign-up-line nickname">
+        <div class="signup-line nickname">
           <div class="left">닉네임</div>
           <input class="right" :value="nickname" @input="updateNickname" placeholder="홍길동" maxlength="10" />
         </div>
-        <div class="sign-up-line birthday">
+        <div class="signup-line birthday">
           <div class="left">생년월일</div>
           <input class="right" v-model="birthday" placeholder="YYYY-MM-DD" maxlength="10" />
         </div>
-        <div class="sign-up-line gender">
+        <div class="signup-line gender">
           <div class="gender-list">
             <button
               type="button"
@@ -161,14 +161,14 @@
 </script>
 
 <style scoped>
-.signup-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 75vh;
-}
+  .signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 75vh;
+  }
 
-.header{
+  .header {
     font-size: 35px;
     padding:15px 10px;
     font-weight: 700;
@@ -180,21 +180,21 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 25px 35px;
   }
-  .sign-up-form {
+  .signup-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
     width: 290px;
-    .sign-up-line{
+    .signup-line {
       display: flex;
       gap: 10px;
-      .left{
+      .left {
         flex:1;
         justify-content: start;
         display: flex;
         align-items: center;
       }
-      .right{
+      .right {
         flex:3;
         padding: 8px 10px;
         border-radius: 3px;
@@ -243,21 +243,21 @@
     font-size: 16px;
     cursor: pointer;
   }
-  .signup-button:hover{
+  .signup-button:hover {
     color:white;
     transition: 0.3s;
   }
   
-  .bottom-container{
+  .bottom-container {
     margin-top: 10px;
-    .go-sign-up {
-    /* color: black; */
-    text-decoration: none;
-    color: black;
-  }
-  .go-sign-up:hover{
-    /* color: black; */
-    color: var(--theme);
-  }
+    .go-signup {
+      /* color: black; */
+      text-decoration: none;
+      color: black;
+    }
+    .go-signup:hover {
+      /* color: black; */
+      color: var(--theme);
+    }
   }
 </style>

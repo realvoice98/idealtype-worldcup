@@ -52,7 +52,7 @@
 <script>
   import { auth } from '@/services/firebase/auth';
   import { onAuthStateChanged, signOut } from 'firebase/auth';
-  import { fetchAllWorldcups } from '@/services/firebase/db.js';
+  import { fetchAllWldcups } from '@/services/firebase/db.js';
   import CommonButton from '@/components/buttons/CommonButton.vue';
 
   export default {
@@ -136,11 +136,11 @@
       },
       // 인기순 정렬 함수
       sortByPopularity() {
-        fetchAllWorldcups('popular');
+        fetchAllWldcups('popular');
       },
       // 최신순 정렬 함수
       sortByNewest() {
-        fetchAllWorldcups('latest');
+        fetchAllWldcups('latest');
       },
       // 검색 기능
       searchWorldcups() {

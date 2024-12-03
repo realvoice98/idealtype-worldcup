@@ -69,17 +69,17 @@
       };
     },
     created() {
-      this.checkProgress();
+      this.checkInProgressWldcup();
     },
     methods: {
       /**
        * 현재 월드컵에 대한 진행 이력이 존재하는지 체크
        */
-      async checkProgress() {
+      async checkInProgressWldcup() {
         const user = auth.currentUser;
         const wldcupId = this.$route.params.id;
 
-        this.inProgress = await checkInProgressWldcup(user, wldcupId);
+        this.isProgress = await checkInProgressWldcup(user, wldcupId);
       },
     },
   }
