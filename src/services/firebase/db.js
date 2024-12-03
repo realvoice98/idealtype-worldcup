@@ -201,6 +201,36 @@ export async function fetchAllWldcups(filter) {
 }
 
 /**
+ * 특정 월드컵에 대한 통계 데이터를 받아오는 함수
+ * @param wldcupId
+ * @returns {Promise<Object[]> | null}
+ */
+export async function fetchWldcupStats(wldcupId) {
+  const statsRef = dbRef(db, `wldcups/${wldcupId}/stats`);
+
+  try {
+    const snapshot = await get(statsRef);
+    if (snapshot.exists()) {
+      const statsData = snapshot.val();
+
+      // TODO: 테스트
+      return Object.keys(statsData).map(key => ({
+        ...statsData[key],
+      }));
+      // 기대 return
+      // {
+      //   { name: '프로미스나인 이채영', winCnt: 10, loseCnt: 2, champCnt: 3 },
+      //   { name: '엔믹스 해원', winCnt: 7, loseCnt: 4, champCnt: 1 },
+      // }
+    } else {
+      return null;
+    }
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+/**
  * 현재 진입한 월드컵에 대한 진행 이력이 존재하는지 체크하는 함수
  * @param {Object} user 현재 유저 정보
  * @param {String} wldcupId 현재 진입한 월드컵의 UID
