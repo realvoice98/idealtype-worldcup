@@ -6,7 +6,7 @@
         <button class="button" @click="triggerFileSelection">이미지 변경</button>
         <button class="button" @click="confirmImages">확인</button>
       </div>
-      <button class="button close" @click="closeModal">
+      <button class="button close" @click="confirmClose">
         <img src="@/assets/x_icon.png" alt="close_icon">
       </button>
     </div>
@@ -41,13 +41,27 @@
       />
     </div>
 
+    <CommonModal2
+        v-if="isConfirmModalVisible"
+        :visible="isConfirmModalVisible"
+        title="저장 여부 확인"
+        content="변경사항이 저장되지 않았습니다. 저장하시겠습니까?"
+        :buttons="confirmButtons"
+        @update:visible="isConfirmModalVisible = $event"
+    />
+
     <p v-if="errorMessage" class="error-message" @click.stop>{{ errorMessage }}</p>
   </div>
 </template>
 
 <script>
+import CommonModal2 from "@/components/modals/CommonModal2.vue";
+
 export default {
   name: 'ImageDetailModal',
+  components: {
+    CommonModal2,
+  },
   props: {
     isVisible: {
       type: Boolean,
@@ -65,6 +79,8 @@ export default {
   data() {
     return {
       currentImageIndex: this.initialIndex,
+      originalArray: JSON.parse(JSON.stringify(this.modelValue)),
+      isConfirmModalVisible: false,
     };
   },
   watch: {
@@ -80,6 +96,12 @@ export default {
     },
     initialIndex(newIndex) {
       this.currentImageIndex = newIndex;
+    },
+    modelValue: {
+      immediate: true,
+      handler(newValue) {
+        this.originalArray = JSON.parse(JSON.stringify(newValue));
+      },
     },
   },
   computed: {
@@ -107,8 +129,34 @@ export default {
       }
       return result;
     },
+    hasChanges() {
+      return !this.areArraysEqual(this.selectedImages, this.originalArray);
+    },
+    confirmButtons() {
+      return [
+        {
+          text: "저장",
+          callback: this.confirmImages,
+        },
+        {
+          text: "나가기",
+          callback: this.closeModal,
+        },
+      ];
+    },
   },
   methods: {
+    areArraysEqual(arr1, arr2) {
+      if (arr1.length !== arr2.length) return false;
+
+      return arr1.every((item, index) => {
+        const other = arr2[index];
+        return (
+            item.preview === other.preview &&
+            item.customName === other.customName
+        );
+      });
+    },
     updateCurrentIndex(thumbnailIndex) {
       const total = this.selectedImages.length;
       this.currentImageIndex = (this.currentImageIndex + (thumbnailIndex - 2) + total) % total;
@@ -141,10 +189,19 @@ export default {
       }
     },
     confirmImages() {
+      this.isConfirmModalVisible = false;
       this.$emit('update:modelValue', this.selectedImages); // 수정된 데이터를 부모로 전달
       this.closeModal();
     },
+    confirmClose(){
+      if (this.hasChanges){
+        this.isConfirmModalVisible = true;
+      }else{
+        this.$emit('update:isVisible', false);
+      }
+    },
     closeModal() {
+      this.isConfirmModalVisible = false;
       this.$emit('update:isVisible', false);
     },
     removeImage(index) {
@@ -167,7 +224,6 @@ export default {
         this.currentImageIndex = (this.currentImageIndex + 1) % this.selectedImages.length;
       }
     },
-
   },
 };
 </script>
