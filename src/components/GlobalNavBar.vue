@@ -38,10 +38,10 @@
           <button class="btn-toggle" :class="{'active': !isPopularityActive}" @click="setSortOrder('latest')">최신순</button>
         </li>
         <li class="nav-item">
-          <input v-model="searchQuery" type="text" class="search-input" placeholder="검색어 입력"/>
+          <input v-model="searchQuery" type="text" class="search-input" placeholder="검색어 입력" @keyup.enter="searchWldcups"/>
         </li>
         <li class="nav-item">
-          <CommonButton variant="white" :onclick="searchWorldcups">검색</CommonButton>
+          <CommonButton variant="white" :onclick="searchWldcups">검색</CommonButton>
         </li>
       </ul>
 
@@ -143,8 +143,9 @@
         fetchAllWldcups('latest');
       },
       // 검색 기능
-      searchWorldcups() {
+      searchWldcups() {
         console.log(this.searchQuery);
+        this.$emit("searchWldcups", this.searchQuery);
       },
     },
   };
