@@ -6,7 +6,7 @@
         <button @click="triggerFileSelection" class="button">+ 추가</button>
         <button @click="confirmImages" class="button">확인</button>
       </div>
-      <button class="button close" @click="closeModal">
+      <button class="button close" @click="confirmClose">
         <img src="@/assets/x_icon.png" alt="x">
       </button>
     </div>
@@ -58,6 +58,13 @@
       />
     </div>
 
+    <CommonModal2
+        v-if="isConfirmModalVisible"
+        :visible="isConfirmModalVisible"
+        content="이미지 추가를 취소하고 나가시겠습니까?"
+        :buttons="confirmButtons"
+    />
+
     <p v-if="errorMessage" class="error-message" @click.stop>{{ errorMessage }}</p>
   </div>
 </template>
@@ -66,10 +73,12 @@
   import VueCropper from 'vue-cropperjs';
   import 'cropperjs/dist/cropper.css';
   import {formatDate} from "@/common";
+  import CommonModal2 from "@/components/modals/CommonModal2.vue";
 
   export default {
     name: 'ImageRegistModal',
     components: {
+      CommonModal2,
       VueCropper,
     },
     props: {
@@ -85,6 +94,7 @@
         cropperVisible: false,
         cropperImage: null,
         currentImageIndex: 0,
+        isConfirmModalVisible: false,
       };
     },
     computed: {
@@ -92,7 +102,22 @@
         const thumbnails = this.selectedImages;
         const startIndex = Math.floor(this.currentImageIndex / 5) * 5;
         return thumbnails.slice(startIndex, startIndex + 5);
-      }
+      },
+      confirmButtons() {
+        return [
+          {
+            text: "추가",
+            callback: this.confirmImages,
+          },
+          {
+            text: "나가기",
+            callback: this.closeModal,
+          },
+        ];
+      },
+      hasAdd(){
+        return this.selectedImages.length > 0;
+      },
     },
     mounted() {
       if (this.isVisible) {
@@ -196,15 +221,23 @@
 
       confirmImages() {
         if (this.selectedImages.some((image) => !image.customName)) {
+          this.isConfirmModalVisible = false;
           this.errorMessage = '모든 이미지에 이름을 입력해주세요.';
           return;
         }
-
+        this.isConfirmModalVisible = false;
         this.$emit('images-selected', this.selectedImages);
         this.closeModal();
       },
-
+      confirmClose(){
+        if (this.hasAdd){
+          this.isConfirmModalVisible = true;
+        }else{
+          this.$emit('update:isVisible', false);
+        }
+      },
       closeModal() {
+        this.isConfirmModalVisible = false;
         this.$emit('update:isVisible', false);
         this.selectedImages = [];
         this.currentImageIndex = 0; // 모달을 닫을 때 currentImageIndex 초기화

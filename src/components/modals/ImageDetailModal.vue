@@ -44,7 +44,6 @@
     <CommonModal2
         v-if="isConfirmModalVisible"
         :visible="isConfirmModalVisible"
-        title="저장 여부 확인"
         content="변경사항이 저장되지 않았습니다. 저장하시겠습니까?"
         :buttons="confirmButtons"
         @update:visible="isConfirmModalVisible = $event"
