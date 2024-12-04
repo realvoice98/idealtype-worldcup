@@ -32,7 +32,7 @@ const routes = [
     component: Introduction,
   },
   {
-    path: '/create-worldcup',
+    path: '/create-wldcup',
     name: 'CreateWorldcup',
     component: CreateWorldcup,
   },
@@ -53,12 +53,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/worldcup-result',
+    path: '/wldcup-result',
     name: 'WorldcupResult',
     component: WorldcupResult
   },
   {
-    path: '/worldcup/:id',
+    path: '/wldcup/:id',
     name: 'WorldcupDetail',
     component: WorldcupDetail,
   },
@@ -80,7 +80,7 @@ const routes = [
         component: UserList,
       },
       {
-        path: 'worldcup-management',
+        path: 'wldcup-management',
         name: 'WorldcupManagement',
         component: WorldcupManagement,
       },

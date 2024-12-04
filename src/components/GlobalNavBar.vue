@@ -9,13 +9,13 @@
           <router-link class="nav-link" to="/">이상형 월드컵</router-link>
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" to="/create-worldcup">월드컵 만들기</router-link>
+          <router-link class="nav-link" to="/create-wldcup">월드컵 만들기</router-link>
         </li>
         <li class="nav-item">
           <router-link class="nav-link" to="/my-page">마이페이지</router-link>
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" to="/worldcup-result">랭크</router-link>
+          <router-link class="nav-link" to="/wldcup-result">랭크</router-link>
         </li>
         <li class="nav-item">
           <button @click="toggleTheme">

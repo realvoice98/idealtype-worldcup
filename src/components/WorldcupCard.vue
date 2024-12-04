@@ -11,7 +11,7 @@
         <p>{{ thumbnails[1].customName }}</p>
       </div>
     </div>
-    <router-link class="card-title" id="card-title-link" :to="worldcupLink">
+    <router-link class="card-title" id="card-title-link" :to="wldcupLink">
       {{ title }}
     </router-link>
     <div class="card-description">
@@ -50,8 +50,8 @@
       updatedAt() {
         return this.data.updatedAt;
       },
-      worldcupLink() {
-        return `/worldcup/${this.data.worldcupId}`;
+      wldcupLink() {
+        return `/wldcup/${this.data.wldcupId}`;
       }
     }
   };
