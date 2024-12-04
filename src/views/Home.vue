@@ -64,7 +64,6 @@
         this.applyFilters();
       },
       applyFilters() {
-        console.log(11)
         let result = [...this.allWldcups];
 
         // 검색어 필터링
