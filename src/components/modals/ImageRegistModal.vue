@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-overlay" v-if="isVisible">
+  <div class="modal-wrap" v-if="isVisible">
     <div class="header">
       <span>{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
       <div class="button-group" v-if="!cropperVisible" @click.stop>
@@ -278,7 +278,7 @@
 </script>
 
 <style scoped>
-.modal-overlay {
+.modal-wrap {
   backdrop-filter: blur(5px);
   display: flex;
   flex-direction: column;
