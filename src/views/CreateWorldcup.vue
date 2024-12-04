@@ -96,14 +96,15 @@
         if (user) {
           // 사용자가 로그인된 상태라면
           this.user = user;
-        } else {
-          // TODO: 커스텀 모달로 수정 적용
-          if (confirm('로그인 상태에서만 월드컵을 만들 수 있어요. 로그인하러 가시겠어요?')) {
-            this.$router.push('/sign-in');
-          } else {
-            this.$router.push('/');
-          }
         }
+        // else {
+        //   // TODO: 커스텀 모달로 수정 적용
+        //   if (confirm('로그인 상태에서만 월드컵을 만들 수 있어요. 로그인하러 가시겠어요?')) {
+        //     this.$router.push('/sign-in');
+        //   } else {
+        //     this.$router.push('/');
+        //   }
+        // }
       });
     },
     methods: {

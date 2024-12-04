@@ -122,7 +122,7 @@
           this.isLoggedIn = false; // 로그인 상태 업데이트
 
           // 로그아웃 후 직접 라우터로 이동
-          this.$router.push('/'); // 메인 페이지로 이동
+          this.$router.push('/sign-in'); // 메인 페이지로 이동
         } catch(e) {
           console.error('로그아웃 실패:', e);
         }

@@ -35,6 +35,7 @@ const routes = [
     path: '/create-wldcup',
     name: 'CreateWorldcup',
     component: CreateWorldcup,
+    meta: { requiresAuth: true },
   },
   {
     path: '/sign-in',

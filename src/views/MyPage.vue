@@ -38,14 +38,15 @@ export default {
       if (user) {
         this.user = user;
         await this.fetchUserWldcupsData(user.uid);
-      }else {
-        // TODO: 커스텀 모달로 수정 적용
-        if (confirm('로그인 상태에서만 가능합니다. 로그인하러 가시겠어요?')) {
-          this.$router.push('/sign-in');
-        } else {
-          this.$router.push('/');
-        }
       }
+      // else {
+      //   // TODO: 커스텀 모달로 수정 적용
+      //   if (confirm('로그인 상태에서만 가능합니다. 로그인하러 가시겠어요?')) {
+      //     this.$router.push('/sign-in');
+      //   } else {
+      //     this.$router.push('/');
+      //   }
+      // }
     });
 
     // 화면 크기 변경 이벤트 리스너 추가
