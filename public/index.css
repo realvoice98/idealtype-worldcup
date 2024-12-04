@@ -139,18 +139,6 @@ html {
   box-sizing: border-box;
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
 
 .modal-content {
   background: #fff;
@@ -166,8 +154,9 @@ html {
 
 .modal-buttons {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   margin-top: 2vh;
+  gap: 25px;
 }
 
 .modal-buttons button {
