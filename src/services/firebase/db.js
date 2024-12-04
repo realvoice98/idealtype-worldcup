@@ -199,7 +199,61 @@ export async function fetchAllWldcups(filter) {
     }
   }
 }
+/**
+ * 특정 사용자가 만든 월드컵 데이터를 가져오는 함수
+ * @param {string} uid 사용자 ID
+ * @returns {Promise<Object[]>} 사용자가 생성한 월드컵 객체 배열
+ */
+export async function fetchUserWldcups(uid) {
+  const userWldcupsRef = dbRef(db, `users/${uid}/myWldcups`);
 
+  try {
+    const userSnapshot = await get(userWldcupsRef);
+
+    if (!userSnapshot.exists()) {
+      return [];
+    }
+
+    const userWldcupsData = userSnapshot.val();
+    const wldcupIds = Object.keys(userWldcupsData);
+
+    const wldcupPromises = wldcupIds.map(async (wldcupId) => {
+      const wldcupSnapshot = await get(dbRef(db, `wldcups/${wldcupId}`));
+      if (wldcupSnapshot.exists()) {
+        const wldcupData = wldcupSnapshot.val();
+        return {
+          wldcupId,
+          ...wldcupData,
+          title: restoreToOriginalString(wldcupData.title),
+          views: Number(wldcupData.views),
+          updatedAt: new Date(wldcupData.updatedAt),
+          thumbnails: wldcupData.images.slice(0, 2),
+        };
+      } else {
+        return null;
+      }
+    });
+
+    const userWldcupsArray = (await Promise.all(wldcupPromises)).filter(Boolean);
+
+    userWldcupsArray.sort((a, b) => b.views - a.views);
+
+    return userWldcupsArray.map((wldcup) => ({
+      ...wldcup,
+      views: numberFormat.format(wldcup.views),
+      updatedAt: relativeTimeFormat.format(
+          Math.ceil((new Date(wldcup.updatedAt) - new Date()) / (1000 * 60 * 60 * 24)),
+          'day'
+      ),
+    }));
+  } catch (e) {
+    console.error('알 수 없는 오류: 사용자 월드컵 목록을 불러오지 못했습니다.', e);
+    return {
+      result: -1,
+      message: '알 수 없는 오류가 발생하여 월드컵 목록을 불러오지 못했어요. 잠시 후 다시 시도해주세요.',
+    };
+  }
+}
 /**
  * 특정 월드컵에 대한 통계 데이터를 받아오는 함수
  * @param wldcupId
