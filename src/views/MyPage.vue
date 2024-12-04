@@ -1,90 +1,102 @@
 <template>
   <div class="mypage-container">
     <div class="mypage-contents">
-
-      <div class="buttons" id="buttons1">
-        <img src="@/assets/like.png" class="button main-button" />
-        <a v-for="(item, index) in like" :key="index" :href="item.href">
-          <img :src="item.src" class="button" />
-        </a>
+      <div
+          v-for="(record, recordIndex) in chunkedWldcups"
+          :key="recordIndex"
+          class="card-record"
+      >
+        <WorldcupCard
+            v-for="(card, cardIndex) in record"
+            :key="cardIndex"
+            :data="card"
+        />
       </div>
-
-      <div class="buttons" id="buttons2">
-        <img src="@/assets/bookmark.png" class="button main-button" />
-        <a v-for="(item, index) in bookmark" :key="index" :href="item.href">
-          <img :src="item.src" class="button" />
-        </a>
-      </div>
-
-      <div class="buttons" id="buttons3">
-        <img src="@/assets/management.png" class="button main-button" />
-        <a v-for="(item, index) in myworldcup" :key="index" :href="item.href">
-          <img :src="item.src" class="button" />
-        </a>
-      </div>
-
     </div>
   </div>
 </template>
 
-
 <script>
+import { auth, onAuthStateChanged } from '@/services/firebase/auth';
+import WorldcupCard from '@/components/WorldcupCard.vue';
+import { fetchUserWldcups } from '@/services/firebase/db.js';
+
 export default {
   name: 'MyPage',
-  // TODO: DB데이터 불러오기
+  components: {
+    WorldcupCard,
+  },
   data() {
     return {
-      like: [
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" },
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" }
-      ],
-      bookmark: [
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" },
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" }
-      ],
-      myworldcup: [
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" },
-        { src: "https://img.khan.co.kr/news/2023/12/31/l_2024010101000021800103831.webp", href: "/" }
-      ]
+      user: null,
+      wldcups: [],
+      windowWidth: window.innerWidth,
     };
   },
-  mounted() {
-    this.setupHoverAnimation('buttons1');
-    this.setupHoverAnimation('buttons2');
-    this.setupHoverAnimation('buttons3');
+  created() {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        this.user = user;
+        await this.fetchUserWldcupsData(user.uid);
+      }else {
+        // TODO: 커스텀 모달로 수정 적용
+        if (confirm('로그인 상태에서만 가능합니다. 로그인하러 가시겠어요?')) {
+          this.$router.push('/sign-in');
+        } else {
+          this.$router.push('/');
+        }
+      }
+    });
+
+    // 화면 크기 변경 이벤트 리스너 추가
+    window.addEventListener('resize', this.updateWindowWidth);
+  },
+  beforeUnmount() {
+    // 화면 크기 변경 이벤트 리스너 제거
+    window.removeEventListener('resize', this.updateWindowWidth);
   },
   methods: {
-    /*
-    FIXME:
-    -목록이 많아도 영역을 벗어나면 그냥 접힘. 수정을 하거나 더보기 버튼을 만들고 따로 페이지를 분리해야할듯
-     */
-    setupHoverAnimation(buttonGroupId) {
-      const buttonsGroup = document.getElementById(buttonGroupId);
-      const buttons = buttonsGroup.querySelectorAll('.button:not(.main-button)');
-
-      // mouseenter 이벤트
-      const mainButton = buttonsGroup.querySelector('.main-button');
-      mainButton.addEventListener('mouseenter', () => {
-        buttons.forEach((button, index) => {
-          const rowIndex = Math.floor(index / 5); // 5개씩 나누기
-          const columnIndex = index % 5; // 열 인덱스
-          // 각 버튼을 오른쪽으로 이동
-          button.style.transform = `translateX(${(columnIndex + 1) * 50}px) translateY(${rowIndex * 50}px)`; // 메인 버튼 옆에서 시작
-          button.style.transition = 'transform 0.5s ease'; // 애니메이션 속도
-        });
-      });
-
-      //mouseleave 이벤트
-      buttonsGroup.addEventListener('mouseleave', () => {
-        buttons.forEach((button) => {
-          // 마우스가 버튼 그룹에서 벗어나면 버튼을 원래 위치로 되돌림
-          button.style.transform = 'translateX(0) translateY(0)'; // 펼쳐지는 방향
-        });
-      });
-    }
-  }
-}
+    async fetchUserWldcupsData(uid) {
+      // 사용자 월드컵 데이터를 가져옴
+      const wldcups = await fetchUserWldcups(uid);
+      if (wldcups.result === -1) {
+        console.error(wldcups.message); // 오류 처리
+        return;
+      }
+      this.wldcups = wldcups; // 월드컵 데이터를 받아옴
+      console.log(this.wldcups);
+    },
+    updateWindowWidth() {
+      // 화면 크기 갱신
+      this.windowWidth = window.innerWidth;
+    },
+  },
+  computed: {
+    chunkSize() {
+      // 화면 크기에 따라 동적으로 청크 사이즈 계산
+      const width = this.windowWidth;
+      if (width >= 2560) {
+        return 6;
+      } else if (width >= 1440) {
+        return 3;
+      } else if (width >= 1024) {
+        return 2;
+      } else {
+        return 1; // 작은 화면에서는 1개씩 보여주기
+      }
+    },
+    chunkedWldcups() {
+      // 월드컵 데이터를 chunkSize에 맞게 나누어줌
+      const result = [];
+      for (let i = 0; i < this.wldcups.length; i += this.chunkSize) {
+        result.push(this.wldcups.slice(i, i + this.chunkSize));
+      }
+      return result;
+    },
+  },
+};
 </script>
+
 
 <style scoped>
 .mypage-container {
@@ -97,30 +109,12 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.buttons {
+.card-record {
   display: flex;
-  position: relative;
-  width: 300px;
-  height: 100px;
-  margin: 1rem;
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  /* margin-bottom: 1rem;  */
+  width: 100%;
+  justify-content: start;
 }
 
-.button {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 0;
-}
-
-.main-button {
-  z-index: 1;
-  background-color: white;
-}
-
-img {
-  width: 50px;
-  height: 50px;
-}
 </style>
