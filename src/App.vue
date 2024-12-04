@@ -8,7 +8,7 @@
 
 <script>
   import GlobalNavBar from '@/components/GlobalNavBar.vue';
-  import CustomModal from '@/components/modals/CustomModal.vue';
+  import CustomModal from '@/components/modals/LoginWarningModal.vue';
   import { onAuthStateChanged } from 'firebase/auth';
   import { auth } from '@/services/firebase/auth';
   import { nextTick } from 'vue';
