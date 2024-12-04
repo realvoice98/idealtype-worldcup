@@ -148,15 +148,10 @@ export async function createWldcup(user, wldcup) {
  * 모든 월드컵 데이터를 가져오는 함수
  * @returns {Promise<Object[]>} 모든 월드컵 객체가 담긴 하나의 배열 데이터
  */
-export async function fetchAllWldcups(filter) {
+export async function fetchAllWldcups() {
   const wldcupsRef = dbRef(db, "wldcups");
 
-  let wldcupsQuery;
-  if (filter === "popular") {
-    wldcupsQuery = query(wldcupsRef, orderByChild("views")); // 조회수 기준 정렬
-  } else if (filter === "latest") {
-    wldcupsQuery = query(wldcupsRef, orderByChild("updatedAt")); // 업데이트 기준 정렬
-  }
+  const wldcupsQuery = query(wldcupsRef, orderByChild("views")); //초기값은 인기순 정렬
 
   try {
     const snapshot = await get(wldcupsQuery);
@@ -165,29 +160,15 @@ export async function fetchAllWldcups(filter) {
       const wldcupsData = snapshot.val();
 
       // 데이터를 배열로 변환
-      const wldcupsArray = Object.keys(wldcupsData).map((key) => ({
+      return Object.keys(wldcupsData).map((key) => ({
         wldcupId: key,
         ...wldcupsData[key], // child node data
         thumbnails: wldcupsData[key].images.slice(0, 2), // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
         title: restoreToOriginalString(wldcupsData[key].title),
         views: Number(wldcupsData[key].views), // 조회수는 숫자로 변환
-        updatedAt: new Date(wldcupsData[key].updatedAt), // Date 객체로 변환
+        updatedAt: new Date(wldcupsData[key].updatedAt).getTime()
       }));
 
-      if (filter === "popular") {
-        wldcupsArray.sort((a, b) => b.views - a.views);
-      } else if (filter === "latest") {
-        wldcupsArray.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-      }
-
-      // 포맷 적용 후 반환
-      return wldcupsArray.map((wldcup) => ({
-        ...wldcup,
-        views: numberFormat.format(wldcup.views),
-        updatedAt: relativeTimeFormat.format(
-          Math.ceil((new Date(wldcup.updatedAt) - new Date()) / (1000 * 60 * 60 * 24)), "day"
-        ),
-      }));
     } else {
       return [];
     }

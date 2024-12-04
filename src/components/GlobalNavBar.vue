@@ -32,13 +32,16 @@
 
       <ul class="gnb-nav-filter" v-show="gnbNavFilterVisible && $route.path === '/'">
         <li class="nav-item">
-          <button class="btn-toggle" :class="{'active': isPopularityActive}" @click="setSortOrder('popular')">인기순</button>
+          <button class="btn-toggle" :class="{'active': isPopularityActive}" @click="setSortFilter('popular')">인기순</button>
         </li>
         <li class="nav-item">
-          <button class="btn-toggle" :class="{'active': !isPopularityActive}" @click="setSortOrder('latest')">최신순</button>
+          <button class="btn-toggle" :class="{'active': !isPopularityActive}" @click="setSortFilter('latest')">최신순</button>
         </li>
         <li class="nav-item">
-          <input v-model="searchQuery" type="text" class="search-input" placeholder="검색어 입력" @keyup.enter="searchWldcups"/>
+          <div class="search-container">
+            <input v-model="searchQuery" type="text" class="search-input" placeholder="검색어 입력" @keyup.enter="searchWldcups" />
+            <button v-if="searchQuery" class="btn-clear" @click="clearSearch">x</button>
+          </div>
         </li>
         <li class="nav-item">
           <CommonButton variant="white" :onclick="searchWldcups">검색</CommonButton>
@@ -124,28 +127,22 @@
           console.error('로그아웃 실패:', e);
         }
       },
-      setSortOrder(order) {
-        if (order === 'popular') {
+      setSortFilter(filter) {
+        if (filter === 'popular') {
           this.isPopularityActive = true;
-          this.sortByPopularity();
-        } else if (order === 'latest') {
+        } else if (filter === 'latest') {
           this.isPopularityActive = false;
-          this.sortByNewest();
         }
-        this.$emit('updateSortOrder', order);
-      },
-      // 인기순 정렬 함수
-      sortByPopularity() {
-        fetchAllWldcups('popular');
-      },
-      // 최신순 정렬 함수
-      sortByNewest() {
-        fetchAllWldcups('latest');
+        fetchAllWldcups();
+        this.$emit('updateSortFilter', filter);
       },
       // 검색 기능
       searchWldcups() {
-        console.log(this.searchQuery);
         this.$emit("searchWldcups", this.searchQuery);
+      },
+      clearSearch() {
+        this.searchQuery = '';
+        this.$emit("clearSearchWldcups");
       },
     },
   };
@@ -206,6 +203,22 @@
     border: 1px solid #ccc;
     width: 350px;
     margin-left: 50px;
+    padding-right: 30px;
+  }
+  .search-container {
+    position: relative;
+  }
+  .btn-clear {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    font-size: 16px;
+    cursor: pointer;
+    color: #888;
   }
 
+  .btn-clear:hover {
+    color: #000;
+  }
 </style>

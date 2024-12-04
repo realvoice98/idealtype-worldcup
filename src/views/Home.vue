@@ -1,5 +1,5 @@
 <template>
-  <GlobalNavBar @updateSortOrder="fetchWldcupsData" />
+  <GlobalNavBar @updateSortFilter="fetchWldcupsData" @searchWldcups="filterWldcupsSearch" @clearSearchWldcups="clearSearchWldcups"/>
   <div class="main-container">
     <div
       v-for="(record, recordIndex) in chunkedWldcups"
@@ -29,13 +29,15 @@
     data() {
       return {
         user: null,
-        wldcups: [],
+        allWldcups: [],
+        filteredWldcups: [],
+        searchQuery: "",
         windowWidth: window.innerWidth, // 화면 크기 저장
         currentFilter: 'popular', // 초기값은 인기순
       };
     },
     async created() {
-      await this.fetchWldcups(this.currentFilter);
+      await this.initWldcups();
       window.addEventListener('resize', this.updateWindowWidth); // 화면 크기 변경 이벤트 리스너 추가
     },
     beforeUnmount() {
@@ -45,14 +47,53 @@
       updateWindowWidth() {
         this.windowWidth = window.innerWidth; // 화면 크기 갱신
       },
-      async fetchWldcups(filter) {
-        this.currentFilter = filter; // 필터 상태 업데이트
-        this.wldcups = await fetchAllWldcups(filter);
+      async initWldcups() {
+        this.allWldcups = await fetchAllWldcups(); //모든 월드컵 정보 받기
+        this.applyFilters();
       },
-      async fetchWldcupsData(order) {
-        this.currentFilter = order;
-        await this.fetchWldcups(order);
+      async clearSearchWldcups() {
+        this.searchQuery = '';
+        this.applyFilters();
       },
+      fetchWldcupsData(filter) {
+        this.currentFilter = filter;
+        this.applyFilters();
+      },
+      filterWldcupsSearch(query) {
+        this.searchQuery = query;
+        this.applyFilters();
+      },
+      applyFilters() {
+        console.log(11)
+        let result = [...this.allWldcups];
+
+        // 검색어 필터링
+        if (this.searchQuery.length > 0) {
+          const keywords = this.searchQuery.split(" ");
+          result = result.filter((item) =>
+              keywords.some((keyword) => item.title.includes(keyword))
+          );
+        }
+
+        if (this.currentFilter === 'popular') {
+          result.sort((a, b) => Number(b.views) - Number(a.views)); // 인기순 정렬
+        } else if (this.currentFilter === 'latest') {
+          result.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)); // 최신순 정렬
+        }
+
+        const numberFormat = new Intl.NumberFormat("ko", {notation: 'compact',});
+        const relativeTimeFormat = new Intl.RelativeTimeFormat("ko", { numeric: "auto" });
+
+        result = result.map((wldcup) => {
+          return {
+            ...wldcup,
+            views: numberFormat.format(wldcup.views),
+            updatedAt: relativeTimeFormat.format(Math.ceil((wldcup.updatedAt - Date.now()) / (1000 * 60 * 60 * 24)), "day"),
+          };
+        });
+
+        this.filteredWldcups = result;
+      }
     },
     computed: {
       /**
@@ -77,8 +118,8 @@
        */
       chunkedWldcups() {
         const result = [];
-        for (let i = 0; i < this.wldcups.length; i += this.chunkSize) {
-          result.push(this.wldcups.slice(i, i + this.chunkSize));
+        for (let i = 0; i < this.filteredWldcups.length; i += this.chunkSize) {
+          result.push(this.filteredWldcups.slice(i, i + this.chunkSize));
         }
         return result;
       },
