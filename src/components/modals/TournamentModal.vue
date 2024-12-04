@@ -11,60 +11,51 @@
     <div v-if="isProgress" class="modal-container">
       <img src="@/assets/trophy.png" alt="" />
       <h2>{{ title }} 진행 이력이 존재하는 경우</h2>
+      <div style="margin-bottom: 30px">
+        <p>이 월드컵에 대한 진행 이력이 있어요!</p>
+        <p><strong>이어서 진행</strong>하시겠어요?</p>
+      </div>
+      <div class="modal-buttons">
+        <CommonButton variant="primary" :onclick="test1">불러오기</CommonButton>
+        <CommonButton variant="white" :onclick="test2">새로하기</CommonButton>
+        <CommonButton variant="white" :onclick="test3">뒤로가기</CommonButton>
+      </div>
     </div>
 
     <div v-if="!isProgress" class="modal-container">
       <img src="@/assets/trophy.png" alt="" />
       <h2>{{ title }} 진행 이력이 존재하지 않는 경우</h2>
+      <div class="modal-description">{{ description }}</div>
+      <div class="hashtag-container">
+        <span v-for="(hashtag, index) in hashtags" :key="index">{{ hashtag }}</span>
+      </div>
+      <em>총 {{ totalItemCnt }}명의 후보 중 무작위 {{ selectItemCnt }}명으로 토너먼트가 진행됩니다.</em>
+      <div class="modal-buttons">
+        <!-- TODO: 버튼 부착 -->
+      </div>
     </div>
   </div>
-
-<!--  <div class="modal-wrapper">-->
-<!--    <div class="modal-container">-->
-<!--      <div class="modal-header">-->
-<!--        <img src="@/assets/trophy.png" alt="">-->
-<!--      </div>-->
-<!--      <div class="modal-title">-->
-<!--        {{title}}-->
-<!--      </div>-->
-<!--      <div class="modal-description">-->
-<!--        {{description}}-->
-<!--      </div>-->
-<!--      <div class="modal-tags" >-->
-<!--        <div class="tag-box" v-for="(item, index) in tags" :key="index">-->
-<!--          #{{item.tag}}-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div class="modal-announcement">-->
-<!--        총 {{default_round}}개의 후보 중 무작위 {{select_round}}강으로 토너먼트가 시작됩니다.-->
-<!--      </div>-->
-<!--      <div class="modal-buttons">-->
-<!--        <select v-model="select_round" @change="change" class="button select-button">-->
-<!--          <option v-for="(item, index) in round_list" :key="index">{{item.round}}</option>-->
-<!--        </select>-->
-<!--        <button class="button start-button">-->
-<!--          시작하기-->
-<!--        </button>-->
-<!--        <button class="button back-button">-->
-<!--          돌아가기-->
-<!--        </button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
 </template>
 
 <script>
   import { auth } from '@/services/firebase/auth';
   import { checkInProgressWldcup } from '@/services/firebase/db';
-
+  
+  import CommonButton from '@/components/buttons/CommonButton.vue';
+  
   export default {
     name: 'TournamentModal',
+    components: {
+      CommonButton
+    },
     data() {
       return {
         isProgress: false, // 월드컵 진행 이력이 존재하는지
         title: '',
         description: '',
-        tags: [],
+        hashtags: [],
+        totalItemCnt: 0,
+        selectItemCnt: 0,
         rounds: [],
       };
     },
@@ -72,13 +63,29 @@
       this.checkInProgressWldcup();
     },
     methods: {
+      test1() {
+        console.log(1)
+      },
+      test2() {
+        console.log(2)
+      },
+      test3() {
+        console.log(3)
+      },
       /**
        * 현재 월드컵에 대한 진행 이력이 존재하는지 체크
        */
       async checkInProgressWldcup() {
+        // 현재 사용자 세션 존재 유무 확인
         const user = auth.currentUser;
+        if (user === null) {
+          // 세션이 존재하지 않으면 무조건 진행 이력 없는 것으로 취급
+          this.isProgress = false;
+          return;
+        }
+  
         const wldcupId = this.$route.params.id;
-
+  
         this.isProgress = await checkInProgressWldcup(user, wldcupId);
       },
     },
@@ -86,5 +93,11 @@
 </script>
 
 <style scoped>
-
+  .modal-description {
+  
+  }
+  
+  .hashtag-container {
+  
+  }
 </style>
