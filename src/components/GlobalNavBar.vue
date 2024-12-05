@@ -2,7 +2,7 @@
   <nav class="gnb" >
     <div class="gnb-container">
       <ul class="gnb-nav">
-        <li class="nav-item">
+        <li class="nav-item undefined">
           <router-link class="nav-link" to="/introduction">undefined</router-link>
         </li>
         <li class="nav-item">
@@ -22,14 +22,15 @@
             <img class="btn-toggle-theme" :src="isDarkMode ? require('@/assets/light-mode-icon.png') : require('@/assets/dark-mode-icon.png')" alt="테마 변경" />
           </button>
         </li>
-        <li class="nav-item" v-if="!isLoggedIn">
-          <router-link class="nav-link" to="/sign-in">로그인</router-link>
-        </li>
-        <li class="nav-item" v-else>
-          <button class="nav-link" @click="signOut">로그아웃</button>
-        </li>
+        <div class="auth-container">
+          <li class="nav-item" v-if="!isLoggedIn">
+            <router-link class="nav-link" to="/sign-in">로그인</router-link>
+          </li>
+          <li class="nav-item" v-else>
+            <button class="nav-link" @click="signOut">로그아웃</button>
+          </li>
+        </div>
       </ul>
-
       <ul class="gnb-nav-filter" v-show="gnbNavFilterVisible && $route.path === '/'">
         <li class="nav-item">
           <button class="btn-toggle" :class="{'active': isPopularityActive}" @click="setSortFilter('popular')">인기순</button>
@@ -47,7 +48,6 @@
           <CommonButton variant="white" :onclick="searchWldcups">검색</CommonButton>
         </li>
       </ul>
-
     </div>
   </nav>
 </template>
@@ -163,6 +163,13 @@
     display: flex;
     gap: 2rem;
     align-items: center;
+  }
+
+  .auth-container {
+    margin-left: auto;
+    display: flex;
+    gap: 1rem;
+    padding-right: 10px;
   }
 
   .gnb-nav-filter {
