@@ -46,7 +46,7 @@
 
 <script>
   import { auth } from '@/services/firebase/auth';
-  import { checkInProgressWldcup } from '@/services/firebase/db';
+  import { checkInProgressWldcup, increaseInViews } from '@/services/firebase/db';
   
   import CommonButton from '@/components/buttons/CommonButton.vue';
   
@@ -67,11 +67,18 @@
       };
     },
     created() {
+      this.increaseInViews();
       this.checkInProgressWldcup();
     },
     methods: {
-      test1() {
-        console.log(1)
+      /**
+       * 현재 월드컵의 조회수 1 증가
+       */
+      async increaseInViews() {
+        const user = auth.currentUser;
+        const wldcupId = this.$route.params.id;
+
+        await increaseInViews(user, wldcupId);
       },
       test2() {
         console.log(2)
@@ -93,6 +100,8 @@
   
         const wldcupId = this.$route.params.id;
 
+        // TODO: 네트워킹 딜레이가 있어, inProgress가 false 상태일 때 노출되는 모달이 먼저 보였다가 사라지는 현상이 있음.
+        //  Promise resolve 되기 전에는 로딩중 화면으로 대체
         this.isProgress = await checkInProgressWldcup(user, wldcupId); // FIXME: 어째서 네트워크 경유하는데 return이 non-promise type인 것이지
       },
       selectTournamentCnt(e) {

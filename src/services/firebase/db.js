@@ -1,5 +1,5 @@
 import { firebaseApp } from '@/services/firebase/config';
-import { getDatabase, ref as dbRef, set, get, push, query, orderByChild, equalTo } from 'firebase/database';
+import { getDatabase, ref as dbRef, set, get, runTransaction, push, query, orderByChild, equalTo } from 'firebase/database';
 import { getStorage, ref as stRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { formatDate, convertToValidNodeString, restoreToOriginalString} from '@/common';
 
@@ -274,7 +274,12 @@ export async function increaseInViews(user, wldcupId) {
   const wldcupViewsRef = dbRef(db, `wldcups/${wldcupId}/views`);
 
   try {
-    // TODO: 기존 조회수 get > +1로 초기화
+    await runTransaction(wldcupViewsRef, (currentViews) => {
+      if (currentViews === null) {
+        return 1; // assert로 도달할 수 없는 (아마도...)
+      }
+      return currentViews + 1;
+    });
   } catch(e) {
     console.error(e);
   }
@@ -290,12 +295,20 @@ export async function saveWldcupProgress(user, wldcupId) {
   const inProgressWldcupRef = dbRef(db, `users/${user.uid}/inProgressWldcup/${wldcupId}`);
 
   try {
-    const snapshot = await get(inProgressWldcupRef);
-    if (snapshot.exists()) {
-
-    } else {
-      return null;
-    }
+    await set(inProgressWldcupRef, {
+      // totalTournaments: 256, // 월드컵 시작 전 선택한 n강 토너먼트
+      // currentTournaments: 128, // 128을 다 채우면 64, 32... 4(준결승전), 2(결승전)
+      // items: [
+      //   {
+      //     index: 1,
+      //     name: '엔믹스 해원',
+      //   },
+      //   {
+      //     index: 2,
+      //     name: '프로미스나인 백지헌',
+      //   },
+      // ]
+    });
   } catch(e) {
     console.error(e);
   }
