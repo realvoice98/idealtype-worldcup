@@ -46,7 +46,7 @@
 
 <script>
   import { auth } from '@/services/firebase/auth';
-  import { checkInProgressWldcup, increaseInViews } from '@/services/firebase/db';
+  import { checkInProgressWldcup, increaseInViews, fetchWldcup } from '@/services/firebase/db';
   
   import CommonButton from '@/components/buttons/CommonButton.vue';
   
@@ -69,6 +69,12 @@
     created() {
       this.increaseInViews();
       this.checkInProgressWldcup();
+
+      // TODO: Promise 분기 통해 inProgress 값에 따라 fetchWldcup 여부 결정
+      //  아닌 경우는 월드컵 데이터를 users/uid/inProgressWldcup 하위노드에서 가져옴
+      //  >> 기존에 진행하던 스냅샷 데이터
+
+      this.fetchWldcup();
     },
     methods: {
       /**
@@ -79,6 +85,12 @@
         const wldcupId = this.$route.params.id;
 
         await increaseInViews(user, wldcupId);
+      },
+      async fetchWldcup() {
+        const wldcupId = this.$route.params.id;
+
+        const wldcup = await fetchWldcup(wldcupId);
+        // TODO: wldcup 객체를 각 data() 필드들에 바인딩
       },
       test2() {
         console.log(2)

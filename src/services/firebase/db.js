@@ -165,7 +165,6 @@ export async function fetchAllWldcups() {
         ...wldcupsData[key], // child node data
         thumbnails: wldcupsData[key].images.slice(0, 2), // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
         title: restoreToOriginalString(wldcupsData[key].title),
-        views: Number(wldcupsData[key].views), // 조회수는 숫자로 변환
         updatedAt: new Date(wldcupsData[key].updatedAt).getTime()
       }));
 
@@ -180,6 +179,34 @@ export async function fetchAllWldcups() {
     }
   }
 }
+
+/**
+ * 특정 월드컵 데이터를 가져오는 함수
+ * @param {string} wldcupId 월드컵 ID
+ * @returns {Promise<void>} 특정 월드컵의 전체 데이터
+ */
+export async function fetchWldcup(wldcupId) {
+  const wldcupRef = dbRef(db, `wldcups/${wldcupId}`);
+
+  try {
+    const snapshot = await get(wldcupRef);
+    if (snapshot.exists()) {
+      const wldcupData = snapshot.val();
+
+      return {
+        ...wldcupData,
+        title: restoreToOriginalString(wldcupData.title),
+        details: restoreToOriginalString(wldcupData.details),
+        hashtags: wldcupData.hashtags.map(item => restoreToOriginalString(item)),
+      }
+    } else {
+      return {};
+    }
+  } catch(e) {
+    console.error(e);
+  }
+}
+
 /**
  * 특정 사용자가 만든 월드컵 데이터를 가져오는 함수
  * @param {string} uid 사용자 ID
@@ -267,13 +294,18 @@ export async function fetchWldcupStats(wldcupId) {
 
 /**
  * 월드컵 조회수를 1 증가시키는 함수
+ * @param {Object} user 유저 정보
+ * @param {string} wldcupId 월드컵 ID
+ * @returns {Promise<void>} 현재 월드컵의 조회수 1 증가
  */
 export async function increaseInViews(user, wldcupId) {
   // TODO: 어뷰징 방지를 위해 기진입 USER 세션의 경우 3분의 대기 시간을 부여
+  //  (firebase 가 아닌 vue 단에서 로컬 스토리지 or 쿠키를 통해 관리하는 게 좋을 듯)
 
   const wldcupViewsRef = dbRef(db, `wldcups/${wldcupId}/views`);
 
   try {
+    // 조회수는 동시성 문제 발생 가능성이 있어 update 사용하지 않고 transaction 사용
     await runTransaction(wldcupViewsRef, (currentViews) => {
       if (currentViews === null) {
         return 1; // assert로 도달할 수 없는 (아마도...)
