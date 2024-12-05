@@ -237,8 +237,8 @@ export async function fetchUserWldcups(uid) {
 }
 /**
  * 특정 월드컵에 대한 통계 데이터를 받아오는 함수
- * @param wldcupId
- * @returns {Promise<Object[]> | null}
+ * @param {string} wldcupId 월드컵 ID
+ * @returns {Promise<Object[]> | null} 모든 후보에 대한 승패 통계 데이터 세트
  */
 export async function fetchWldcupStats(wldcupId) {
   const statsRef = dbRef(db, `wldcups/${wldcupId}/stats`);
@@ -266,27 +266,55 @@ export async function fetchWldcupStats(wldcupId) {
 }
 
 /**
- * 현재 진입한 월드컵에 대한 진행 이력이 존재하는지 체크하는 함수
- * @param {Object} user 현재 유저 정보
- * @param {String} wldcupId 현재 진입한 월드컵의 UID
- * @returns {Boolean} 현재 진입한 월드컵에 대한 진행 이력 유무
+ * 월드컵 조회수를 1 증가시키는 함수
  */
-export async function checkInProgressWldcup(user, wldcupId) {
-  const inProgressWldcupRef = dbRef(db, `users/${user.uid}/inProgressWldcups`);
-  
-  // TODO: query()를 통해 wldcupId와 매칭되는 값만 추출하여 return
+export async function increaseInViews(user, wldcupId) {
+  // TODO: 어뷰징 방지를 위해 기진입 USER 세션의 경우 3분의 대기 시간을 부여
+
+  const wldcupViewsRef = dbRef(db, `wldcups/${wldcupId}/views`);
+
+  try {
+    // TODO: 기존 조회수 get > +1로 초기화
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+/**
+ * 월드컵의 현재 진행도를 저장하는 함수
+ * @param {Object} user 유저 정보
+ * @param {string} wldcupId 월드컵 ID
+ * @returns
+ */
+export async function saveWldcupProgress(user, wldcupId) {
+  const inProgressWldcupRef = dbRef(db, `users/${user.uid}/inProgressWldcup/${wldcupId}`);
 
   try {
     const snapshot = await get(inProgressWldcupRef);
-
     if (snapshot.exists()) {
-      const inProgressWldcupData = snapshot.val();
 
-      // TODO: 테스트
-      return Object.keys(inProgressWldcupData).filter(wldcupId => inProgressWldcupData[wldcupId].id === wldcupId);
     } else {
-      return false;
+      return null;
     }
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+/**
+ * 현재 진입한 월드컵에 대한 진행 이력이 존재하는지 체크하는 함수
+ * @param {Object} user 현재 유저 정보
+ * @param {string} wldcupId 현재 진입한 월드컵의 UID
+ * @returns {boolean} 현재 진입한 월드컵에 대한 진행 이력 유무
+ */
+export async function checkInProgressWldcup(user, wldcupId) {
+  // NOTE: 진행률 저장 API 생성 후 정상적인 테스트 가능
+  const inProgressWldcupRef = dbRef(db, `users/${user.uid}/inProgressWldcups/${wldcupId}`);
+
+  try {
+    // TODO: 어쨌든 뭔가 진행도라고 판단가능한 데이터가 있으면 true 처리
+    const snapshot = await get(inProgressWldcupRef);
+    return snapshot.exists(); // true or false
   } catch (e) {
     console.error('오류: 진행 중인 월드컵 목록을 불러오지 못했습니다.', e);
   }
