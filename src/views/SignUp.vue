@@ -17,7 +17,7 @@
         </div>
         <div class="signup-line birthday">
           <div class="left">생년월일</div>
-          <input class="right" v-model="birthday" placeholder="YYYY-MM-DD" maxlength="10" />
+          <input class="right" v-model="birthday" @input="autoHyphen" placeholder="YYYY-MM-DD" maxlength="10" />
         </div>
         <div class="signup-line gender">
           <div class="gender-list">
@@ -128,7 +128,21 @@
       },
       updateNickname(e) {
         this.nickname = e.target.value; // 닉네임 입력 값 양방향 바인딩
-      }
+      },
+      /**
+       * 생년월일 입력 시, YYYY-MM-DD 형식으로 '-' 문자 자동 포맷
+       */
+      autoHyphen(e) {
+        let value = e.target.value.replace(/\D/g, '');
+
+        if (value.length > 4) {
+          value = value.slice(0, 4) + '-' + value.slice(4);
+        }
+        if (value.length > 7) {
+          value = value.slice(0, 7) + '-' + value.slice(7);
+        }
+        this.birthday = value;
+      },
     },
     watch: {
       email(value) {
