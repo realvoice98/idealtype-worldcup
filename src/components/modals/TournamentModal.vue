@@ -1,5 +1,7 @@
 <template>
   <div class="modal-wrap">
+    <LoadingSpinner :visible="isLoading" />
+
     <div v-if="isProgress" class="modal-container" style="padding: 40px">
       <img src="@/assets/trophy.png" alt="" />
       <h2>{{ title }}</h2>
@@ -10,11 +12,11 @@
       <div class="modal-buttons">
         <CommonButton variant="primary" :onclick="test1">불러오기</CommonButton>
         <CommonButton variant="white" :onclick="test2">새로하기</CommonButton>
-        <CommonButton variant="white" :onclick="test3">뒤로가기</CommonButton>
+        <CommonButton variant="white" :onclick="this.moveToPreviousPage">뒤로가기</CommonButton>
       </div>
     </div>
 
-    <div v-if="!isProgress" class="modal-container" style="padding: 40px">
+    <div v-if="!isProgress && isProgress !== null" class="modal-container" style="padding: 40px">
       <img src="@/assets/trophy.png" alt="" />
       <h2>{{ title }}</h2>
       <div class="modal-description">
@@ -38,7 +40,7 @@
           </div>
         </div>
         <CommonButton variant="primary" :onclick="test1">시작하기</CommonButton>
-        <CommonButton variant="white" :onclick="test1">돌아가기</CommonButton>
+        <CommonButton variant="white" :onclick="this.moveToPreviousPage">뒤로가기</CommonButton>
       </div>
     </div>
   </div>
@@ -49,15 +51,18 @@
   import { checkInProgressWldcup, increaseInViews, fetchWldcup } from '@/services/firebase/db';
   
   import CommonButton from '@/components/buttons/CommonButton.vue';
+  import LoadingSpinner from '@/components/LoadingSpinner.vue';
   
   export default {
     name: 'TournamentModal',
     components: {
-      CommonButton
+      LoadingSpinner,
+      CommonButton,
     },
     data() {
       return {
-        isProgress: false, // 월드컵 진행 이력이 존재하는지
+        isLoading: true,
+        isProgress: null, // 월드컵 진행 이력이 존재하는지
         title: '천하제일 신창섭 AI 정상화 월드컵 (어디까지 늘어나는지 테스트)', // TODO: 테스트용 더미값 제거
         description: '젠장 에이스 이 공격은 대체 뭐냐!! --- 줄바꿈 테스트 줄바꿈 테스트 줄바꿈 테스트 줄바꿈 테스트 줄바꿈 테스트 줄바꿈 테스트 ',
         hashtags: ['#어디까지늘어날수', '#있는지테스트', '#한번해봐야합니다', '#이제여기서개행이되야함', '#오', '#개행도잘된다', '#된다된다잘된다', '#더잘된다잘된다'],
@@ -86,35 +91,29 @@
 
         await increaseInViews(user, wldcupId);
       },
-      async fetchWldcup() {
-        const wldcupId = this.$route.params.id;
-
-        const wldcup = await fetchWldcup(wldcupId);
-        // TODO: wldcup 객체를 각 data() 필드들에 바인딩
-      },
-      test2() {
-        console.log(2)
-      },
-      test3() {
-        console.log(3)
-      },
       /**
        * 현재 월드컵에 대한 진행 이력이 존재하는지 체크
        */
       async checkInProgressWldcup() {
-        // 현재 사용자 세션 존재 유무 확인
+        const wldcupId = this.$route.params.id;
         const user = auth.currentUser;
         if (user === null) {
           // 세션이 존재하지 않으면 무조건 진행 이력 없는 것으로 취급
           this.isProgress = false;
           return;
         }
-  
+
+        this.isProgress = await checkInProgressWldcup(user, wldcupId);
+        // Promise resolve 이후 1초 뒤 시점에 로딩 스피너 제거 (부드러운 화면 전환)
+        setTimeout(() => {
+          this.isLoading = false;
+        }, 1000);
+      },
+      async fetchWldcup() {
         const wldcupId = this.$route.params.id;
 
-        // TODO: 네트워킹 딜레이가 있어, inProgress가 false 상태일 때 노출되는 모달이 먼저 보였다가 사라지는 현상이 있음.
-        //  Promise resolve 되기 전에는 로딩중 화면으로 대체
-        this.isProgress = await checkInProgressWldcup(user, wldcupId); // FIXME: 어째서 네트워크 경유하는데 return이 non-promise type인 것이지
+        const wldcup = await fetchWldcup(wldcupId);
+        // TODO: wldcup 객체를 각 data() 필드들에 바인딩
       },
       selectTournamentCnt(e) {
         const selectItem = document.querySelector('.btn-dropdown');
