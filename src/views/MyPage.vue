@@ -1,36 +1,47 @@
 <template>
   <div class="mypage-container">
     <div class="mypage-contents">
-      <div
-          v-for="(record, recordIndex) in chunkedWldcups"
-          :key="recordIndex"
-          class="card-record"
-      >
-        <WorldcupCard
-            v-for="(card, cardIndex) in record"
-            :key="cardIndex"
-            :data="card"
-        />
-      </div>
+      <ul class="record-list">
+        <li
+            v-for="(data, index) in wldcups"
+            :key="index"
+            class="record-item"
+        >
+          <img :src="data.thumbnails[0].path" alt="썸네일" class="thumbnail" @click="wldcupLink(data.wldcupId)" />
+          <div class="record-info">
+            <h3 class="title">{{ data.title }}</h3>
+            <p class="stats">조회수 {{ data.views }}회 · {{ data.updatedAt }}</p>
+          </div>
+          <button
+              class="more-options"
+              @click.stop="toggleMenu(index)"
+          >
+            <span class="icon">menu</span>
+          </button>
+          <div
+              v-if="activeMenuIndex === index"
+              class="dropdown-menu"
+          >
+            <button @click.stop="editWldcup(data)">편집</button>
+            <button @click.stop="deleteWldcup(data)">삭제</button>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
 import { auth, onAuthStateChanged } from '@/services/firebase/auth';
-import WorldcupCard from '@/components/WorldcupCard.vue';
 import { fetchUserWldcups } from '@/services/firebase/db.js';
 
 export default {
   name: 'MyPage',
-  components: {
-    WorldcupCard,
-  },
   data() {
     return {
       user: null,
       wldcups: [],
-      windowWidth: window.innerWidth,
+      activeMenuIndex: null,
     };
   },
   created() {
@@ -39,64 +50,35 @@ export default {
         this.user = user;
         await this.fetchUserWldcupsData(user.uid);
       }
-      // else {
-      //   // TODO: 커스텀 모달로 수정 적용
-      //   if (confirm('로그인 상태에서만 가능합니다. 로그인하러 가시겠어요?')) {
-      //     this.$router.push('/sign-in');
-      //   } else {
-      //     this.$router.push('/');
-      //   }
-      // }
     });
-
-    // 화면 크기 변경 이벤트 리스너 추가
-    window.addEventListener('resize', this.updateWindowWidth);
-  },
-  beforeUnmount() {
-    // 화면 크기 변경 이벤트 리스너 제거
-    window.removeEventListener('resize', this.updateWindowWidth);
   },
   methods: {
     async fetchUserWldcupsData(uid) {
-      // 사용자 월드컵 데이터를 가져옴
       const wldcups = await fetchUserWldcups(uid);
       if (wldcups.result === -1) {
-        console.error(wldcups.message); // 오류 처리
+        console.error(wldcups.message);
         return;
       }
-      this.wldcups = wldcups; // 월드컵 데이터를 받아옴
-      console.log(this.wldcups);
+      this.wldcups = wldcups;
     },
-    updateWindowWidth() {
-      // 화면 크기 갱신
-      this.windowWidth = window.innerWidth;
+    wldcupLink(wldcupId) {
+      this.$router.push(`/wldcup/${wldcupId}`);
     },
-  },
-  computed: {
-    chunkSize() {
-      // 화면 크기에 따라 동적으로 청크 사이즈 계산
-      const width = this.windowWidth;
-      if (width >= 2560) {
-        return 6;
-      } else if (width >= 1440) {
-        return 3;
-      } else if (width >= 1024) {
-        return 2;
-      } else {
-        return 1; // 작은 화면에서는 1개씩 보여주기
-      }
+    toggleMenu(index) {
+      this.activeMenuIndex = this.activeMenuIndex === index ? null : index;
     },
-    chunkedWldcups() {
-      // 월드컵 데이터를 chunkSize에 맞게 나누어줌
-      const result = [];
-      for (let i = 0; i < this.wldcups.length; i += this.chunkSize) {
-        result.push(this.wldcups.slice(i, i + this.chunkSize));
-      }
-      return result;
+    editWldcup(data) {
+      console.log('편집 기능 실행:', data);
+      //TODO: 편집 로직 추가
+    },
+    deleteWldcup(data) {
+      console.log('삭제 기능 실행:', data);
+      //TODO: 삭제 로직 추가
     },
   },
 };
 </script>
+
 
 
 <style scoped>
@@ -110,12 +92,79 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.card-record {
-  display: flex;
-  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
-  /* margin-bottom: 1rem;  */
-  width: 100%;
-  justify-content: start;
+.record-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
+.record-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  cursor: pointer;
+  position: relative; /* 드롭다운 메뉴의 기준 */
+}
+
+.thumbnail {
+  width: 10vw;
+  height: 15vh;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 16px;
+}
+
+.record-info {
+  flex: 1;
+}
+
+.title {
+  font-size: 1vw;
+  font-weight: bold;
+  margin: 0;
+}
+
+.stats {
+  font-size: 1vw;
+  color: #888;
+}
+
+.more-options {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+}
+
+.icon{
+  font-size: 1.5vw;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 60%;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  width: 5vw; /* 드롭다운 메뉴의 너비 */
+}
+
+.dropdown-menu button {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown-menu button:hover {
+  background: #f0f0f0;
+}
 </style>
