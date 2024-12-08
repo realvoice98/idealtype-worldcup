@@ -79,8 +79,6 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
 .mypage-container {
   text-align: left;

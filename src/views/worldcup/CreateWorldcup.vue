@@ -64,8 +64,8 @@
   import { auth, onAuthStateChanged } from '@/services/firebase/auth';
   import { getUser, createWldcup, uploadImage } from '@/services/firebase/db';
 
-  import ImageRegistModal from '@/components/modals/ImageRegistModal.vue';
-  import ImageDetailModal from '@/components/modals/ImageDetailModal.vue';
+  import ImageRegistModal from '@/components/modals/worldcup/ImageRegistModal.vue';
+  import ImageDetailModal from '@/components/modals/worldcup/ImageDetailModal.vue';
   import CommonButton from '@/components/buttons/CommonButton.vue';
 
   export default {

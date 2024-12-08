@@ -58,7 +58,6 @@
 </script>
 
 <style scoped>
-
   .card-container {
     margin: 1rem;
     padding: 15px;
@@ -123,6 +122,4 @@
     color: black;
     text-decoration: none;
   }
-
-
 </style>

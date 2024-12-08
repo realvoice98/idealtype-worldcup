@@ -1,11 +1,11 @@
 <template>
-  <div class="worldcup-details">
+  <div class="wldcup-details">
   </div>
   <TournamentModal v-if="this.isModalVisible" @close="handleModalState" />
 </template>
 
 <script>
-  import TournamentModal from '@/components/modals/TournamentModal.vue';
+  import TournamentModal from '@/components/modals/worldcup/TournamentModal.vue';
 
   // 전체 플로우
   //  0. router-link 에서 worldcupId를 router param으로 전달하여 라우팅 추적

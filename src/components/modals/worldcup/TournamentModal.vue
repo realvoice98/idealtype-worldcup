@@ -51,7 +51,7 @@
   import { checkInProgressWldcup, increaseInViews, fetchWldcup } from '@/services/firebase/db';
   
   import CommonButton from '@/components/buttons/CommonButton.vue';
-  import LoadingSpinner from '@/components/LoadingSpinner.vue';
+  import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
   
   export default {
     name: 'TournamentModal',

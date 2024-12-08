@@ -11,9 +11,9 @@
       visible: {
         type: Boolean,
         default: true,
-      }
+      },
     },
-  }
+  };
 </script>
 
 <style scoped>

@@ -3,11 +3,12 @@ import { createRouter, createWebHistory } from 'vue-router';
 // views
 import Home from '@/views/Home.vue';
 import Introduction from '@/views/Introduction.vue';
-import CreateWorldcup from '@/views/CreateWorldcup.vue';
-import SignIn from '@/views/SignIn.vue';
-import SignUp from '@/views/SignUp.vue';
-import MyPage from '@/views/MyPage.vue';
-import WorldcupResult from '@/views/WorldCupResult.vue';
+import CreateWorldcup from '@/views/worldcup/CreateWorldcup.vue';
+import SignIn from '@/views/user/SignIn.vue';
+import SignUp from '@/views/user/SignUp.vue';
+import MyPage from '@/views/user/MyPage.vue';
+import WorldcupResult from '@/views/worldcup/WorldCupResult.vue';
+import WorldcupDetail from '@/views/worldcup/WorldcupDetail.vue';
 
 // views/admin
 import BackOffice from '@/views/admin/BackOffice.vue';
@@ -17,7 +18,6 @@ import WorldcupManagement from "@/components/admin/WorldcupManagement.vue";
 import ReportReceive from '@/components/admin/ReportReceive.vue';
 import Questions from '@/components/admin/Questions.vue';
 import Settings from '@/components/admin/Settings.vue';
-import WorldcupDetail from '@/views/WorldcupDetail.vue';
 
 const routes = [
   // views

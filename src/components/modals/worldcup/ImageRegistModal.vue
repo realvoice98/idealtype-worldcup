@@ -72,7 +72,7 @@
 <script>// TODO: 변경사항 경고 모달 추가하기
   import VueCropper from 'vue-cropperjs';
   import 'cropperjs/dist/cropper.css';
-  import {formatDate} from "@/common";
+  import { formatDate } from "@/common";
   import CommonModal2 from "@/components/modals/CommonModal2.vue";
 
   export default {
