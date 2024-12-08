@@ -6,7 +6,7 @@
       <div class="header-container">
 
         <div class="profile-container">
-          <ProfileButton width="160" height="160" :onclick="changeImage" />
+          <ProfileButton :src="user.profileImage" width="160" height="160" :onclick="changeImage" />
           <p class="user-nickname">{{ user.nickname }}
             <span v-if="user.emailVerified" class="icon" style="color: var(--theme)">verified</span>
           </p>
@@ -15,9 +15,9 @@
 
         <div class="menu-container">
           <ul class="menu-list">
-            <li><router-link to="/">내 프로필</router-link></li>
-            <li><router-link to="/">내 월드컵</router-link></li>
-            <li><router-link to="/">내 활동</router-link></li>
+            <li><router-link to="/my-page/profile">내 프로필</router-link></li>
+            <li><router-link to="/my-page/wldcups">내 월드컵</router-link></li>
+            <li><router-link to="/my-page/activity">내 활동</router-link></li>
           </ul>
         </div>
 
@@ -53,10 +53,11 @@
       return {
         isLoading: true,
         user: {
-          email: '',
+          profileImage: '',
           nickname: '',
+          email: '',
+          emailVerified: '',
         },
-        isVerified: false,
       };
     },
     created() {
@@ -112,7 +113,6 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background-color: dimgray;
   }
 
   .profile-container {
@@ -164,7 +164,7 @@
       grid-template-rows: auto 1fr; /* 헤더(top), 콘텐츠(bottom) */
     }
 
-    .header {
+    header {
       grid-column: 1 / -1; /* 전체 너비 차지 */
       border-left: none;
       box-shadow: none;

@@ -6,7 +6,12 @@ import Introduction from '@/views/Introduction.vue';
 import CreateWorldcup from '@/views/worldcup/CreateWorldcup.vue';
 import SignIn from '@/views/user/SignIn.vue';
 import SignUp from '@/views/user/SignUp.vue';
+
 import MyPage from '@/views/user/MyPage.vue';
+import ProfileDetail from '@/components/user/ProfileDetail.vue';
+import WorldcupList from '@/components/user/WorldcupList.vue';
+import Activity from '@/components/user/Activity.vue';
+
 import WorldcupResult from '@/views/worldcup/WorldCupResult.vue';
 import WorldcupDetail from '@/views/worldcup/WorldcupDetail.vue';
 
@@ -50,6 +55,23 @@ const routes = [
     path: '/my-page',
     name: 'MyPage',
     component: MyPage,
+    children: [
+      {
+        path: 'profile',
+        name: 'ProfileDetail',
+        component: ProfileDetail,
+      },
+      {
+        path: 'wldcups',
+        name: 'WorldcupList',
+        component: WorldcupList,
+      },
+      {
+        path: 'activity',
+        name: 'Activity',
+        component: Activity,
+      },
+    ]
   },
   {
     path: '/wldcup-result',
