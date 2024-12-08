@@ -35,7 +35,6 @@ const routes = [
     path: '/create-wldcup',
     name: 'CreateWorldcup',
     component: CreateWorldcup,
-    meta: { requiresAuth: true },
   },
   {
     path: '/sign-in',
@@ -51,7 +50,6 @@ const routes = [
     path: '/my-page',
     name: 'MyPage',
     component: MyPage,
-    meta: { requiresAuth: true },
   },
   {
     path: '/wldcup-result',

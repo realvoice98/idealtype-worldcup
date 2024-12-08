@@ -38,7 +38,10 @@
       async signIn() {
         try {
           await signInWithEmailAndPassword(auth, this.email, this.password);
-          this.$router.push('/');
+          const targetPath = localStorage.getItem('targetPath') || '/';
+          localStorage.removeItem('targetPath');
+          this.$router.push(targetPath);
+
 
           // TODO: 60분 간 세션 유지
 

@@ -9,10 +9,10 @@
           <router-link class="nav-link" to="/">이상형 월드컵</router-link>
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" to="/create-wldcup">월드컵 만들기</router-link>
+          <a href="#" class="nav-link" @click="navigateTo('/create-wldcup')">월드컵 만들기</a>
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" to="/my-page">마이페이지</router-link>
+          <a href="#" class="nav-link" @click="navigateTo('/my-page')">마이페이지</a>
         </li>
         <li class="nav-item">
           <router-link class="nav-link" to="/wldcup-result">랭크</router-link>
@@ -49,6 +49,12 @@
         </li>
       </ul>
     </div>
+    <LoginWarningModal
+        v-if="isModalVisible"
+        :message="modalMessage"
+        @close="closeModal"
+        @confirm="confirmModal"
+    />
   </nav>
 </template>
 
@@ -57,11 +63,14 @@
   import { onAuthStateChanged, signOut } from 'firebase/auth';
   import { fetchAllWldcups } from '@/services/firebase/db.js';
   import CommonButton from '@/components/buttons/CommonButton.vue';
+  import LoginWarningModal from '@/components/modals/LoginWarningModal.vue';
+
 
   export default {
     name: 'GNB',
     components: {
       CommonButton,
+      LoginWarningModal
     },
     data() {
       return {
@@ -71,6 +80,9 @@
         gnbNavFilterVisible: true, // 초기 상태는 true
         searchQuery: '',
         isPopularityActive: true,
+        isModalVisible: false,
+        modalMessage: '',
+        modalConfirmRoute: '',
       };
     },
     mounted() {
@@ -118,14 +130,51 @@
 
       async signOut() {
         try {
-          await signOut(auth); // Firebase에서 로그아웃 처리
-          this.isLoggedIn = false; // 로그인 상태 업데이트
+          const currentPath = this.$route.path;
 
-          // 로그아웃 후 직접 라우터로 이동
-          this.$router.push('/sign-in'); // 메인 페이지로 이동
-        } catch(e) {
-          console.error('로그아웃 실패:', e);
+          await signOut(auth);
+          this.isLoggedIn = false;
+
+          if (currentPath === '/create-wldcup') {
+            this.showModal('로그인 상태에서만 월드컵을 만들 수 있어요. 로그인하러 가시겠어요?', currentPath);
+          } else if (currentPath === '/my-page') {
+            this.showModal('로그인 상태에서만 확인할 수 있어요. 로그인하러 가시겠어요?', currentPath);
+          }
+        } catch (error) {
+          console.error('로그아웃 실패:', error);
         }
+      },
+      navigateTo(targetPath) {
+        if (!this.isLoggedIn) {
+          if (targetPath === '/create-wldcup') {
+            this.showModal(
+                '로그인 상태에서만 월드컵을 만들 수 있어요. 로그인하러 가시겠어요?',
+                targetPath
+            );
+          } else if (targetPath === '/my-page') {
+            this.showModal(
+                '로그인 상태에서만 확인할 수 있어요. 로그인하러 가시겠어요?',
+                targetPath
+            );
+          }
+        } else {
+          this.$router.push(targetPath);
+        }
+      },
+      showModal(message, targetPath) {
+        this.modalMessage = message;
+        this.modalConfirmRoute = targetPath;
+        this.isModalVisible = true;
+      },
+      closeModal() {
+        this.isModalVisible = false;
+        this.$router.push('/');
+      },
+      confirmModal() {
+        this.isModalVisible = false;
+        localStorage.setItem('targetPath', this.modalConfirmRoute);
+        console.log(this.modalConfirmRoute)
+        this.$router.push('/sign-in');
       },
       setSortFilter(filter) {
         if (filter === 'popular') {

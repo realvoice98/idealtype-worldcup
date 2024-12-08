@@ -1,24 +1,18 @@
 <template>
   <div id="app" :class="{ 'dark-mode': isDarkMode, 'light-mode': !isDarkMode }">
     <GlobalNavBar v-if="isGnbVisible" :isDarkMode="isDarkMode" @toggleTheme="toggleTheme" />
-    <CustomModal v-if="isModalVisible" :visible="isModalVisible" @close="closeModal" />
     <router-view />
   </div>
 </template>
 
 <script>
   import GlobalNavBar from '@/components/GlobalNavBar.vue';
-  import CustomModal from '@/components/modals/LoginWarningModal.vue';
-  import { onAuthStateChanged } from 'firebase/auth';
-  import { auth } from '@/services/firebase/auth';
-  import { nextTick } from 'vue';
   import router from '@/router';
 
   export default {
     name: 'App',
     components: {
       GlobalNavBar,
-      CustomModal,
     },
     data() {
       return {
@@ -33,8 +27,6 @@
       // 로컬 스토리지에서 테마 상태 가져오기
       const savedTheme = localStorage.getItem('theme');
       this.isDarkMode = savedTheme === 'light';
-
-      this.setupRouterGuard();
     },
     watch: {
       // route가 변경될 때마다 GNB 상태 확인
@@ -59,30 +51,6 @@
         //  관리자 계정으로 bo url 접근인 경우
         //  GNB 컴포넌트 자체에 대해서 전혀 고려하지 않는 별개의 페이지 환경으로 조성되어야 함
         this.isGnbVisible = !url.startsWith('/bo'); // 관리자 페이지는 GNB 미노출
-      },
-      openModal() {
-        this.isModalVisible = true;
-      },
-      closeModal() {
-        this.isModalVisible = false;
-      },
-      setupRouterGuard() {
-        router.beforeEach((to, from, next) => {
-          onAuthStateChanged(auth, (user) => {
-            const isLoggedIn = !!user;
-
-            if (to.meta.requiresAuth && !isLoggedIn) {
-
-              nextTick(() => {
-                this.openModal();
-              });
-
-              next({name: 'SignIn'});
-            } else {
-              next();
-            }
-          });
-        });
       },
     },
   };
