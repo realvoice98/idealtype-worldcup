@@ -16,9 +16,10 @@
 </template>
 
 <script>
-  import WorldcupCard from '@/components/modals/worldcup/WorldcupCard.vue';
-  import { fetchAllWldcups } from '@/services/firebase/db.js';
+  import WorldcupCard from '@/components/worldcup/WorldcupCard.vue';
   import GlobalNavBar from '@/components/GlobalNavBar.vue';
+
+  import { fetchAllWldcups } from '@/services/firebase/db.js';
 
   export default {
     name: 'Home',

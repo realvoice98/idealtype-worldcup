@@ -76,8 +76,8 @@ html {
   font-family: 'SUIT', Avenir, Helvetica, Arial, sans-serif;
 }
 
-[class*="btn"] {
-  cursor: pointer;
+#wrap {
+  position: relative;
 }
 
 .hashtag {
@@ -103,13 +103,8 @@ html {
 }
 
 /* Button START */
-.btn-like {
-  background: transparent;
-  border: none;
-}
-.btn-like > img {
-  width: 24px;
-  height: 24px;
+[class*="btn"] {
+  cursor: pointer;
 }
 
 .btn-toggle-theme {

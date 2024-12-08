@@ -3,11 +3,11 @@
     <router-link :to="wldcupLink">
       <div class="card-thumbnails">
         <div class="card-thumbnail">
-          <img :src="thumbnails[0].path" alt=""/>
+          <img :src="thumbnails[0].path" alt="썸네일 이미지 1"/>
           <p>{{ thumbnails[0].customName }}</p>
         </div>
         <div class="card-thumbnail">
-          <img :src="thumbnails[1].path" alt=""/>
+          <img :src="thumbnails[1].path" alt="썸네일 이미지 2"/>
           <p>{{ thumbnails[1].customName }}</p>
         </div>
       </div>
@@ -20,16 +20,19 @@
     </div>
     <div class="card-description">
       <span>조회수 {{ views }}회 · {{ updatedAt }} 업데이트됨</span>
-      <button class="btn-like">
-        <img :src="require('@/assets/like.png')" alt="" />
-      </button>
+      <LikeButton />
     </div>
   </div>
 </template>
 
 <script>
+  import LikeButton from '@/components/buttons/LikeButton.vue';
+
   export default {
     name: 'WorldcupCard',
+    components: {
+      LikeButton,
+    },
     props: {
       data: {
         type: Object,
@@ -54,7 +57,7 @@
       wldcupLink() {
         return `/wldcup/${this.data.wldcupId}`;
       }
-    }
+    },
   };
 </script>
 
