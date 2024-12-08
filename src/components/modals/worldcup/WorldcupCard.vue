@@ -1,6 +1,5 @@
 <template>
   <div class="card-container">
-    <!-- // TODO: .card-container 내에 .card-description 영역 제외하고, 어느 곳을 클릭하던 a 태그 href로 연결될 수 있게끔 수정 -->
     <router-link :to="wldcupLink">
       <div class="card-thumbnails">
         <div class="card-thumbnail">
