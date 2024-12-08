@@ -111,15 +111,6 @@ export default {
   border-radius: 5px;
 }
 
-.comment-input button {
-  padding: 10px 15px;
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
 .comments-list {
   margin-top: 20px;
 }
