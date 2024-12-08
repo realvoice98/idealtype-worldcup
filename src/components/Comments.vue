@@ -1,0 +1,141 @@
+<template>
+  <div class="comment-section">
+    <div class="comment-input">
+      <input v-model="newComment" placeholder="댓글을 입력하세요." />
+      <common-button
+          variant="primary"
+          :disabled="!newComment.trim()"
+          @click="submitComment"
+      >
+        댓글 달기
+      </common-button>
+    </div>
+
+    <div class="comments-list">
+      <div v-for="comment in comments" :key="comment.id" class="comment">
+        <p><strong>{{ comment.nickName }}</strong>: {{ comment.text }}</p>
+        <p><small>{{ comment.timestamp }}</small></p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { fetchWldcupComments,createComment } from '@/services/firebase/db.js';
+import { auth, onAuthStateChanged } from '@/services/firebase/auth';
+import CommonButton from "@/components/buttons/CommonButton.vue";
+import {ref, get, getDatabase} from 'firebase/database';
+import {firebaseApp} from "@/services/firebase/config";
+
+export default {
+  components: {
+    CommonButton,
+  },
+  data() {
+    return {
+      newComment: "",
+      comments: [],
+      wldcupId: "-ODZrawWKjChdBdCOhAR", //TODO 월드컵ID 받아와야함
+      user: null,
+    };
+  },
+  created() {
+    onAuthStateChanged(auth, async (user) => {
+      const db = getDatabase(firebaseApp);
+      if (user) {
+        const userRef = ref(db, `users/${user.uid}/nickname`);
+        try {
+          const snapshot = await get(userRef);
+          if (snapshot.exists()) {
+            this.user = {
+              nickname: snapshot.val(),
+              uid: user.uid,
+            };
+          }
+        } catch (error) {
+          console.error("닉네임을 가져오는 중 오류가 발생했습니다:", error);
+        }
+      } else {
+        this.user = {
+          nickname: '익명',
+          uid: "anonymous-uid",
+        };
+      }
+    });
+  },
+  methods: {
+    async submitComment() {
+      if (this.newComment.trim() === "") return;
+
+      try {
+        await createComment(this.user, this.wldcupId, this.newComment);
+        this.newComment = "";
+        this.fetchComments();
+      } catch (e) {
+        console.error("댓글 작성 실패:", e);
+      }
+    },
+
+    async fetchComments() {
+      try {
+        const comments = await fetchWldcupComments(this.wldcupId);
+        console.log(comments)
+        this.comments = comments || [];
+      } catch (e) {
+        console.error("댓글 불러오기 실패:", e);
+      }
+    },
+  },
+  async mounted() {
+    this.fetchComments();
+  },
+};
+</script>
+
+<style scoped>
+.comment-section {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.comment-input {
+  display: flex;
+  gap: 10px;
+}
+
+.comment-input input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.comment-input button {
+  padding: 10px 15px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.comments-list {
+  margin-top: 20px;
+}
+
+.comment {
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.comment p {
+  margin: 0;
+}
+
+.comment small {
+  color: #888;
+}
+</style>

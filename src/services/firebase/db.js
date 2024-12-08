@@ -293,6 +293,62 @@ export async function fetchWldcupStats(wldcupId) {
 }
 
 /**
+ * 특정 월드컵에 대한 댓글 데이터를 받아오는 함수
+ * @param {string} wldcupId 월드컵 ID
+ */
+export async function fetchWldcupComments(wldcupId) {
+  const commentsRef = dbRef(db, `comments/${wldcupId}`);
+
+  try {
+    const snapshot = await get(commentsRef);
+    if (snapshot.exists()) {
+      const commentsData = snapshot.val();
+
+      return Object.keys(commentsData)
+          .map(key => ({
+            id: key,
+            ...commentsData[key],
+          }))
+          .sort((a, b) => new Date(b.timestamp) -new Date( a.timestamp));
+    } else {
+      return [];
+    }
+  } catch (e) {
+    console.error("댓글을 가져오는 데 오류가 발생했습니다:", e);
+    return null;
+  }
+}
+
+/**
+ * 월드컵에 댓글을 작성하는 함수
+ * @param {Object} user 유저 정보
+ * @param {string} wldcupId 월드컵 ID
+ * @param {string} commentText 댓글 내용
+ * @returns {Promise<void>} 댓글 데이터를 DB에 저장
+ */
+export async function createComment(user, wldcupId, commentText) {
+  const commentsRef = dbRef(db, `comments/${wldcupId}`);
+
+  try {
+    const newCommentRef = push(commentsRef);
+
+    // 댓글 정보 저장
+    await set(newCommentRef, {
+      uid: user.uid,                        // 유저 고유 id
+      nickName: user.nickname,              // 닉네임
+      text: commentText,                    // 댓글 내용
+      timestamp: formatDate(new Date()),    // 댓글 작성 시간
+    });
+
+    alert("댓글이 작성되었습니다!");
+  } catch (e) {
+    alert("댓글 작성에 실패했습니다! 잠시 후 다시 시도해주세요.");
+    console.error('댓글 작성 실패:', e);
+  }
+}
+
+
+/**
  * 월드컵 조회수를 1 증가시키는 함수
  * @param {Object} user 유저 정보
  * @param {string} wldcupId 월드컵 ID
