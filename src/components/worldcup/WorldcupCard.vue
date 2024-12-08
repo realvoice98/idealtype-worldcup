@@ -123,7 +123,7 @@
   }
 
   a {
-    color: black;
+    color: inherit; /* 부모 요소의 색상 상속 */
     text-decoration: none;
   }
 </style>
