@@ -2,13 +2,13 @@
   <div class="comment-section">
     <div class="comment-input">
       <input v-model="newComment" placeholder="댓글을 입력하세요." />
-      <common-button
+      <CommonButton
           variant="primary"
           :disabled="!newComment.trim()"
           @click="submitComment"
       >
         댓글 달기
-      </common-button>
+      </CommonButton>
     </div>
 
     <div class="comments-list">
