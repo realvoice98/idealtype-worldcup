@@ -1,168 +1,178 @@
 <template>
-  <div class="mypage-container">
-    <div class="mypage-contents">
-      <ul class="record-list">
-        <li
-            v-for="(data, index) in wldcups"
-            :key="index"
-            class="record-item"
-        >
-          <img :src="data.thumbnails[0].path" alt="썸네일" class="thumbnail" @click="wldcupLink(data.wldcupId)" />
-          <div class="record-info">
-            <h3 class="title">{{ data.title }}</h3>
-            <p class="stats">조회수 {{ data.views }}회 · {{ data.updatedAt }}</p>
-          </div>
-          <button
-              class="more-options"
-              @click.stop="toggleMenu(index)"
-          >
-            <span class="icon">menu</span>
-          </button>
-          <div
-              v-if="activeMenuIndex === index"
-              class="dropdown-menu"
-          >
-            <button @click.stop="editWldcup(data)">편집</button>
-            <button @click.stop="deleteWldcup(data)">삭제</button>
-          </div>
-        </li>
-      </ul>
+  <LoadingSpinner :visible="isLoading" />
+
+  <div class="layout-container">
+    <header role="banner">
+      <div class="header-container">
+
+        <div class="profile-container">
+          <ProfileButton width="160" height="160" :onclick="changeImage" />
+          <p class="user-nickname">{{ user.nickname }}
+            <span v-if="user.emailVerified" class="icon" style="color: var(--theme)">verified</span>
+          </p>
+          <p class="user-email">{{ user.email }}</p>
+        </div>
+
+        <div class="menu-container">
+          <ul class="menu-list">
+            <li><router-link to="/">내 프로필</router-link></li>
+            <li><router-link to="/">내 월드컵</router-link></li>
+            <li><router-link to="/">내 활동</router-link></li>
+          </ul>
+        </div>
+
+        <footer role="contentinfo">
+          <a href="javascript:void(0)">저작권</a>
+          <a href="javascript:void(0)">고객문의</a>
+          <a href="javascript:void(0)">FAQ</a>
+        </footer>
+      </div>
+    </header>
+
+    <div class="content">
+      <router-view />
     </div>
+
   </div>
 </template>
 
 <script>
-import { auth, onAuthStateChanged } from '@/services/firebase/auth';
-import { fetchUserWldcups } from '@/services/firebase/db.js';
+  import { auth, onAuthStateChanged } from '@/services/firebase/auth';
+  import { getUser } from '@/services/firebase/db.js';
 
-export default {
-  name: 'MyPage',
-  data() {
-    return {
-      user: null,
-      wldcups: [],
-      activeMenuIndex: null,
-    };
-  },
-  created() {
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        this.user = user;
-        await this.fetchUserWldcupsData(user.uid);
-      }
-    });
-  },
-  methods: {
-    async fetchUserWldcupsData(uid) {
-      const wldcups = await fetchUserWldcups(uid);
-      if (wldcups.result === -1) {
-        console.error(wldcups.message);
-        return;
-      }
-      this.wldcups = wldcups;
+  import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
+  import ProfileButton from '@/components/buttons/ProfileButton.vue';
+
+  export default {
+    name: 'MyPage',
+    components: {
+      LoadingSpinner,
+      ProfileButton,
     },
-    wldcupLink(wldcupId) {
-      this.$router.push(`/wldcup/${wldcupId}`);
+    data() {
+      return {
+        isLoading: true,
+        user: {
+          email: '',
+          nickname: '',
+        },
+        isVerified: false,
+      };
     },
-    toggleMenu(index) {
-      this.activeMenuIndex = this.activeMenuIndex === index ? null : index;
+    created() {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          this.user = await getUser(user);
+
+          setTimeout(() => {
+            this.isLoading = false;
+          }, 1000);
+        } else {
+          // TODO: 로그인 분기 처리
+        }
+      });
     },
-    editWldcup(data) {
-      console.log('편집 기능 실행:', data);
-      //TODO: 편집 로직 추가
+    methods: {
+      changeImage() {
+        // TODO: 이미지 변경
+      },
     },
-    deleteWldcup(data) {
-      console.log('삭제 기능 실행:', data);
-      //TODO: 삭제 로직 추가
-    },
-  },
-};
+  };
 </script>
 
 <style scoped>
-.mypage-container {
-  text-align: left;
-}
+  a {
+    text-decoration: none;
+    color: inherit; /* 부모 요소의 색상 상속 */
+  }
 
-.mypage-contents {
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+  .layout-container {
+    display: grid;
+    grid-template-columns: 0.5fr 1.2fr 2.5fr 0.5fr; /* 전체 영역 별 비율 */
+    gap: 0;
+    width: 100%;
+    height: 100vh;
+    box-sizing: border-box;
+  }
 
-.record-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+  header {
+    grid-column: 2 / 3; /* 전체 영역 별 비율 중 가운데 위치 */
+    display: flex;
+    align-items: flex-start; /* 상단에서부터 콘텐츠 나열 */
+    justify-content: center; /* 좌우 중앙 정렬 */
+    padding: 20px;
+    box-shadow: 5px 0 10px 1px rgba(0, 0, 0, 0.1);
+    border-left: 2px solid #f2f2f2;
+    margin-right: 20px;
+  }
 
-.record-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-  cursor: pointer;
-  position: relative; /* 드롭다운 메뉴의 기준 */
-}
+  .content {
+    grid-column: 3 / 4; /* 2 비율 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: dimgray;
+  }
 
-.thumbnail {
-  width: 10vw;
-  height: 15vh;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-right: 16px;
-}
+  .profile-container {
+    padding: 20px;
+    flex-direction: column;
+  }
+  .profile-container p {
+    font-size: 18px;
+    margin: 10px;
+  }
+  .user-nickname {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .user-email {
+    color: dimgray;
+  }
 
-.record-info {
-  flex: 1;
-}
+  .menu-container {
+    padding: 25px 0;
+  }
+  .menu-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  .menu-list li {
+    display: flex;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--theme);
+    padding-bottom: 7px;
+  }
 
-.title {
-  font-size: 1vw;
-  font-weight: bold;
-  margin: 0;
-}
+  footer {
+    padding-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
 
-.stats {
-  font-size: 1vw;
-  color: #888;
-}
+    a {
+      font-size: 15px;
+      color: dimgray;
+    }
+  }
 
-.more-options {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  position: relative;
-}
+  @media (max-width: 768px) {
+    .layout-container {
+      grid-template-columns: 1fr; /* 모바일 크기에서 단일 열 */
+      grid-template-rows: auto 1fr; /* 헤더(top), 콘텐츠(bottom) */
+    }
 
-.icon{
-  font-size: 1.5vw;
-}
+    .header {
+      grid-column: 1 / -1; /* 전체 너비 차지 */
+      border-left: none;
+      box-shadow: none;
+      margin-right: 0;
+    }
 
-.dropdown-menu {
-  position: absolute;
-  top: 60%;
-  right: 0;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  width: 5vw; /* 드롭다운 메뉴의 너비 */
-}
-
-.dropdown-menu button {
-  padding: 8px 16px;
-  background: none;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.dropdown-menu button:hover {
-  background: #f0f0f0;
-}
+    .content {
+      grid-column: 1 / -1; /* 전체 너비 차지 */
+    }
+  }
 </style>

@@ -76,10 +76,6 @@ html {
   font-family: 'SUIT', Avenir, Helvetica, Arial, sans-serif;
 }
 
-#wrap {
-  position: relative;
-}
-
 .hashtag {
   background-color: #eeeeee;
   padding-left: 0.3rem;
