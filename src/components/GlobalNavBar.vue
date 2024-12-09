@@ -1,20 +1,24 @@
 <template>
-  <nav class="gnb" >
+  <nav class="gnb">
     <div class="gnb-container">
       <ul class="gnb-nav">
-        <li><router-link to="/introduction">undefined</router-link></li>
-        <li><router-link to="/">이상형 월드컵</router-link></li>
-        <li><a href="javascript:void(0)" @click="navigateTo('/create-wldcup')">월드컵 만들기</a></li>
-        <li><a href="javascript:void(0)" @click="navigateTo('/my-page')">마이페이지</a></li>
-        <li><router-link to="/wldcup-result">랭크</router-link></li>
+        <li class="logo"><router-link to="/introduction">undefined</router-link></li>
+        <li class="nav-tab"><router-link to="/">이상형 월드컵</router-link></li>
+        <li class="nav-tab"><a href="javascript:void(0)" @click="navigateTo('/create-wldcup')">월드컵 만들기</a></li>
+        <li class="nav-tab"><a href="javascript:void(0)" @click="navigateTo('/my-page')">마이페이지</a></li>
+        <li class="nav-tab"><router-link to="/wldcup-result">랭크</router-link></li>
         <li>
           <button @click="toggleTheme">
             <img class="btn-toggle-theme" :src="isDarkMode ? require('@/assets/dark-mode-icon.png') : require('@/assets/light-mode-icon.png')" alt="" />
           </button>
         </li>
         <div class="auth-container">
-          <li v-if="!isLoggedIn"><router-link to="/sign-in">로그인</router-link></li>
-          <li v-else><button @click="signOut">로그아웃</button></li>
+          <li v-if="!isLoggedIn">
+            <router-link to="/sign-in">로그인</router-link>
+          </li>
+          <li v-else>
+            <button @click="signOut">로그아웃</button>
+          </li>
         </div>
       </ul>
       <ul class="gnb-nav-filter" v-show="gnbNavFilterVisible && $route.path === '/'">
@@ -44,7 +48,6 @@
   import { fetchAllWldcups } from '@/services/firebase/db.js';
   import CommonButton from '@/components/buttons/CommonButton.vue';
   import LoginWarningModal from '@/components/modals/LoginWarningModal.vue';
-
 
   export default {
     name: 'GNB',
@@ -185,13 +188,14 @@
     right: 0;
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    background-color: var(--theme);
+    background-color: whitesmoke;
   }
 
   .gnb-nav {
     display: flex;
     gap: 2rem;
     align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
   .auth-container {
@@ -207,12 +211,30 @@
     align-items: center;
   }
 
+  ul {
+    padding: 0;
+    margin: 0;
+  }
   li {
+    padding: 10px 15px;
     list-style-type: none;
+  }
+  li.logo {
+    padding-left: 100px;
+    border: 5px solid var(--theme);
+    background-color: var(--theme);
+    border-radius: 0 5px 5px 0;
+  }
+  li.nav-tab {
+    margin-bottom: 2px; /* 현재 탭 하단 바 두께와 동일해야 함 */
+    padding-bottom: 5px;
+
+  li.nav-tab.active {
+    border-bottom: 2px solid var(--theme);
   }
 
   a {
-    color: white;
+    color: inherit;
     text-decoration: none;
   }
 
