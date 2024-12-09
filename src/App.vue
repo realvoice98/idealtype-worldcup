@@ -37,7 +37,7 @@
       const savedTheme = localStorage.getItem('theme');
       this.isDarkMode = savedTheme === 'light';
       this.setupRouterGuard();
-      this.checkAuthEmail();
+      // this.checkAuthEmail();
     },
     watch: {
       // route가 변경될 때마다 GNB 상태 확인
