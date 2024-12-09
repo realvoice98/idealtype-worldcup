@@ -1,8 +1,8 @@
 import { firebaseApp } from '@/services/firebase/config';
-import { getDatabase, ref as dbRef, set, get, runTransaction, push, query, orderByChild, equalTo, remove as rm  } from 'firebase/database';
+import { getDatabase, ref as dbRef, set, get, runTransaction, push, query, orderByChild, remove as rm  } from 'firebase/database';
 import { getStorage, ref as stRef, uploadBytes, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
 import { formatDate, convertToValidNodeString, restoreToOriginalString} from '@/common';
-import {remove} from "core-js/internals/map-helpers";
+
 
 const db = getDatabase(firebaseApp);
 const st = getStorage(firebaseApp);
@@ -355,16 +355,16 @@ export async function createComment(user, wldcupId, commentText) {
  * @param {boolean} isLiked 현재 좋아요 상태
  * @returns {Promise<void>} 좋아요 데이터를 DB에 저장/삭제
  */
-export async function toggleLike(user, wldcupId, isLiked) {
+export async function toggleLike(user, wldcupId) {
   const likeRef = dbRef(db, `users/${user.uid}/myLikesWldcups/${wldcupId}`);
 
   try {
-    if (isLiked) {
-      // 좋아요 취소
-      await remove(likeRef);
-    } else {
-      // 좋아요 설정
+    const snapshot = await get(likeRef);
+    console.log(snapshot.val())
+    if (snapshot.val() === null) {
       await set(likeRef, true);
+    } else {
+      await rm(likeRef);
     }
   } catch (e) {
     alert("좋아요 설정 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");

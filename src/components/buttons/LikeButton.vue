@@ -63,10 +63,10 @@ export default {
         return;
       }
 
-      this.isTilting = true; // 흔들림 애니메이션 트리거
       try {
-        await toggleLike(this.user, this.wldcupId, this.isActived);
+        await toggleLike(this.user, this.wldcupId);
         this.isActived = !this.isActived;
+        this.isTilting = true; // 흔들림 애니메이션 트리거
       } catch (e) {
         console.error("좋아요 토글 실패:", e);
       } finally {
@@ -79,8 +79,6 @@ export default {
     async loadLikes() {
       try {
         const likes = await getLikedWorldcups(this.user);
-        console.log("likes")
-        console.log(likes)
 
         this.isActived = likes[this.wldcupId] === true;
       } catch (e) {
@@ -89,8 +87,6 @@ export default {
     },
   },
   async created() {
-    console.log(this.user);
-
     if (this.user) {
       await this.loadLikes();
     }
