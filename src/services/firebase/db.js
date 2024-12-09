@@ -1,6 +1,6 @@
 import { firebaseApp } from '@/services/firebase/config';
-import { getDatabase, ref as dbRef, set, get, runTransaction, push, query, orderByChild, equalTo } from 'firebase/database';
-import { getStorage, ref as stRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getDatabase, ref as dbRef, set, get, runTransaction, push, query, orderByChild, equalTo, remove as rm  } from 'firebase/database';
+import { getStorage, ref as stRef, uploadBytes, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
 import { formatDate, convertToValidNodeString, restoreToOriginalString} from '@/common';
 import {remove} from "core-js/internals/map-helpers";
 
@@ -469,6 +469,21 @@ export async function checkInProgressWldcup(user, wldcupId) {
 }
 
 /**
+ * 월드컵 삭제 함수
+ * @param {string} wldcupId 현재 진입한 월드컵의 UID
+ */
+export async function deleteWldcup(wldcupId) {
+  const wldcupRef = dbRef(db, `wldcups/${wldcupId}`);
+
+  try {
+    console.log(wldcupRef);
+    await rm(wldcupRef);
+  }catch (e){
+    console.error('오류: 월드컵을 삭제하지 못했습니다.', e)
+  }
+}
+
+/**
  * Firebase Storage
  *
  * 이미지, 오디오, 동영상의 원본 데이터는 Storage에 보관하고,
@@ -496,5 +511,23 @@ export async function uploadImage(image, userId, wldcupTitle) {
   } catch (e) {
     console.error('이미지 업로드 실패:', e);
     throw new Error('이미지 업로드 중 오류가 발생했습니다.');
+  }
+}
+
+/**
+ * 이미지 삭제 함수
+ * @param {Object} userId 사용자 UID
+ * @param {string} wldcupTitle 월드컵 제목
+ */
+export async function deleteImages(userId, wldcupTitle) {
+  const wldcupsRef = stRef(st, `wldcups/${userId}/${wldcupTitle}`)
+
+  try {
+    const res = await listAll(wldcupsRef);
+    const deletePromises = res.items.map(item => deleteObject(item));
+
+    await Promise.all(deletePromises);
+  }catch (e){
+    console.error("파일 삭제 중 오류 발생:", e);
   }
 }
