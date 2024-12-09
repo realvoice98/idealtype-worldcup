@@ -2,51 +2,31 @@
   <nav class="gnb" >
     <div class="gnb-container">
       <ul class="gnb-nav">
-        <li class="nav-item undefined">
-          <router-link class="nav-link" to="/introduction">undefined</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link class="nav-link" to="/">이상형 월드컵</router-link>
-        </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link" @click="navigateTo('/create-wldcup')">월드컵 만들기</a>
-        </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link" @click="navigateTo('/my-page')">마이페이지</a>
-        </li>
-        <li class="nav-item">
-          <router-link class="nav-link" to="/wldcup-result">랭크</router-link>
-        </li>
-        <li class="nav-item">
+        <li><router-link to="/introduction">undefined</router-link></li>
+        <li><router-link to="/">이상형 월드컵</router-link></li>
+        <li><a href="javascript:void(0)" @click="navigateTo('/create-wldcup')">월드컵 만들기</a></li>
+        <li><a href="javascript:void(0)" @click="navigateTo('/my-page')">마이페이지</a></li>
+        <li><router-link to="/wldcup-result">랭크</router-link></li>
+        <li>
           <button @click="toggleTheme">
             <img class="btn-toggle-theme" :src="isDarkMode ? require('@/assets/dark-mode-icon.png') : require('@/assets/light-mode-icon.png')" alt="" />
           </button>
         </li>
         <div class="auth-container">
-          <li class="nav-item" v-if="!isLoggedIn">
-            <router-link class="nav-link" to="/sign-in">로그인</router-link>
-          </li>
-          <li class="nav-item" v-else>
-            <button class="nav-link" @click="signOut">로그아웃</button>
-          </li>
+          <li v-if="!isLoggedIn"><router-link to="/sign-in">로그인</router-link></li>
+          <li v-else><button @click="signOut">로그아웃</button></li>
         </div>
       </ul>
       <ul class="gnb-nav-filter" v-show="gnbNavFilterVisible && $route.path === '/'">
-        <li class="nav-item">
-          <button class="btn-toggle" :class="{'active': isPopularityActive}" @click="setSortFilter('popular')">인기순</button>
-        </li>
-        <li class="nav-item">
-          <button class="btn-toggle" :class="{'active': !isPopularityActive}" @click="setSortFilter('latest')">최신순</button>
-        </li>
-        <li class="nav-item">
+        <li><button class="btn-toggle" :class="{'active': isPopularityActive}" @click="setSortFilter('popular')">인기순</button></li>
+        <li><button class="btn-toggle" :class="{'active': !isPopularityActive}" @click="setSortFilter('latest')">최신순</button></li>
+        <li>
           <div class="search-container">
             <input v-model="searchQuery" type="text" class="search-input" placeholder="검색어 입력" @keyup.enter="searchWldcups" />
             <button v-if="searchQuery" class="btn-clear" @click="clearSearch">x</button>
           </div>
         </li>
-        <li class="nav-item">
-          <CommonButton variant="white" :onclick="searchWldcups">검색</CommonButton>
-        </li>
+        <li><CommonButton variant="white" :onclick="searchWldcups">검색</CommonButton></li>
       </ul>
     </div>
     <LoginWarningModal
@@ -227,11 +207,11 @@
     align-items: center;
   }
 
-  .nav-item {
+  li {
     list-style-type: none;
   }
 
-  .nav-link {
+  a {
     color: white;
     text-decoration: none;
   }
