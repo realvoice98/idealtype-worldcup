@@ -2,6 +2,7 @@ import { firebaseApp } from '@/services/firebase/config';
 import { getDatabase, ref as dbRef, set, get, runTransaction, push, query, orderByChild, equalTo } from 'firebase/database';
 import { getStorage, ref as stRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { formatDate, convertToValidNodeString, restoreToOriginalString} from '@/common';
+import {remove} from "core-js/internals/map-helpers";
 
 const db = getDatabase(firebaseApp);
 const st = getStorage(firebaseApp);
@@ -347,6 +348,52 @@ export async function createComment(user, wldcupId, commentText) {
   }
 }
 
+/**
+ * 월드컵 좋아요 상태를 토글하는 함수
+ * @param {Object} user 유저 정보
+ * @param {string} wldcupId 월드컵 ID
+ * @param {boolean} isLiked 현재 좋아요 상태
+ * @returns {Promise<void>} 좋아요 데이터를 DB에 저장/삭제
+ */
+export async function toggleLike(user, wldcupId, isLiked) {
+  const likeRef = dbRef(db, `users/${user.uid}/myLikesWldcups/${wldcupId}`);
+
+  try {
+    if (isLiked) {
+      // 좋아요 취소
+      await remove(likeRef);
+    } else {
+      // 좋아요 설정
+      await set(likeRef, true);
+    }
+  } catch (e) {
+    alert("좋아요 설정 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    console.error("좋아요 토글 실패:", e);
+  }
+}
+
+/**
+ * 특정 유저의 월드컵 좋아요 데이터를 불러오는 함수
+ * @param {Object} user 유저 정보
+ * @returns {Promise<Object>} 좋아요한 월드컵 ID 리스트 (key-value 형태로 반환)
+ */
+export async function getLikedWorldcups(user) {
+  const likesRef = dbRef(db, `users/${user.uid}/myLikesWldcups`);
+
+  try {
+    const snapshot = await get(likesRef);
+
+    if (snapshot.exists()) {
+      return snapshot.val();
+    } else {
+      return {};
+    }
+  } catch (e) {
+    alert("좋아요 데이터를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    console.error("좋아요 데이터 불러오기 실패:", e);
+    return {};
+  }
+}
 
 /**
  * 월드컵 조회수를 1 증가시키는 함수

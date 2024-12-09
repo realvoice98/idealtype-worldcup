@@ -11,6 +11,7 @@
         v-for="(card, cardIndex) in record"
         :key="cardIndex"
         :data="card"
+        :user="user"
       />
     </div>
   </div>
@@ -22,6 +23,7 @@
 
   import { fetchAllWldcups } from '@/services/firebase/db.js';
   import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
+  import {auth, onAuthStateChanged} from "@/services/firebase/auth";
 
   export default {
     name: 'Home',
@@ -41,9 +43,15 @@
         isLoading: false,
       };
     },
+
     async created() {
       await this.initWldcups();
       window.addEventListener('resize', this.updateWindowWidth); // 화면 크기 변경 이벤트 리스너 추가
+      onAuthStateChanged(auth, (user) => { // 안에다 비동기 요청 넣으면 await (user) =>
+        if (user) {
+          this.user = user;
+        }
+      });
     },
     beforeUnmount() {
       window.removeEventListener('resize', this.updateWindowWidth); // 이벤트 리스너 제거
