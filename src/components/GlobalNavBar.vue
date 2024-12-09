@@ -19,7 +19,7 @@
         </li>
         <li class="nav-item">
           <button @click="toggleTheme">
-            <img class="btn-toggle-theme" :src="isDarkMode ? require('@/assets/light-mode-icon.png') : require('@/assets/dark-mode-icon.png')" alt="테마 변경" />
+            <img class="btn-toggle-theme" :src="isDarkMode ? require('@/assets/dark-mode-icon.png') : require('@/assets/light-mode-icon.png')" alt="" />
           </button>
         </li>
         <div class="auth-container">
@@ -75,7 +75,7 @@
     data() {
       return {
         lastScrollPosition: 0,      // 마지막 스크롤 위치
-        isDarkMode: true,           // 초기 상태는 라이트모드
+        isDarkMode: null,
         isLoggedIn: false,          // 로그인 상태
         gnbNavFilterVisible: true, // 초기 상태는 true
         searchQuery: '',
@@ -115,7 +115,7 @@
       },
       toggleTheme() {
         this.isDarkMode = !this.isDarkMode;
-        localStorage.setItem('theme', this.isDarkMode ? 'light' : 'dark');
+        localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
         this.applyTheme();
       },
       applyTheme() {
@@ -236,6 +236,10 @@
     text-decoration: none;
   }
 
+  .btn-toggle-theme {
+    width: 20px;
+    height: 20px;
+  }
   button {
     background: transparent;
     border: none;
