@@ -1,8 +1,8 @@
 <template>
-  <div class="modal-wrap" v-if="isVisible">
+  <div class="modal-overlay" v-if="isVisible">
     <div class="header">
       <span class="image-index">{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
-      <div class="button-group">
+      <div v-if="!cropperVisible" class="button-group">
         <button class="button" @click="triggerFileSelection">이미지 변경</button>
         <button class="button" @click="confirmImages">확인</button>
       </div>
@@ -11,11 +11,11 @@
       </button>
     </div>
 
-    <div v-if="selectedImages.length > 0" class="main-image-container" @click.stop>
+    <div v-if="!cropperVisible && selectedImages.length > 0" class="main-image-container" @click.stop>
       <button v-if="selectedImages.length > 1" class="arrow left-arrow" @click="previousImage">&lt;</button>
 
       <div class="image-container">
-        <img :src="selectedImages[currentImageIndex]?.preview" class="main-image" />
+        <img :src="selectedImages[currentImageIndex]?.preview" class="main-image" @click="openCropper(currentImageIndex)" />
         <input
             :value="selectedImages[currentImageIndex]?.customName || ''"
             @input="updateCustomName($event.target.value)"
@@ -31,7 +31,24 @@
       <button v-if="selectedImages.length > 1" class="arrow right-arrow" @click="nextImage">&gt;</button>
     </div>
 
-    <div class="thumbnails" @click.stop>
+    <div v-if="cropperVisible" class="cropper-container" @click.stop>
+      <VueCropper
+          ref="cropper"
+          :src="cropperImage"
+          :aspect-ratio="1"
+          :view-mode="1"
+          :drag-mode="'move'"
+          :zoomable="false"
+          :movable="true"
+          class="vue-cropper"
+      />
+      <div class="cropper-buttons">
+        <button @click="cropImage">자르기</button>
+        <button @click="closeCropper">취소</button>
+      </div>
+    </div>
+
+    <div v-if="!cropperVisible" class="thumbnails" @click.stop>
       <img
           v-for="(image, index) in thumbnailList"
           :key="index"
@@ -55,11 +72,14 @@
 
 <script>
 import CommonModal2 from "@/components/modals/CommonModal2.vue";
+import VueCropper from 'vue-cropperjs';
+import 'cropperjs/dist/cropper.css';
 
 export default {
   name: 'ImageDetailModal',
   components: {
     CommonModal2,
+    VueCropper,
   },
   props: {
     isVisible: {
@@ -80,6 +100,8 @@ export default {
       currentImageIndex: this.initialIndex,
       originalArray: JSON.parse(JSON.stringify(this.modelValue)),
       isConfirmModalVisible: false,
+      cropperImage: null,
+      cropperVisible: false,
     };
   },
   watch: {
@@ -182,6 +204,36 @@ export default {
         reader.readAsDataURL(file);
       }
     },
+
+    openCropper(index) {
+      if (this.selectedImages && this.selectedImages[index]) {
+        this.cropperImage = this.selectedImages[index].preview; // 'preview'가 undefined인 경우를 방지
+        this.cropperVisible = true;
+      }
+    },
+
+    cropImage() {
+      this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
+        const originalFile = this.selectedImages[this.currentImageIndex].file;
+        const croppedFile = new File([blob], originalFile.name, { type: blob.type });
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.selectedImages[this.currentImageIndex] = {
+            file: croppedFile,
+            preview: e.target.result,
+          };
+          this.closeCropper();
+        };
+        reader.readAsDataURL(croppedFile);
+      });
+    },
+
+    closeCropper() {
+      this.cropperVisible = false;
+      this.cropperImage = null;
+    },
+
     updateCustomName(value) {
       if (this.selectedImages[this.currentImageIndex]) {
         this.selectedImages[this.currentImageIndex].customName = value;
@@ -229,7 +281,13 @@ export default {
 
 
 <style scoped>
-.modal-wrap {
+.modal-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(5px);
   display: flex;
   flex-direction: column;
