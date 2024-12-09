@@ -13,8 +13,13 @@
 
     <div class="comments-list">
       <div v-for="comment in comments" :key="comment.id" class="comment">
-        <p><strong>{{ comment.nickName }}</strong>: {{ comment.text }}</p>
-        <p><small>{{ comment.timestamp }}</small></p>
+        <div class="profile-box">
+        <!-- <ProfileButton width="40" height="40" src=""/> -->
+        <img width=25 height=25 alt=""  src=""/>
+        <div class="nickname">{{ comment.nickName }}</div>
+        <div class="timestamp">{{ comment.timestamp }}</div>
+        </div>
+        <div class="text"> {{ comment.text }}</div>
       </div>
     </div>
   </div>
@@ -128,5 +133,25 @@ export default {
 
 .comment small {
   color: #888;
+}
+
+.comment .text {
+  color: #888;
+  text-align: start;
+  padding: 5px;
+}
+
+.comment .profile-box{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  .nickname{
+    font-size: 15px;
+    font-weight: bold;
+  }
+  .timestamp{
+    font-size: 12px;
+    font-weight: lighter;
+  }
 }
 </style>
