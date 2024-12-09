@@ -107,6 +107,11 @@
     margin-right: 20px;
   }
 
+  .header-container {
+    position: fixed;
+    margin-top: 50px; /* TODO: 섹시하지 못한 위치 이동 */
+  }
+
   .content {
     grid-column: 3 / 4; /* 2 비율 */
     display: flex;
