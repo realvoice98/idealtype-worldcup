@@ -1,6 +1,7 @@
 <template>
   <GlobalNavBar @updateSortFilter="fetchWldcupsData" @searchWldcups="filterWldcupsSearch" @clearSearchWldcups="clearSearchWldcups"/>
   <div class="main-container">
+    <LoadingSpinner :visible="isLoading" />
     <div
       v-for="(record, recordIndex) in chunkedWldcups"
       :key="recordIndex"
@@ -20,10 +21,12 @@
   import GlobalNavBar from '@/components/GlobalNavBar.vue';
 
   import { fetchAllWldcups } from '@/services/firebase/db.js';
+  import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 
   export default {
     name: 'Home',
     components: {
+      LoadingSpinner,
       WorldcupCard,
       GlobalNavBar,
     },
@@ -35,6 +38,7 @@
         searchQuery: "",
         windowWidth: window.innerWidth, // 화면 크기 저장
         currentFilter: 'popular', // 초기값은 인기순
+        isLoading: false,
       };
     },
     async created() {
@@ -49,20 +53,41 @@
         this.windowWidth = window.innerWidth; // 화면 크기 갱신
       },
       async initWldcups() {
-        this.allWldcups = await fetchAllWldcups(); //모든 월드컵 정보 받기
-        this.applyFilters();
+        this.isLoading = true;
+        try {
+          this.allWldcups = await fetchAllWldcups(); // 모든 월드컵 정보 받기
+          this.applyFilters();
+        } catch (error) {
+          console.error("불러오기 실패:", error);
+        } finally {
+          this.isLoading = false;
+        }
       },
       async clearSearchWldcups() {
         this.searchQuery = '';
         this.applyFilters();
       },
       fetchWldcupsData(filter) {
-        this.currentFilter = filter;
-        this.applyFilters();
+        this.isLoading = true;
+        try {
+          this.currentFilter = filter;
+          this.applyFilters();
+        }  catch (error) {
+          console.error("불러오기 실패:", error);
+        } finally {
+          this.isLoading = false;
+        }
       },
       filterWldcupsSearch(query) {
-        this.searchQuery = query;
-        this.applyFilters();
+        this.isLoading = true;
+        try {
+          this.searchQuery = query;
+          this.applyFilters();
+        }  catch (error) {
+          console.error("불러오기 실패:", error);
+        } finally {
+          this.isLoading = false;
+        }
       },
       applyFilters() {
         let result = [...this.allWldcups];
