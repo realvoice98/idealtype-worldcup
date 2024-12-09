@@ -26,14 +26,10 @@
 </template>
 
 <script>
+import { getLikedWorldcups, toggleLike } from "@/services/firebase/db";
+
 export default {
-  name: 'LikeButton',
-  data() {
-    return {
-      isActived: false,
-      isTilting: false,
-    }
-  },
+  name: "LikeButton",
   props: {
     disabled: {
       type: Boolean,
@@ -43,23 +39,65 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    user: {
+      type: Object,
+    },
+    wldcupId: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      isActived: false,
+      isTilting: false,
+    };
   },
   methods: {
     /**
      * 현재 월드컵에 대한 좋아요 상태 변경
      */
-    toggleState() {
-      this.isActived = !this.isActived;
-      this.isTilting = true; // 흔들림 애니메이션 트리거
+    async toggleState() {
+      if (!this.user) {
+        alert("로그인 후에 좋아요 버튼을 누를 수 있습니다.");
+        return;
+      }
 
-      // TODO: 현재 월드컵에 대한 좋아요 이력 user/uid/myLikesWldcups/wldcupId 경로에 boolean 값으로 set/delete
+      this.isTilting = true; // 흔들림 애니메이션 트리거
+      try {
+        await toggleLike(this.user, this.wldcupId, this.isActived);
+        this.isActived = !this.isActived;
+      } catch (e) {
+        console.error("좋아요 토글 실패:", e);
+      } finally {
+        this.isTilting = false;
+      }
     },
-    initTilt() {
-      this.isTilting = false; // 애니메이션 종료 후 상태 초기화
+    /**
+     * 좋아요 데이터 로드 및 초기화
+     */
+    async loadLikes() {
+      try {
+        const likes = await getLikedWorldcups(this.user);
+        console.log("likes")
+        console.log(likes)
+
+        this.isActived = likes[this.wldcupId] === true;
+      } catch (e) {
+        console.error("좋아요 데이터 로드 실패:", e);
+      }
     },
+  },
+  async created() {
+    console.log(this.user);
+
+    if (this.user) {
+      await this.loadLikes();
+    }
   },
 };
 </script>
+
 
 <style scoped>
   .btn-like {

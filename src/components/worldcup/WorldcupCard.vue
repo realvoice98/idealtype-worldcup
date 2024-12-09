@@ -11,7 +11,7 @@
           <p>{{ thumbnails[1].customName }}</p>
         </div>
       </div>
-      <div class="card-title" id="card-title-link" >
+      <div class="card-title" id="card-title-link">
         {{ title }}
       </div>
     </router-link>
@@ -20,13 +20,13 @@
     </div>
     <div class="card-description">
       <span>조회수 {{ views }}회 · {{ updatedAt }} 업데이트됨</span>
-      <LikeButton />
+      <LikeButton :user="user" :wldcupId="data.wldcupId"/>
     </div>
   </div>
 </template>
 
 <script>
-  import LikeButton from '@/components/buttons/LikeButton.vue';
+import LikeButton from '@/components/buttons/LikeButton.vue';
 
   export default {
     name: 'WorldcupCard',
@@ -37,6 +37,7 @@
       data: {
         type: Object,
       },
+      user: Object,
     },
     computed: {
       thumbnails() {
@@ -71,8 +72,8 @@
     max-width: 25rem; /* 카드 하나 당 고정 너비 */
     width: 100%;
     box-sizing: border-box;
-    
   }
+
   .card-thumbnails {
     display: flex;
     justify-content: space-between;
@@ -89,12 +90,12 @@
 
   .card-thumbnail {
     flex: 1;
-    p{
+    p {
       display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    margin: 6px 0px;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      margin: 6px 0px;
     }
   }
 
@@ -118,6 +119,7 @@
     justify-content: space-between;
     width: 100%;
   }
+
   .card-description > span {
     margin-right: 1rem; /* 텍스트가 아무리 길어져도 버튼과 약간의 이격 거리 유지 */
   }
