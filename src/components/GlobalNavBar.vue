@@ -228,7 +228,7 @@
   li.nav-tab {
     margin-bottom: 2px; /* 현재 탭 하단 바 두께와 동일해야 함 */
     padding-bottom: 5px;
-
+  }
   li.nav-tab.active {
     border-bottom: 2px solid var(--theme);
   }
