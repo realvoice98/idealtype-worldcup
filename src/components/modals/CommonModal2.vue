@@ -7,7 +7,7 @@
       <div class="btn-modal">
         <p>{{ content }}</p>
         <span v-for="(button, index) in buttons" :key="index">
-          <button @click="button.callback">{{ button.text }}</button>
+          <CommonButton variant="primary" @click="button.callback">{{ button.text }}</CommonButton>
         </span>
       </div>
     </div>
@@ -15,8 +15,13 @@
 </template>
 
 <script>
+  import CommonButton from "@/components/buttons/CommonButton.vue";
+
   export default {
     name: "CommonModal",
+    components:{
+      CommonButton,
+    },
     props: {
       visible: {
         type: Boolean,
