@@ -41,6 +41,7 @@ export default {
     },
     user: {
       type: Object,
+      default: null,
     },
     wldcupId: {
       type: String,
@@ -78,18 +79,22 @@ export default {
      */
     async loadLikes() {
       try {
-        const likes = await getLikedWorldcups(this.user);
+        if (!this.user) return;
 
+        const likes = await getLikedWorldcups(this.user);
         this.isActived = likes[this.wldcupId] === true;
       } catch (e) {
         console.error("좋아요 데이터 로드 실패:", e);
       }
     },
   },
-  async created() {
-    if (this.user) {
-      await this.loadLikes();
-    }
+  watch: {
+    user: {
+      immediate: true,
+      handler(newUser) {
+        if (newUser) this.loadLikes();
+      },
+    },
   },
 };
 </script>

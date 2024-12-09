@@ -383,7 +383,7 @@ export async function getLikedWorldcups(user) {
   try {
     const snapshot = await get(likesRef);
 
-    if (snapshot.exists()) {
+    if (snapshot.val() !== null) {
       return snapshot.val();
     } else {
       return {};
