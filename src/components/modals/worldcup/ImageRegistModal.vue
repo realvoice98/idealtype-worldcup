@@ -1,7 +1,7 @@
 <template>
-  <div class="modal-wrap" v-if="isVisible">
+  <div class="modal-overlay" v-if="isVisible">
     <div class="header">
-      <span>{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
+      <span class="image-index">{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
       <div class="button-group" v-if="!cropperVisible" @click.stop>
         <button @click="triggerFileSelection" class="button">+ 추가</button>
         <button @click="confirmImages" class="button">확인</button>
@@ -278,7 +278,13 @@
 </script>
 
 <style scoped>
-.modal-wrap {
+.modal-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(5px);
   display: flex;
   flex-direction: column;
@@ -336,6 +342,11 @@
 .header .button.close img{
   width: 3vw;
   height: 3.5vh;
+}
+
+.image-index {
+  text-align: center;
+  font-size: 1.5vw;
 }
 
 .main-image-container {
