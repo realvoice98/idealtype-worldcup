@@ -136,12 +136,23 @@
         }
         return rounds; // ex. [ 128, 64, 32, 16, 8, 4 ]
       },
+      /**
+       * 선택한 토너먼트 라운드 수로 업데이트
+       */
       selectTournamentCnt(e) {
         const selectItem = document.querySelector('.btn-dropdown');
         selectItem.style.borderWidth = '2px';
         selectItem.style.backgroundColor = 'white';
         selectItem.style.borderColor = '#98B7D4';
-        selectItem.innerText = e.target.innerText; // TODO: <span class="icon"> 을 childNode로 append 해주어야 함
+        selectItem.innerHTML = e.target.innerText;
+
+        // 드랍박스 하단 화살표 아이콘 업데이트
+        const iconSpan = document.createElement('span');
+        iconSpan.classList.add('icon');
+        iconSpan.style.fontSize = '20px';
+        iconSpan.style.float = 'right';
+        iconSpan.innerText = 'arrow_drop_down';
+        selectItem.appendChild(iconSpan);
       },
     },
   };
