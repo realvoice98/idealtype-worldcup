@@ -130,6 +130,8 @@
             this.showModal('로그인 상태에서만 월드컵을 만들 수 있어요. 로그인하러 가시겠어요?', currentPath);
           } else if (currentPath === '/my-page') {
             this.showModal('로그인 상태에서만 확인할 수 있어요. 로그인하러 가시겠어요?', currentPath);
+          } else if (currentPath === '/') {
+            window.location.reload();
           } else {
             this.$router.push('/');
           }
