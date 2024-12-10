@@ -34,8 +34,8 @@
             {{ enterItemCnt }}강 <span class="icon">arrow_drop_down</span>
           </button>
           <div class="dropdown-content">
-            <span v-for="(tournament, index) in tournaments" :key="index" @click="selectTournamentCnt">
-              {{ tournament }}강
+            <span v-for="(round, index) in rounds" :key="index" @click="selectTournamentCnt">
+              {{ round }}강
             </span>
           </div>
         </div>
@@ -63,12 +63,12 @@
       return {
         isLoading: true,
         isProgress: null, // 월드컵 진행 이력이 존재하는지
-        title: '천하제일 신창섭 AI 정상화 월드컵 (어디까지 늘어나는지 테스트)', // TODO: 테스트용 더미값 제거
-        description: '젠장 에이스 이 공격은 대체 뭐냐!! --- 줄바꿈 테스트 줄바꿈 테스트 줄바꿈 테스트 줄바꿈 테스트 줄바꿈 테스트 줄바꿈 테스트 ',
-        hashtags: ['#어디까지늘어날수', '#있는지테스트', '#한번해봐야합니다', '#이제여기서개행이되야함', '#오', '#개행도잘된다', '#된다된다잘된다', '#더잘된다잘된다'],
-        totalItemCnt: 512, // 전체 후보 수
-        enterItemCnt: 256, // 출진 후보 수 (tournaments * 2)
-        tournaments: [256, 128, 64, 32, 16, 8, 4], // n강
+        title: '',
+        description: '',
+        hashtags: [],
+        totalItemCnt: 0, // 전체 후보 수
+        enterItemCnt: 0, // 출진 후보 수 (rounds * 2)
+        rounds: [], // n강
       };
     },
     created() {
@@ -111,9 +111,30 @@
       },
       async fetchWldcup() {
         const wldcupId = this.$route.params.id;
-
         const wldcup = await fetchWldcup(wldcupId);
-        // TODO: wldcup 객체를 각 data() 필드들에 바인딩
+
+        this.title = wldcup.title;
+        this.description = wldcup.description;
+        this.hashtags = wldcup.hashtags;
+        this.totalItemCnt = wldcup.images.length;
+        this.enterItemCnt = Math.pow(2, Math.floor(Math.log2(this.totalItemCnt))); // 가장 가까운 2의 제곱수
+        this.rounds = this.calcRounds(this.totalItemCnt); // 라운드 배열 연산
+      },
+      /**
+       * 총 후보 수를 기준으로 최대 라운드부터 최소 라운드(4강)까지 배열 원소를 추가하는 연산 함수
+       * @param totalItemCnt 단일 월드컵 내 총 후보 수
+       * @returns {Array} 최대 라운드 ~ 최소 라운드(4강) 데이터를 담은 배열
+       */
+      calcRounds(totalItemCnt) {
+        const rounds = [];
+        let current = Math.pow(2, Math.floor(Math.log2(totalItemCnt))); // 가장 가까운 2의 제곱수 (최대 라운드)
+
+        // 라운드의 최소값은 4강
+        while (current >= 4) {
+          rounds.push(current);
+          current /= 2;
+        }
+        return rounds; // ex. [ 128, 64, 32, 16, 8, 4 ]
       },
       selectTournamentCnt(e) {
         const selectItem = document.querySelector('.btn-dropdown');
