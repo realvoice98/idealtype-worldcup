@@ -2,7 +2,7 @@
   <nav class="gnb">
     <div class="gnb-container">
       <ul class="gnb-nav">
-        <li class="logo"><router-link to="/introduction">undefined</router-link></li>
+        <li class="nav-tab logo"><router-link to="/introduction">undefined</router-link></li>
         <li class="nav-tab" :class="{ active: $route.path === '/' }">
           <router-link to="/">이상형 월드컵</router-link>
         </li>
@@ -38,7 +38,7 @@
             <button v-if="searchQuery" class="btn-clear" @click="clearSearch">x</button>
           </div>
         </li>
-        <li><CommonButton variant="white" :onclick="searchWldcups">검색</CommonButton></li>
+        <li><CommonButton variant="white" :onclick="searchWldcups" style="border: 2px solid var(--theme)">검색</CommonButton></li>
       </ul>
     </div>
     <LoginWarningModal
@@ -206,6 +206,10 @@
     gap: 2rem;
     align-items: center;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-tab, .logo {
+    color: black; /* 다크모드 시에도 GNB는 독립적인 색상을 유지 */
   }
 
   .auth-container {
