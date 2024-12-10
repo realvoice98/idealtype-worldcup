@@ -1,5 +1,5 @@
 import { firebaseApp } from '@/services/firebase/config';
-import { getDatabase, ref as dbRef, set, get, runTransaction, push, query, orderByChild, remove as rm  } from 'firebase/database';
+import { getDatabase, ref as dbRef, set, get, update, runTransaction, push, query, orderByChild, remove as rm  } from 'firebase/database';
 import { getStorage, ref as stRef, uploadBytes, getDownloadURL, listAll, deleteObject } from 'firebase/storage';
 import { formatDate, convertToValidNodeString, restoreToOriginalString} from '@/common';
 
@@ -421,28 +421,71 @@ export async function increaseInViews(user, wldcupId) {
 }
 
 /**
+ * 월드컵 새로시작 시, 최대 라운드 설정 및 초기 데이터를 삽입하는 함수
+ * @param {Object} user 유저 정보
+ * @param {string} wldcupId 월드컵 ID
+ * @param {number} round n강
+ * @param {string} matches 1:1 매치
+ * @returns {Promise<void>}
+ */
+export async function initWldcupProgress(user, wldcupId, round, matches) {
+  // FIXME: initWldcupProgress ?? 피로감에 이상해진 함수 작명 > 좀 더 직관적으로
+
+  const inProgressWldcupRef = dbRef(db, `inProgressWldcup/${wldcupId}/${user.uid}`);
+
+  try {
+    await set(inProgressWldcupRef, {
+      round,
+      matches: { [round]: matches }, // 초기 라운드 매치 정보 삽입
+    });
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+/**
+ * 매치에서 승리한 후보에 대한 결과 처리 함수
+ * @param {Object} user 유저 정보
+ * @param {string} wldcupId 월드컵 ID
+ * @param {number} round n강
+ * @param {string} matchId
+ * @param {string} winnerName 승리한 아이템 이름
+ * @returns {Promise<void>}
+ */
+export async function processMatchResult(user, wldcupId, round, matchId, winnerName) {
+  // TODO: 빌어먹을 데모 로직을 테스트 가능한 수준으로 제대로 수정해!!!!!!!!!!
+
+  const inProgressWldcupRef = dbRef(db, `inProgressWldcup/${wldcupId}/${user.uid}`);
+  const winnerPath = `matches/${round}/${matchId}/${winnerName}`;
+  const nextRound = round === "final" ? null : String(round / 2);
+
+  // 승리 카운트 증가
+  const updates = {};
+  updates[`${winnerPath}/winCnt`] = 1;
+  if (round === 2) { // FIXME: 2 ? 'final' ??? 마지막 라운드를 어떻게 생성해서 보내줄 것인지 고민이 필요... 아... 머리 끝까지 화가 난다
+    updates[`${winnerPath}/champCnt`] = 1;
+  }
+
+  // 다음 라운드 매치로 승리자 이동
+  if (nextRound) {
+    const nextMatchId = `match${Math.ceil(matchId / 2)}`;
+    updates[`matches/${nextRound}/${nextMatchId}/${winnerName}`] = { ...winnerData }; // TODO: 구조분해할당이 제대로 이루어지는지? FUCK FUCK FUCK FUCK FUCK
+  }
+
+  await update(inProgressWldcupRef, updates);
+}
+
+/**
  * 월드컵의 현재 진행도를 저장하는 함수
  * @param {Object} user 유저 정보
  * @param {string} wldcupId 월드컵 ID
  * @returns
  */
 export async function saveWldcupProgress(user, wldcupId) {
-  const inProgressWldcupRef = dbRef(db, `users/${user.uid}/inProgressWldcup/${wldcupId}`);
+  const inProgressWldcupRef = dbRef(db, `users/${user.uid}/inProgressWldcup/${wldcupId}`); // FIXME: 월드컵 상세 관련 함수 작업이 끝나는 대로 경로를 매핑 처리
 
   try {
     await set(inProgressWldcupRef, {
-      // totalTournaments: 256, // 월드컵 시작 전 선택한 n강 토너먼트
-      // currentTournaments: 128, // 128을 다 채우면 64, 32... 4(준결승전), 2(결승전)
-      // items: [
-      //   {
-      //     index: 1,
-      //     name: '엔믹스 해원',
-      //   },
-      //   {
-      //     index: 2,
-      //     name: '프로미스나인 백지헌',
-      //   },
-      // ]
     });
   } catch(e) {
     console.error(e);
