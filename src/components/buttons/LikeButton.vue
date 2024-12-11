@@ -70,9 +70,10 @@ export default {
         this.isTilting = true; // 흔들림 애니메이션 트리거
       } catch (e) {
         console.error("좋아요 토글 실패:", e);
-      } finally {
-        this.isTilting = false;
       }
+    },
+    initTilt() {
+      this.isTilting = false; // 애니메이션 종료 후 상태 초기화
     },
     /**
      * 좋아요 데이터 로드 및 초기화

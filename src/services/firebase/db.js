@@ -358,7 +358,6 @@ export async function toggleLike(user, wldcupId) {
 
   try {
     const snapshot = await get(likeRef);
-    console.log(snapshot.val())
     if (snapshot.val() === null) {
       await set(likeRef, true);
     } else {
