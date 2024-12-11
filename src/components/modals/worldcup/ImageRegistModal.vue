@@ -345,6 +345,7 @@
   display: flex;
   justify-content: center;
   flex-grow: 1;
+  justify-content: space-evenly;
 }
 
 .header .button.close {
@@ -370,8 +371,8 @@
 }
 
 .header .button.close img{
-  width: 3vw;
-  height: 3.5vh;
+  width: 30px;
+  height: 30px;
 }
 
 .image-index {
@@ -512,9 +513,9 @@
 
 .image-name-input {
   position: absolute;
-  bottom: 1vh;
-  left: 1vh;
-  width: calc(100% - 2vh);
+  bottom: 6px;
+  left: 0;
+  width: 100%;
   height: 8vh;
   border: none;
   background: rgba(0, 0, 0, 0.5);
@@ -523,6 +524,13 @@
   border-radius: 0.5vw;
   font-size: 2vw;
   box-sizing: border-box;
+  outline:none;
+  padding: 0px 10px;
+}
+
+.image-name-input::placeholder{
+  color:white;
+  
 }
 </style>
 

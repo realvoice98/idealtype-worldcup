@@ -29,7 +29,7 @@
           <div class="image-box" v-for="(image, index) in images" :key="index" @click.stop="openDetailModal(index)">
             <img :src="image.preview" alt="이미지 영역" />
           </div>
-          <div v-if="images.length === 0">
+          <div class="image-registration" v-if="images.length === 0">
             여기를 클릭해서 이미지를 등록해주세요.
           </div>
         </div>
@@ -105,7 +105,7 @@
         //     this.$router.push('/');
         //   }
         // }
-      );
+    });
     },
     methods: {
       /**
@@ -255,6 +255,10 @@
       outline: none;
     }
 
+    .content-box{
+      padding:5px 10px;
+    }
+
     .content-box > input {
       width: 100%;
     }
@@ -268,7 +272,6 @@
       box-sizing: border-box;
       color: dimgray;
       line-height: 22px;
-      padding: 8px;
     }
 
     .input-hashtag {
@@ -284,7 +287,7 @@
 
     .image-area {
       display: flex;
-      height: 10rem;
+      min-height: 10rem;
       flex-wrap: wrap;
       cursor: pointer;
       gap: 10px;
@@ -293,6 +296,13 @@
     .image-box img{
       width: 100px;
       height: 100px;
+    }
+
+    .image-registration{
+      width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     }
 
     .button-container {
