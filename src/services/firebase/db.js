@@ -517,10 +517,11 @@ export async function checkInProgressWldcup(user, wldcupId) {
  */
 export async function deleteWldcup(wldcupId) {
   const wldcupRef = dbRef(db, `wldcups/${wldcupId}`);
+  const commentsRef = dbRef(db, `comments/${wldcupId}`);
 
   try {
-    console.log(wldcupRef);
     await rm(wldcupRef);
+    await rm(commentsRef); //TODO: 댓글 삭제되는지 테스트 필요
   }catch (e){
     console.error('오류: 월드컵을 삭제하지 못했습니다.', e)
   }
