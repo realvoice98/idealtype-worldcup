@@ -19,6 +19,26 @@
           <div class="left">생년월일</div>
           <input class="right" v-model="birthday" @input="autoHyphen" placeholder="YYYY-MM-DD" maxlength="10" />
         </div>
+        <div>
+        <div class="signup-line phoneNumber">
+          <div class="left">전화번호</div>
+          <div class="right">
+            <input style="border:none" v-model="phoneNumber" @input="autoPhoneHyphen" placeholder="010-0000-0000" maxlength="15" />
+            <button class="submit-btn" id="verificationPhone" @click="submitPhone">발송</button>  
+          </div>
+        </div>
+        <div class="submit-status" v-if="submitStatus">{{ submitStatus }}</div>
+      </div>
+      <div>
+        <div class="signup-line verification">
+          <div class="left">인증번호</div>
+          <div class="right">
+            <input style="border:none" placeholder="인증번호 6자리" v-model="verification" @input="updateVerification" maxlength="6" />
+          <button class="confirm-btn" id="confirmVerification" @click="confirmVerification">확인</button>
+          </div>
+        </div>
+        <div class="submit-status" v-if="verificationMessage">{{ verificationMessage }}</div>
+      </div>
         <div class="signup-line gender">
           <div class="gender-list">
             <button
@@ -43,8 +63,11 @@
 </template>
 
 <script>
-  import { auth, createUserWithEmailAndPassword } from '@/services/firebase/auth';
+  import Dashboard from '@/components/admin/Dashboard.vue';
+import { auth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber } from '@/services/firebase/auth';
   import { createUser } from '@/services/firebase/db';
+
+  auth.languageCode = 'ko';
 
   export default {
     name: 'SignUp',
@@ -54,14 +77,42 @@
         password: '',
         nickname: '',
         birthday: '',
+        phoneNumber: '',
+        noHyphenPhoneNumber: '',
+        submitStatus: '',
+        verification: '',
+        verificationStatus: '',
+        verificationMessage: '',
         gender: '',
-        errorMessage: '',
+        errorMessage: ''
       };
+    },
+    mounted(){
+        window.recaptchaVerifier = new RecaptchaVerifier(auth,'verificationPhone', {
+      size: 'invisible',
+      callback: (response) => {
+        console.log("reCAPTCHA 통과:", response);
+      },
+    });
+      document.getElementById("confirmVerification").addEventListener("click", (e) => {
+        e.preventDefault();
+        const code = this.verification;
+        window.confirmationResult.confirm(code).then((result) => {
+        
+        this.verificationStatus = 'Y';
+        this.verificationMessage = '인증되었습니다.'
+        }).catch((error) => {
+          console.log("error :", error)
+          // firebaseError(error)
+        });
+      })
+   
     },
     methods: {
       /**
        * Firebase Auth 연동 회원가입 및 DB에 회원 데이터 추가
        */
+      
       async signUp() {
         if (!this.validate()) return;
 
@@ -116,11 +167,19 @@
           this.errorMessage = '생년월일을 입력해주세요.';
           return false;
         }
+
+        if (!this.verificationStatus) {
+          this.errorMessage = '인증번호를 입력해주세요';
+          return false;
+        }
+
         // TODO: birthday 숫자, 공백, `.` 문자만 포함 (정규식)
         if (!this.gender) {
           this.errorMessage = '성별을 선택해주세요.';
           return false;
         }
+
+     
         return true;
       },
       selectGender(gender) {
@@ -143,6 +202,36 @@
         }
         this.birthday = value;
       },
+      autoPhoneHyphen(e) {
+        let value = e.target.value.replace(/\D/g, '');
+
+        if (value.length > 3) {
+          value = value.slice(0, 3) + '-' + value.slice(3);
+        }
+        if (value.length > 8) {
+          value = value.slice(0, 8) + '-' + value.slice(8);
+        }
+        this.phoneNumber = value;
+        this.noHyphenPhoneNumber = value.replace(/-/g, '');
+      },
+      updateVerification(e) {
+        this.verification = e.target.value; // 인증번호 값 바인딩
+      },
+
+      submitPhone(e){
+        e.preventDefault();
+        const phoneNumber = "+82" + this.noHyphenPhoneNumber //한국 지역번호 +82
+        const appVerifier = window.recaptchaVerifier;
+        signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+          .then((confirmationResult) => {
+            window.confirmationResult = confirmationResult;
+            this.submitStatus = '발송 되었습니다.';
+            
+          }).catch((error) => {
+            console.log("에러",error)
+          });
+      }
+            
     },
     watch: {
       email(value) {
@@ -172,6 +261,7 @@
       },
     }
   }
+
 </script>
 
 <style scoped>
@@ -186,6 +276,10 @@
     font-size: 35px;
     padding:15px 10px;
     font-weight: 700;
+  }
+
+  input{
+    outline: none;
   }
 
   .signup-content {
@@ -213,6 +307,7 @@
         padding: 8px 10px;
         border-radius: 3px;
         border: 1px solid #ccc;
+        display: flex;
       }
     }
   }
@@ -274,4 +369,21 @@
       color: var(--theme);
     }
   }
+
+  .submit-btn, .confirm-btn {
+    background-color: var(--theme);
+    border: none;
+    border-radius: 3px;
+    font-size: 13px;
+    padding: 2px 10px;
+    cursor: pointer;
+  }
+
+  .submit-status{
+    font-size: 12px;
+    color: crimson;
+    text-align: end;
+    padding: 1px 20px 0px 0px;
+  }
+
 </style>

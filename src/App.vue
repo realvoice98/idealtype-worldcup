@@ -2,7 +2,6 @@
   <div id="app" :class="{ 'dark-mode': isDarkMode, 'light-mode': !isDarkMode }">
     <GlobalNavBar v-if="isGnbVisible" :isDarkMode="isDarkMode" @toggleTheme="toggleTheme" />
     <CustomModal v-if="isModalVisible" :visible="isModalVisible" @close="closeModal" />
-    <AuthEmailModal v-if="isAuthEmailModalVisible" :visible="isAuthEmailModalVisible" @close="closeAuthEmailModal" />
     <router-view />
   </div>
 </template>
@@ -14,14 +13,11 @@
   import { auth } from '@/services/firebase/auth';
   import { nextTick } from 'vue';
   import router from '@/router';
-  import AuthEmailModal from '@/components/modals/AuthEmailModal.vue';
-
   export default {
     name: 'App',
     components: {
       GlobalNavBar,
       CustomModal,
-      AuthEmailModal,
     },
     data() {
       return {
@@ -37,7 +33,7 @@
       const savedTheme = localStorage.getItem('theme');
       this.isDarkMode = savedTheme === 'light';
       this.setupRouterGuard();
-      // this.checkAuthEmail();
+      this.checkAuthEmail();
     },
     watch: {
       // route가 변경될 때마다 GNB 상태 확인
@@ -93,24 +89,24 @@
           });
         });
       },
-      // checkAuthEmail() {
-      //   router.beforeEach((to, from, next) => {
-      //     onAuthStateChanged(auth, (user) => {
-      //       const isLoggedIn = !!user;
+      checkAuthEmail() {
+        router.beforeEach((to, from, next) => {
+          onAuthStateChanged(auth, (user) => {
+            const isLoggedIn = !!user;
 
-      //       if (to.meta.requiresAuth && !isLoggedIn) {
+            if (to.meta.requiresAuth && !isLoggedIn) {
 
-      //         nextTick(() => {
-      //           this.openAuthEmailModal();
-      //         });
+              nextTick(() => {
+                this.openAuthEmailModal();
+              });
 
-      //         // next({name: 'SignUp'});
-      //       } else {
-      //         next();
-      //       }
-      //     });
-      //   });
-      // },
+              // next({name: 'SignUp'});
+            } else {
+              next();
+            }
+          });
+        });
+      },
     },
   };
 </script>

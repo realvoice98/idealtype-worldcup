@@ -4,7 +4,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  getRedirectResult
+  getRedirectResult,
+  RecaptchaVerifier,
+  signInWithPhoneNumber
 } from 'firebase/auth';
 
 // Initialize Firebase Authentication and get a reference to the service
@@ -15,5 +17,7 @@ export {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  getRedirectResult
+  getRedirectResult,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
 };
