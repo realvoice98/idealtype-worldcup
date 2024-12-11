@@ -4,7 +4,7 @@
       <span class="image-index">{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
       <div class="button-group" v-if="!cropperVisible" @click.stop>
         <button @click="triggerFileSelection" class="button">+ 추가</button>
-        <button @click="confirmImages" class="button">확인</button>
+        <button @click="handleButtonClick" class="button">{{ isWldcupsPage ? '업데이트' : '확인' }}</button>
       </div>
       <button class="button close" @click="confirmClose">
         <img src="@/assets/x_icon.png" alt="x">
@@ -61,7 +61,7 @@
     <CommonModal2
         v-if="isConfirmModalVisible"
         :visible="isConfirmModalVisible"
-        content="이미지 추가를 취소하고 나가시겠습니까?"
+        content="취소하고 나가시겠습니까?"
         :buttons="confirmButtons"
     />
 
@@ -104,23 +104,40 @@
         return thumbnails.slice(startIndex, startIndex + 5);
       },
       confirmButtons() {
-        return [
-          {
-            text: "추가",
-            callback: this.confirmImages,
-          },
-          {
-            text: "나가기",
-            callback: this.closeModal,
-          },
-        ];
+        // 경로에 따라 버튼을 다르게 설정
+        if (this.isWldcupsPage) {
+          return [
+            {
+              text: "업데이트",
+              callback: this.updateImages, // '/my-page/wldcups' 경로에서 실행할 로직
+            },
+            {
+              text: "나가기",
+              callback: this.closeModal,
+            },
+          ];
+        } else {
+          return [
+            {
+              text: "추가",
+              callback: this.confirmImages, // 기본 '추가' 버튼
+            },
+            {
+              text: "나가기",
+              callback: this.closeModal,
+            },
+          ];
+        }
       },
       hasAdd(){
         return this.selectedImages.length > 0;
       },
+      isWldcupsPage() {
+        return this.$route.path.startsWith('/my-page/wldcups');
+      },
     },
     mounted() {
-      if (this.isVisible) {
+      if (this.isVisible && !this.isWldcupsPage) {
         this.triggerFileSelection();
       }
     },
@@ -136,7 +153,7 @@
         deep: true,
       },
       isVisible(newVal) {
-        if (newVal) {
+        if (newVal && !this.isWldcupsPage) {
           this.triggerFileSelection();
         }
       },
@@ -219,6 +236,14 @@
         this.cropperImage = null;
       },
 
+      handleButtonClick() {
+        if (this.isWldcupsPage) {
+          this.updateImages();  // '/my-page/wldcups' 경로일 때 실행할 로직
+        } else {
+          this.confirmImages();  // 그 외의 경로에서 실행할 로직
+        }
+      },
+
       confirmImages() {
         if (this.selectedImages.some((image) => !image.customName)) {
           this.isConfirmModalVisible = false;
@@ -235,6 +260,11 @@
         }else{
           this.$emit('update:isVisible', false);
         }
+      },
+      updateImages() {
+        // '/my-page/wldcups' 경로에서 '업데이트' 버튼 클릭 시 처리할 로직
+        console.log('이미지 업데이트');
+        // 업데이트 관련 추가 처리 로직
       },
       closeModal() {
         this.isConfirmModalVisible = false;
