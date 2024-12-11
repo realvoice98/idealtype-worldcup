@@ -22,6 +22,7 @@
             type="text"
             class="image-name-input"
             placeholder="이미지 이름 입력"
+            ref="customNameInput"
         />
         <button class="remove-button" @click="removeImage(currentImageIndex)">
           <img src="@/assets/x_icon.png" alt="x">
@@ -50,11 +51,11 @@
 
     <div v-if="!cropperVisible" class="thumbnails" @click.stop>
       <img
-          v-for="(image, index) in displayedThumbnails"
+          v-for="(image, index) in thumbnailList"
           :key="index"
           :src="image.preview"
-          :class="{ 'active-thumbnail': index === currentImageIndex % 5 }"
-          @click="currentImageIndex = index"
+          :class="{ 'active-thumbnail': image.isActive }"
+          @click="updateCurrentIndex(index)"
       />
     </div>
 
@@ -98,10 +99,26 @@
       };
     },
     computed: {
-      displayedThumbnails() {
-        const thumbnails = this.selectedImages;
-        const startIndex = Math.floor(this.currentImageIndex / 5) * 5;
-        return thumbnails.slice(startIndex, startIndex + 5);
+      thumbnailList() {
+        const total = this.selectedImages.length;
+        const range = 2;
+        let result = [];
+
+        if (total <= 5) {
+          result = this.selectedImages.map((image, index) => ({
+            ...image,
+            isActive: index === this.currentImageIndex,
+          }));
+        } else {
+          for (let i = -range; i <= range; i++) {
+            const index = (this.currentImageIndex + i + total) % total;
+            result.push({
+              ...this.selectedImages[index],
+              isActive: index === this.currentImageIndex,
+            });
+          }
+        }
+        return result;
       },
       confirmButtons() {
         // 경로에 따라 버튼을 다르게 설정
@@ -140,6 +157,11 @@
       if (this.isVisible && !this.isWldcupsPage) {
         this.triggerFileSelection();
       }
+
+      window.addEventListener('keydown', this.handleKeydown);
+    },
+    beforeUnmount() {
+      window.removeEventListener('keydown', this.handleKeydown);
     },
     watch: {
       'selectedImages': {
@@ -201,10 +223,14 @@
           reader.readAsDataURL(file);
         });
 
-        // 첫 번째 이미지가 추가되면 currentImageIndex를 0으로 설정
         if (this.selectedImages.length === 1) {
           this.currentImageIndex = 0;
         }
+      },
+
+      updateCurrentIndex(thumbnailIndex) {
+        const total = this.selectedImages.length;
+        this.currentImageIndex = (this.currentImageIndex + (thumbnailIndex - 2) + total) % total;
       },
 
       openCropper(index) {
@@ -243,6 +269,7 @@
           this.confirmImages();  // 그 외의 경로에서 실행할 로직
         }
       },
+
 
       confirmImages() {
         if (this.selectedImages.some((image) => !image.customName)) {
@@ -287,17 +314,39 @@
         }
       },
 
+      focusInput() {
+        this.$nextTick(() => {
+          const input = this.$refs.customNameInput;
+          if (input) {
+            input.focus();
+          }
+        });
+      },
+
       previousImage() {
         if (this.selectedImages.length > 0) {
           this.currentImageIndex = (this.currentImageIndex - 1 + this.selectedImages.length) % this.selectedImages.length;
+          this.focusInput();
         }
       },
 
       nextImage() {
         if (this.selectedImages.length > 0) {
           this.currentImageIndex = (this.currentImageIndex + 1) % this.selectedImages.length;
+          this.focusInput();
         }
       },
+
+      handleKeydown(event) {
+        if (event.key === 'ArrowLeft') {
+          this.previousImage();
+          this.focusInput();
+        } else if (event.key === 'ArrowRight') {
+          this.nextImage();
+          this.focusInput();
+        }
+      },
+
       updateCustomName(value) {
         if (this.selectedImages[this.currentImageIndex]) {
           this.selectedImages[this.currentImageIndex].customName = value;

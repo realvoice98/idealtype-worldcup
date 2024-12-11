@@ -22,6 +22,7 @@
             type="text"
             class="image-name-input"
             placeholder="이미지 이름 입력"
+            ref="customNameInput"
         />
         <button class="remove-button" @click="removeImage(currentImageIndex)">
           <img src="@/assets/x_icon.png" alt="x">
@@ -166,6 +167,12 @@ export default {
       ];
     },
   },
+  mounted() {
+    window.addEventListener('keydown', this.handleKeydown);
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.handleKeydown);
+  },
   methods: {
     areArraysEqual(arr1, arr2) {
       if (arr1.length !== arr2.length) return false;
@@ -265,14 +272,37 @@ export default {
         }
       }
     },
+
+    focusInput() {
+      this.$nextTick(() => {
+        const input = this.$refs.customNameInput;
+        if (input) {
+          input.focus();
+        }
+      });
+    },
+
     previousImage() {
       if (this.selectedImages.length > 0) {
         this.currentImageIndex = (this.currentImageIndex - 1 + this.selectedImages.length) % this.selectedImages.length;
+        this.focusInput();
       }
     },
+
     nextImage() {
       if (this.selectedImages.length > 0) {
         this.currentImageIndex = (this.currentImageIndex + 1) % this.selectedImages.length;
+        this.focusInput();
+      }
+    },
+
+    handleKeydown(event) {
+      if (event.key === 'ArrowLeft') {
+        this.previousImage();
+        this.focusInput();
+      } else if (event.key === 'ArrowRight') {
+        this.nextImage();
+        this.focusInput();
       }
     },
   },
