@@ -73,6 +73,9 @@
         }
       });
     },
+    mounted() {
+      document.title = '이상형 월드컵 : 마이페이지';
+    },
     methods: {
       changeImage() {
         // TODO: 이미지 변경

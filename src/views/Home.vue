@@ -56,6 +56,9 @@
     beforeUnmount() {
       window.removeEventListener('resize', this.updateWindowWidth); // 이벤트 리스너 제거
     },
+    mounted() {
+      document.title = '이상형 월드컵 | Ideal type worldcup';
+    },
     methods: {
       updateWindowWidth() {
         this.windowWidth = window.innerWidth; // 화면 크기 갱신

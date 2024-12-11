@@ -101,6 +101,8 @@
   export default {
     name: "Introduction",
     mounted() {
+      document.title = '이상형 월드컵 | Ideal type worldcup';
+
       new TypeIt("#title", {
         strings: "이상형 월드컵",
         speed: 50,

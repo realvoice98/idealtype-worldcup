@@ -54,6 +54,9 @@
         }
       }
     },
+    mounted() {
+      document.title = '이상형 월드컵 : 로그인';
+    }
   };
 </script>
 

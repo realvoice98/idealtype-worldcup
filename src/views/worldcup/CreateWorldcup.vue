@@ -105,7 +105,10 @@
         //     this.$router.push('/');
         //   }
         // }
-    });
+      });
+    },
+    mounted() {
+      document.title = '이상형 월드컵 : 월드컵 만들기';
     },
     methods: {
       /**

@@ -185,6 +185,9 @@ export default {
       ],
     };
   },
+  mounted() {
+    document.title = '이상형 월드컵 | Ideal type worldcup';
+  },
   computed: {
     // 필터링된 데이터 반환 (검색 및 페이징 반영)
     filteredData() {
