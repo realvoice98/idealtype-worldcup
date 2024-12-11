@@ -14,10 +14,9 @@
     <div class="comments-list">
       <div v-for="comment in comments" :key="comment.id" class="comment">
         <div class="profile-box">
-        <!-- <ProfileButton width="40" height="40" src=""/> -->
-        <img width=25 height=25 alt=""  src=""/>
-        <div class="nickname">{{ comment.nickName }}</div>
-        <div class="timestamp">{{ comment.timestamp }}</div>
+          <ProfileButton width="40" height="40" />
+          <div class="nickname">{{ comment.nickName }}</div>
+          <div class="timestamp">{{ comment.timestamp }}</div>
         </div>
         <div class="text"> {{ comment.text }}</div>
       </div>
@@ -28,12 +27,14 @@
 <script>
 import { fetchWldcupComments,createComment } from '@/services/firebase/db.js';
 import { auth, onAuthStateChanged } from '@/services/firebase/auth';
+import ProfileButton from "@/components/buttons/ProfileButton.vue";
 import CommonButton from "@/components/buttons/CommonButton.vue";
 import {ref, get, getDatabase} from 'firebase/database';
 import {firebaseApp} from "@/services/firebase/config";
 
 export default {
   components: {
+    ProfileButton,
     CommonButton,
   },
   data() {

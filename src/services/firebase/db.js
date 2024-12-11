@@ -340,10 +340,8 @@ export async function createComment(user, wldcupId, commentText) {
       text: commentText,                    // 댓글 내용
       timestamp: formatDate(new Date()),    // 댓글 작성 시간
     });
-
-    alert("댓글이 작성되었습니다!");
   } catch (e) {
-    alert("댓글 작성에 실패했습니다! 잠시 후 다시 시도해주세요.");
+    alert("댓글 작성에 실패했습니다. 잠시 후 다시 시도해주세요.");
     console.error('댓글 작성 실패:', e);
   }
 }
