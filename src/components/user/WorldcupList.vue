@@ -14,6 +14,10 @@
               <p class="stats">조회수 {{ data.views }}회 · {{ data.updatedAt }}</p>
             </div>
           </router-link>
+          <ImageRegistModal
+            :is-visible="isRegistModalVisible"
+            @update:isVisible="isRegistModalVisible = $event"
+          />
           <CommonModal2
             v-if="isConfirmModalVisible"
             :visible="isConfirmModalVisible"
@@ -44,18 +48,22 @@
 
 <script>
   import { auth, onAuthStateChanged } from '@/services/firebase/auth';
-  import { fetchUserWldcups, deleteWldcup, deleteImages } from '@/services/firebase/db.js';
+  import {fetchUserWldcups, deleteWldcup, deleteImages, fetchWldcup} from '@/services/firebase/db.js';
   import CommonModal2 from "@/components/modals/CommonModal2.vue";
+  import ImageRegistModal from "@/components/modals/worldcup/ImageRegistModal.vue";
 
   export default {
     name: 'WorldcupList',
-    components: {CommonModal2},
+    components: {ImageRegistModal, CommonModal2},
     data() {
       return {
         user: null,
         wldcups: [],
         activeMenuIndex: null,
         isConfirmModalVisible: false,
+        isRegistModalVisible: false,
+        existingImages: [],
+        newImages:[],
         wldcupId: null,
         wldcupTitle: null,
       };
@@ -98,8 +106,21 @@
         this.activeMenuIndex = this.activeMenuIndex === index ? null : index;
       },
       editWldcup(data) {
-        console.log('편집 기능 실행:', data.wldcupId);
-        //TODO: 편집 로직 추가
+        if (this.isRegistModalVisible) return;
+        this.isRegistModalVisible = true;
+        console.log('편집 기능 실행:', data.wldcupId, data.title, data.creatorId);
+
+        fetchWldcup(data.wldcupId).then(wldcupData => {
+          if (wldcupData && wldcupData.images) {
+            console.log('가져온 이미지 데이터:', wldcupData.images);
+            // TODO: images 데이터를 이용해 편집 로직 구현
+            this.existingImages = [...this.existingImages, ...wldcupData.images];
+          } else {
+            console.log('이미지 데이터가 없습니다.');
+          }
+        }).catch(error => {
+          console.error('월드컵 데이터를 가져오는 중 오류 발생:', error);
+        });
       },
       async deleteWldcup() {
         try {
