@@ -25,12 +25,10 @@
 </template>
 
 <script>
-import { fetchWldcupComments,createComment } from '@/services/firebase/db.js';
+import {fetchWldcupComments, createComment, fetchNickname} from '@/services/firebase/db.js';
 import { auth, onAuthStateChanged } from '@/services/firebase/auth';
 import ProfileButton from "@/components/buttons/ProfileButton.vue";
 import CommonButton from "@/components/buttons/CommonButton.vue";
-import {ref, get, getDatabase} from 'firebase/database';
-import {firebaseApp} from "@/services/firebase/config";
 
 export default {
   components: {
@@ -47,17 +45,13 @@ export default {
   },
   created() {
     onAuthStateChanged(auth, async (user) => {
-      const db = getDatabase(firebaseApp);
       if (user) {
-        const userRef = ref(db, `users/${user.uid}/nickname`);
         try {
-          const snapshot = await get(userRef);
-          if (snapshot.exists()) {
-            this.user = {
-              nickname: snapshot.val(),
-              uid: user.uid,
-            };
-          }
+          const nickname = await fetchNickname(user.uid);
+          this.user = {
+            nickname: nickname || '익명',
+            uid: user.uid,
+          };
         } catch (error) {
           console.error("닉네임을 가져오는 중 오류가 발생했습니다:", error);
         }

@@ -71,6 +71,28 @@ export async function updateLastLogin(uid) {
 }
 
 /**
+ * 닉네임 가져오기 함수
+ * @param {string} uid 사용자 UID
+ * @returns {Promise<string>} 닉네임 (존재하지 않을 경우 빈 문자열 반환)
+ */
+export async function fetchNickname(uid) {
+  const userRef = dbRef(db, `users/${uid}/nickname`);
+
+  try {
+    const snapshot = await get(userRef);
+    if (snapshot.exists()) {
+      return snapshot.val();
+    } else {
+      console.warn(`닉네임 정보가 없습니다: UID ${uid}`);
+      return '';
+    }
+  } catch (error) {
+    console.error('닉네임을 가져오는 중 오류가 발생했습니다:', error);
+    throw error; // 필요 시 호출한 곳에서 처리할 수 있도록 오류 재발생
+  }
+}
+
+/**
  * 단일 유저 정보를 조회하는 함수
  * @param {Object} user 유저 정보
  */
