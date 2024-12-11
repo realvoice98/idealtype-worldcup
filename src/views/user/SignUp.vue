@@ -63,8 +63,7 @@
 </template>
 
 <script>
-  import Dashboard from '@/components/admin/Dashboard.vue';
-import { auth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber } from '@/services/firebase/auth';
+  import { auth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber } from '@/services/firebase/auth';
   import { createUser } from '@/services/firebase/db';
 
   auth.languageCode = 'ko';
@@ -87,32 +86,32 @@ import { auth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhon
         errorMessage: ''
       };
     },
-    mounted(){
-        window.recaptchaVerifier = new RecaptchaVerifier(auth,'verificationPhone', {
-      size: 'invisible',
-      callback: (response) => {
-        console.log("reCAPTCHA 통과:", response);
-      },
-    });
+    mounted() {
+      document.title = '이상형 월드컵 : 회원가입';
+
+      window.recaptchaVerifier = new RecaptchaVerifier(auth,'verificationPhone', {
+        size: 'invisible', callback: (response) => {
+          console.log("reCAPTCHA 통과:", response);
+        },
+      });
       document.getElementById("confirmVerification").addEventListener("click", (e) => {
         e.preventDefault();
         const code = this.verification;
-        window.confirmationResult.confirm(code).then((result) => {
-        
-        this.verificationStatus = 'Y';
-        this.verificationMessage = '인증되었습니다.'
-        }).catch((error) => {
-          console.log("error :", error)
-          // firebaseError(error)
+        window.confirmationResult.confirm(code)
+          .then((result) => {
+            this.verificationStatus = 'Y';
+            this.verificationMessage = '인증되었습니다.'
+          })
+          .catch((error) => {
+            console.log("error :", error);
+            // firebaseError(error)
         });
-      })
-   
+      });
     },
     methods: {
       /**
        * Firebase Auth 연동 회원가입 및 DB에 회원 데이터 추가
        */
-      
       async signUp() {
         if (!this.validate()) return;
 
@@ -179,7 +178,6 @@ import { auth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhon
           return false;
         }
 
-     
         return true;
       },
       selectGender(gender) {
@@ -218,7 +216,7 @@ import { auth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhon
         this.verification = e.target.value; // 인증번호 값 바인딩
       },
 
-      submitPhone(e){
+      submitPhone(e) {
         e.preventDefault();
         const phoneNumber = "+82" + this.noHyphenPhoneNumber //한국 지역번호 +82
         const appVerifier = window.recaptchaVerifier;
@@ -226,12 +224,10 @@ import { auth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhon
           .then((confirmationResult) => {
             window.confirmationResult = confirmationResult;
             this.submitStatus = '발송 되었습니다.';
-            
           }).catch((error) => {
             console.log("에러",error)
           });
       }
-            
     },
     watch: {
       email(value) {
@@ -259,9 +255,8 @@ import { auth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhon
           this.errorMessage = '';
         }
       },
-    }
-  }
-
+    },
+  };
 </script>
 
 <style scoped>
@@ -278,7 +273,7 @@ import { auth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhon
     font-weight: 700;
   }
 
-  input{
+  input {
     outline: none;
   }
 
@@ -379,11 +374,10 @@ import { auth, createUserWithEmailAndPassword, RecaptchaVerifier, signInWithPhon
     cursor: pointer;
   }
 
-  .submit-status{
+  .submit-status {
     font-size: 12px;
     color: crimson;
     text-align: end;
     padding: 1px 20px 0px 0px;
   }
-
 </style>
