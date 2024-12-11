@@ -23,6 +23,7 @@
 
 <script>
   import { auth, signInWithEmailAndPassword } from '@/services/firebase/auth';
+  import {updateLastLogin} from "@/services/firebase/db";
 
   export default {
     name: 'SignIn',
@@ -37,7 +38,11 @@
       /** Firebase Authentication 연동 로그인 */
       async signIn() {
         try {
-          await signInWithEmailAndPassword(auth, this.email, this.password);
+          const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
+          const uid = userCredential.user.uid
+
+          await updateLastLogin(uid);
+
           const targetPath = localStorage.getItem('targetPath') || '/';
           localStorage.removeItem('targetPath');
           this.$router.push(targetPath);

@@ -55,6 +55,22 @@ export async function createUser(user) {
 }
 
 /**
+ * 로그인 시 lastLoginedAt 업데이트 함수
+ * @param {string} uid 사용자 UID
+ */
+export async function updateLastLogin(uid) {
+  const userRef = dbRef(db, 'users/' + uid);
+
+  try {
+    await update(userRef, {
+      lastLoginedAt: formatDate(new Date()),
+    });
+  } catch (e) {
+    console.error('lastLoginedAt 업데이트 실패:', e);
+  }
+}
+
+/**
  * 단일 유저 정보를 조회하는 함수
  * @param {Object} user 유저 정보
  */
