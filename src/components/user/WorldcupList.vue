@@ -16,6 +16,7 @@
           </router-link>
           <ImageRegistModal
             :is-visible="isRegistModalVisible"
+            :existing-images="existingImages"
             @update:isVisible="isRegistModalVisible = $event"
           />
           <CommonModal2
@@ -64,6 +65,7 @@
         isRegistModalVisible: false,
         existingImages: [],
         newImages:[],
+        deletedImages: [],
         wldcupId: null,
         wldcupTitle: null,
       };
@@ -110,18 +112,37 @@
         this.isRegistModalVisible = true;
         console.log('편집 기능 실행:', data.wldcupId, data.title, data.creatorId);
 
-        fetchWldcup(data.wldcupId).then(wldcupData => {
-          if (wldcupData && wldcupData.images) {
-            console.log('가져온 이미지 데이터:', wldcupData.images);
-            // TODO: images 데이터를 이용해 편집 로직 구현
-            this.existingImages = [...this.existingImages, ...wldcupData.images];
-          } else {
-            console.log('이미지 데이터가 없습니다.');
-          }
-        }).catch(error => {
-          console.error('월드컵 데이터를 가져오는 중 오류 발생:', error);
-        });
+        fetchWldcup(data.wldcupId)
+            .then(async wldcupData => {
+              if (wldcupData && wldcupData.images) {
+                console.log('가져온 이미지 데이터:', wldcupData.images);
+
+                // URL로 가져온 이미지를 File 객체로 변환
+                const filePromises = wldcupData.images.map(async (image, index) => {
+                  const response = await fetch(image.path);
+                  const blob = await response.blob();
+                  const fileName = extractFileNameFromUrl(image.path);
+                  const customName = image.customName;
+                  const file = new File([blob], fileName, { type: blob.type });
+
+                  return {
+                    customName: customName,
+                    fileName: fileName,
+                    path: image.path,
+                    file: file,
+                  };
+                });
+
+                this.existingImages = await Promise.all(filePromises);
+              } else {
+                console.log('이미지 데이터가 없습니다.');
+              }
+            })
+            .catch(error => {
+              console.error('월드컵 데이터를 가져오는 중 오류 발생:', error);
+            });
       },
+
       async deleteWldcup() {
         try {
           await deleteWldcup(this.wldcupId);
@@ -149,6 +170,13 @@
       },
     },
   };
+
+  function extractFileNameFromUrl(url) {
+    const urlParts = url.split('/');
+    const fileWithExtension = urlParts[urlParts.length - 1];
+    const fileName = fileWithExtension.split('?')[0];
+    return decodeURIComponent(fileName);
+  }
 </script>
 
 <style scoped>
