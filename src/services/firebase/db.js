@@ -563,6 +563,53 @@ export async function deleteWldcup(wldcupId) {
 }
 
 /**
+ * @param {number} index - 인덱스 번호
+ * @param {string} wldcupId - 월드컵 ID
+ * @param {Array<{ path: string, customName: string }>} images - 업데이트할 이미지 배열
+ * @returns {Promise<void>}
+ */
+export async function updateWldcupImages(index, wldcupId, images) {
+  const wldcupImageRef = dbRef(db, `wldcups/${wldcupId}/images/${index}`);
+
+  try {
+    // Firebase에서 현재 인덱스의 데이터 가져오기
+    const snapshot = await get(wldcupImageRef);
+
+    if (snapshot.exists()) {
+      const existingData = snapshot.val();
+      const { path: existingPath, customName: existingCustomName } = existingData;
+
+      // 새 데이터와 기존 데이터 비교
+      const newPath = images[index].path;
+      const newCustomName = images[index].customName;
+
+      if (newPath === existingPath) {
+        if (newCustomName !== existingCustomName) {
+          await update(wldcupImageRef, { customName: newCustomName });
+          console.log(`인덱스 ${index}: 커스텀 네임 업데이트 완료.`);
+        } else {
+          console.log(`인덱스 ${index}: 변경 사항 없음.`);
+        }
+      } else {
+        // 경로가 다르면 경로와 커스텀 네임 모두 업데이트
+        await update(wldcupImageRef, { path: newPath, customName: newCustomName });
+        console.log(`인덱스 ${index}: 경로 및 커스텀 네임 업데이트 완료.`);
+      }
+    } else {
+      // 인덱스 번호가 없으면 새로 추가
+      const newPath = images[index].path;
+      const newCustomName = images[index].customName;
+      await set(wldcupImageRef, { path: newPath, customName: newCustomName });
+      console.log(`인덱스 ${index}: 새 이미지 추가 완료.`);
+    }
+  } catch (error) {
+    console.error(`인덱스 ${index} 업데이트 중 오류 발생:`, error);
+    throw new Error(`이미지 업데이트 중 오류가 발생했습니다.`);
+  }
+}
+
+
+/**
  * Firebase Storage
  *
  * 이미지, 오디오, 동영상의 원본 데이터는 Storage에 보관하고,
@@ -608,5 +655,48 @@ export async function deleteImages(userId, wldcupTitle) {
     await Promise.all(deletePromises);
   }catch (e){
     console.error("파일 삭제 중 오류 발생:", e);
+  }
+}
+
+/**
+ * 이미지 업데이트 처리 후 경로 반환 함수
+ * @param {File} image 이미지 파일 객체
+ * @param {string} userId 사용자 UID
+ * @param {string} wldcupTitle 월드컵 제목
+ * @return {Promise<string>} 업로드된 이미지의 참조 경로
+ */
+export async function updateImage(image, userId, wldcupTitle) {
+  const basePath = `wldcups/${userId}/${wldcupTitle}`;
+  const fileName = image.customName ? `${image.customName}` : image.name;  // 기존 파일 이름 그대로 사용
+  const filePath = `${basePath}/${fileName}`;
+
+  // 경로 로그 출력
+  console.log("최종 파일 경로:", filePath);
+
+  try {
+    // Firebase Storage 참조 생성
+    const wldcupsRef = stRef(st, filePath);
+
+    // 기존 파일 삭제 (존재하는 경우에만)
+    try {
+      await deleteObject(wldcupsRef);
+      console.log('기존 이미지 삭제 완료');
+    } catch (deleteError) {
+      if (deleteError.code === 'storage/object-not-found') {
+        console.log('삭제 대상 파일이 없습니다. 스킵합니다.');
+      } else {
+        throw deleteError; // 다른 에러는 다시 throw
+      }
+    }
+
+    // 새 파일 업로드
+    await uploadBytes(wldcupsRef, image);
+    console.log('새로운 이미지 업로드 완료:', fileName);
+
+    // 다운로드 URL 반환
+    return await getDownloadURL(wldcupsRef);
+  } catch (e) {
+    console.error('이미지 업데이트 실패:', e);
+    throw new Error('이미지 업데이트 중 오류가 발생했습니다.');
   }
 }
