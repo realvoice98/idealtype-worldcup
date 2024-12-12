@@ -15,7 +15,7 @@
       <button v-if="selectedImages.length > 1" class="arrow left-arrow" @click="previousImage">&lt;</button>
 
       <div class="image-container">
-        <img :src="selectedImages[currentImageIndex]?.preview" class="main-image" @click="openCropper(currentImageIndex)" />
+        <img :src="selectedImages[currentImageIndex]?.preview || selectedImages[currentImageIndex]?.path" class="main-image" @click="openCropper(currentImageIndex)" />
         <input
             :value="selectedImages[currentImageIndex]?.customName || ''"
             @input="updateCustomName($event.target.value)"
@@ -32,7 +32,7 @@
       <button v-if="selectedImages.length > 1" class="arrow right-arrow" @click="nextImage">&gt;</button>
     </div>
 
-    <div v-if="cropperVisible" class="cropper-container" @click.stop>
+    <div v-if="cropperVisible && thumbnailList.length > 0" class="cropper-container" @click.stop>
       <VueCropper
           ref="cropper"
           :src="cropperImage"
@@ -53,7 +53,7 @@
       <img
           v-for="(image, index) in thumbnailList"
           :key="index"
-          :src="image.preview"
+          :src="image.preview || image.path"
           :class="{ 'active-thumbnail': image.isActive }"
           @click="updateCurrentIndex(index)"
       />
@@ -87,10 +87,12 @@
         type: Boolean,
         required: true,
       },
+      existingImages: Array,
     },
     data() {
       return {
         selectedImages: [],
+        deletedImages: [],
         errorMessage: '',
         cropperVisible: false,
         cropperImage: null,
@@ -101,24 +103,22 @@
     computed: {
       thumbnailList() {
         const total = this.selectedImages.length;
-        const range = 2;
-        let result = [];
 
         if (total <= 5) {
-          result = this.selectedImages.map((image, index) => ({
+          return this.selectedImages.map((image, index) => ({
             ...image,
             isActive: index === this.currentImageIndex,
           }));
-        } else {
-          for (let i = -range; i <= range; i++) {
-            const index = (this.currentImageIndex + i + total) % total;
-            result.push({
-              ...this.selectedImages[index],
-              isActive: index === this.currentImageIndex,
-            });
-          }
         }
-        return result;
+
+        const range = 2;
+        return Array.from({ length: 5 }, (_, i) => {
+          const index = (this.currentImageIndex + i - range + total) % total;
+          return {
+            ...this.selectedImages[index],
+            isActive: index === this.currentImageIndex,
+          };
+        });
       },
       confirmButtons() {
         // 경로에 따라 버튼을 다르게 설정
@@ -179,6 +179,20 @@
           this.triggerFileSelection();
         }
       },
+      existingImages: {
+        handler(newImages) {
+          if (this.isWldcupsPage) {
+            this.selectedImages = newImages.map(image => ({
+              file: image.file,
+              preview: URL.createObjectURL(image.file),
+              name: image.fileName,
+              customName: image.customName,
+            }));
+          }
+        },
+        immediate: true,
+        deep: true,
+      },
     },
     methods: {
       triggerFileSelection() {
@@ -216,16 +230,14 @@
               // 새 파일 객체 생성
               const newFile = new File([file], uniqueFileName, { type: file.type });
 
-              // 새로운 파일 객체와 preview 이미지를 selectedImages에 추가
+              // 새로운 파일 객체와 preview 이미지를 추가
               this.selectedImages.push({ file: newFile, preview: e.target.result, name: uniqueFileName, customName: '', });
             }
           };
           reader.readAsDataURL(file);
         });
 
-        if (this.selectedImages.length === 1) {
-          this.currentImageIndex = 0;
-        }
+        this.currentImageIndex = this.selectedImages.length === 1 ? 0 : this.currentImageIndex;
       },
 
       updateCurrentIndex(thumbnailIndex) {
@@ -247,9 +259,11 @@
 
           const reader = new FileReader();
           reader.onload = (e) => {
+            const customName = this.selectedImages[this.currentImageIndex].customName;
             this.selectedImages[this.currentImageIndex] = {
               file: croppedFile,
               preview: e.target.result,
+              customName: customName,
             };
             this.closeCropper();
           };
@@ -269,7 +283,6 @@
           this.confirmImages();  // 그 외의 경로에서 실행할 로직
         }
       },
-
 
       confirmImages() {
         if (this.selectedImages.some((image) => !image.customName)) {
@@ -291,7 +304,7 @@
       updateImages() {
         // '/my-page/wldcups' 경로에서 '업데이트' 버튼 클릭 시 처리할 로직
         console.log('이미지 업데이트');
-        // 업데이트 관련 추가 처리 로직
+        this.closeModal();
       },
       closeModal() {
         this.isConfirmModalVisible = false;
