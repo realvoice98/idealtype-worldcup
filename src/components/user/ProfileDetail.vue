@@ -31,12 +31,9 @@ export default {
     created() {
       // TODO: 구현이 시급하여 props 전달 받지 않고 API 또 쏨,
       //  추후 router로 데이터 전달받을 수 있도록 수정
+      //   ㄴ 개인정보를 url param에 담는 건 너무 상남자 코딩 같은데, sessionStorage 같은 공간에 담는 방향으로 진행
       onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          this.user = await getUser(user);
-        } else {
-          // TODO: 로그인 분기 처리
-        }
+        if (user) this.user = await getUser(user);
       });
       // TODO END
     },

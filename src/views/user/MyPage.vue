@@ -78,7 +78,11 @@
     },
     methods: {
       changeImage() {
-        // TODO: 이미지 변경
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/png, image/jpeg';
+        // TODO: fileInput.addEventListener('change', this.onFileChange);
+        fileInput.click();
       },
     },
   };
