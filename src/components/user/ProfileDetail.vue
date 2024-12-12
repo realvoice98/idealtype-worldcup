@@ -1,11 +1,28 @@
 <template>
-  <div class="profile-detail">
-    <p>{{ user.nickname }}</p>
-    <p>{{ user.email }}</p>
-    <p>{{ user.gender }}</p> <!-- 성별은 포맷 -->
-    <p>{{ user.birthday }}</p>
-    <p>{{ user.createdAt }}</p>
-    <p>{{ user.lastLoginedAt }}</p>
+  <div class="profile-container">
+    <div class="profile-title">
+      <strong>내 프로필 정보</strong>
+    </div>
+    <div class="profile-content">
+      <div class="content-item">
+        <p>{{ user.nickname }}</p>
+      </div>
+      <div class="content-item">
+        <p>{{ user.email }}</p>
+      </div>
+      <div class="content-item">
+        <p>{{ user.gender }}</p> <!-- 성별은 포맷 -->
+      </div>
+      <div class="content-item">
+        <p>{{ user.birthday }}</p>
+      </div>
+      <div class="content-item">
+        <p>{{ user.createdAt }}</p>
+      </div>
+      <div class="content-item">
+        <p>{{ user.lastLoginedAt }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -38,10 +55,32 @@ export default {
       // TODO END
     },
     methods: {
-    }
+    },
   };
 </script>
 
 <style scoped>
+  .profile-container {
+    background-color: red;
 
+  }
+
+  .profile-title {
+    background-color: var(--theme);
+  }
+
+  .profile-content {
+    border: 2px solid lightgray;
+    padding: 0 2rem;
+  }
+  .content-item {
+    border-bottom: 1px solid lightgray;
+  }
+  .content-item:last-child {
+    border-bottom: none;
+  }
+  p {
+    padding: 0;
+    margin: 0;
+  }
 </style>
