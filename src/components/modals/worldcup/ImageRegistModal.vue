@@ -75,6 +75,7 @@
   import 'cropperjs/dist/cropper.css';
   import { formatDate } from "@/common";
   import CommonModal2 from "@/components/modals/CommonModal2.vue";
+import {updateImage, updateWldcupImages, uploadImage} from "@/services/firebase/db";
 
   export default {
     name: 'ImageRegistModal',
@@ -87,7 +88,22 @@
         type: Boolean,
         required: true,
       },
-      existingImages: Array,
+      wldcupId: {
+        type: String,
+        required: true,
+      },
+      title: {
+        type: String,
+        required: true,
+      },
+      creatorId: {
+        type: String,
+        required: true,
+      },
+      existingImages: {
+        type: Array,
+        required: true,
+      }
     },
     data() {
       return {
@@ -126,7 +142,7 @@
           return [
             {
               text: "업데이트",
-              callback: this.updateImages, // '/my-page/wldcups' 경로에서 실행할 로직
+              callback: this.confirmUpdateImages,
             },
             {
               text: "나가기",
@@ -278,9 +294,9 @@
 
       handleButtonClick() {
         if (this.isWldcupsPage) {
-          this.updateImages();  // '/my-page/wldcups' 경로일 때 실행할 로직
+          this.confirmUpdateImages();
         } else {
-          this.confirmImages();  // 그 외의 경로에서 실행할 로직
+          this.confirmImages();
         }
       },
 
@@ -301,10 +317,32 @@
           this.$emit('update:isVisible', false);
         }
       },
-      updateImages() {
-        // '/my-page/wldcups' 경로에서 '업데이트' 버튼 클릭 시 처리할 로직
-        console.log('이미지 업데이트');
-        this.closeModal();
+      async confirmUpdateImages() {
+        try {
+          const updateImages = await Promise.all(
+              this.selectedImages.map(async (image) => {
+                const imagePath = await updateImage(image.file, this.creatorId, this.title);
+                return {
+                  path: imagePath,
+                  customName: image.customName,
+                };
+              })
+          );
+
+          // 업데이트된 이미지 정보를 Firebase에 반영
+          await Promise.all(
+              updateImages.map((imageData, index) => {
+                return updateWldcupImages(index, this.wldcupId, updateImages);
+              })
+          );
+
+          console.log('모든 이미지가 성공적으로 업데이트되었습니다.');
+        } catch (e) {
+          this.errorMessage = `오류: ${e.message}`;
+          console.error('이미지 업데이트 중 오류 발생:', e);
+        } finally {
+          this.closeModal();
+        }
       },
       closeModal() {
         this.isConfirmModalVisible = false;

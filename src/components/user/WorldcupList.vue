@@ -16,6 +16,9 @@
           </router-link>
           <ImageRegistModal
             :is-visible="isRegistModalVisible"
+            :wldcup-id="data.wldcupId"
+            :title="data.title"
+            :creator-id="data.creatorId"
             :existing-images="existingImages"
             @update:isVisible="isRegistModalVisible = $event"
           />
@@ -52,6 +55,13 @@
   import {fetchUserWldcups, deleteWldcup, deleteImages, fetchWldcup} from '@/services/firebase/db.js';
   import CommonModal2 from "@/components/modals/CommonModal2.vue";
   import ImageRegistModal from "@/components/modals/worldcup/ImageRegistModal.vue";
+
+  function extractFileNameFromUrl(url) {
+    const urlParts = url.split('/');
+    const fileWithExtension = urlParts[urlParts.length - 1];
+    const fileName = fileWithExtension.split('?')[0];
+    return decodeURIComponent(fileName);
+  }
 
   export default {
     name: 'WorldcupList',
@@ -117,13 +127,14 @@
               if (wldcupData && wldcupData.images) {
                 console.log('가져온 이미지 데이터:', wldcupData.images);
 
-                // URL로 가져온 이미지를 File 객체로 변환
                 const filePromises = wldcupData.images.map(async (image, index) => {
                   const response = await fetch(image.path);
                   const blob = await response.blob();
-                  const fileName = extractFileNameFromUrl(image.path);
+                  const url = extractFileNameFromUrl(image.path);
+                  const fileName = url.substring(url.lastIndexOf('/') + 1);
                   const customName = image.customName;
                   const file = new File([blob], fileName, { type: blob.type });
+                  console.log(fileName)
 
                   return {
                     customName: customName,
@@ -132,6 +143,7 @@
                     file: file,
                   };
                 });
+
 
                 this.existingImages = await Promise.all(filePromises);
               } else {
@@ -170,13 +182,6 @@
       },
     },
   };
-
-  function extractFileNameFromUrl(url) {
-    const urlParts = url.split('/');
-    const fileWithExtension = urlParts[urlParts.length - 1];
-    const fileName = fileWithExtension.split('?')[0];
-    return decodeURIComponent(fileName);
-  }
 </script>
 
 <style scoped>
