@@ -226,9 +226,11 @@ export default {
 
         const reader = new FileReader();
         reader.onload = (e) => {
+          const customName = this.selectedImages[this.currentImageIndex].customName;
           this.selectedImages[this.currentImageIndex] = {
             file: croppedFile,
             preview: e.target.result,
+            customName: customName,
           };
           this.closeCropper();
         };
