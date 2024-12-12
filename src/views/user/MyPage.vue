@@ -144,7 +144,8 @@
   }
 
   .menu-container {
-    padding: 25px 0;
+    padding: 25px;
+    margin: 0 10px;
   }
   .menu-list {
     list-style-type: none;
