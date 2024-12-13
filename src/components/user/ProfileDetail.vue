@@ -116,7 +116,7 @@
 
 <script>
   import { auth, onAuthStateChanged } from "@/services/firebase/auth";
-  import { getUser } from "@/services/firebase/db";
+  import {getUser, updateProfile} from "@/services/firebase/db";
 
   import CommonButton from "@/components/buttons/CommonButton.vue";
 
@@ -137,6 +137,7 @@
           level: 1,
           exp: 0,
         },
+        uid:"",
         progressWidth: 0,
         isEditingNickname: false,
         isEditingGender: false,
@@ -151,7 +152,10 @@
       //  추후 router로 데이터 전달받을 수 있도록 수정
       //   ㄴ 개인정보를 url param에 담는 건 너무 상남자 코딩 같은데, sessionStorage 같은 공간에 담는 방향으로 진행
       onAuthStateChanged(auth, async (user) => {
-        if (user) this.user = await getUser(user);
+        if (user) {
+          this.user = await getUser(user)
+          this.uid = user.uid;
+        }
       });
       // TODO END
     },
@@ -200,16 +204,23 @@
           this.editedBirthday = this.user.birthday;
         }
       },
-      save(type) {
-        if (type === "nickname") {
-          this.isEditingNickname = false;
-          console.log(this.editedNickname);
-        } else if (type === "gender") {
-          this.isEditingGender = false;
-          console.log(this.editedGender)
-        } else if (type === "birthday") {
-          this.isEditingBirthday = false;
-          console.log(this.editedBirthday)
+      async save(type) {
+        try {
+          if (type === "nickname") {
+            this.isEditingNickname = false;
+            await updateProfile(this.uid, type, this.editedNickname);
+          } else if (type === "gender") {
+            this.isEditingGender = false;
+            await updateProfile(this.uid, type, this.editedGender);
+          } else if (type === "birthday") {
+            this.isEditingBirthday = false;
+            await updateProfile(this.uid, type, this.editedBirthday);
+          }
+
+          // 업데이트 후 사용자 데이터 갱신
+          this.user = await getUser({ uid: this.uid });
+        } catch (error) {
+          console.error("Error saving profile:", error);
         }
       },
       selectGender(gender) {
