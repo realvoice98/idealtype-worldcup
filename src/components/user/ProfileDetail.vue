@@ -1,68 +1,92 @@
 <template>
-  <div class="profile-container">
-    <div class="profile-title">
-      <strong>내 프로필 정보</strong>
+  <div class="profile-detail">
+
+    <div class="profile-container">
+      <div class="profile-title">
+        <strong>내 프로필 정보</strong>
+      </div>
+      <div class="profile-content">
+        <div class="content-item">
+          <div class="label-wrap">
+            <span class="icon">abc</span>
+            <span class="label">닉네임</span>
+          </div>
+          <div class="value-wrap">
+            <p>{{ user.nickname }}</p>
+            <button class="btn-edit">
+              <span class="icon">edit</span>
+            </button>
+          </div>
+        </div>
+        <div class="content-item">
+          <div class="label-wrap">
+            <span class="icon">email</span>
+            <span class="label">이메일</span>
+          </div>
+          <p>{{ user.email }}</p>
+        </div>
+        <div class="content-item">
+          <div class="label-wrap">
+            <span class="icon">male</span>
+            <span class="label">성별</span>
+          </div>
+          <div class="value-wrap">
+            <p>{{ formattedGender }}</p>
+            <button class="btn-edit">
+              <span class="icon">edit</span>
+            </button>
+          </div>
+        </div>
+        <div class="content-item">
+          <div class="label-wrap">
+            <span class="icon">cake</span>
+            <span class="label">생년월일</span>
+          </div>
+          <div class="value-wrap">
+            <p>{{ user.birthday }}</p>
+            <button class="btn-edit">
+              <span class="icon">edit</span>
+            </button>
+            <span class="until-bday">{{ daysUntilBirthday }}</span>
+          </div>
+        </div>
+        <div class="content-item">
+          <div class="label-wrap">
+            <span class="icon">person_add</span>
+            <span class="label">가입일자</span>
+          </div>
+          <p>{{ user.createdAt }}</p>
+        </div>
+        <div class="content-item">
+          <div class="label-wrap">
+            <span class="icon">update</span>
+            <span class="label">마지막 로그인 시간</span>
+          </div>
+          <p>{{ user.lastLoginedAt }}</p>
+        </div>
+      </div>
     </div>
-    <div class="profile-content">
-      <div class="content-item">
-        <div class="label-wrap">
-          <span class="icon">abc</span>
-          <span class="label">닉네임</span>
-        </div>
-        <div class="value-wrap">
-          <p>{{ user.nickname }}</p>
-          <button class="btn-edit">
-            <span class="icon">edit</span>
-          </button>
-        </div>
+
+    <div class="profile-container">
+      <div class="profile-title">
+        <strong>레벨 EXP</strong>
       </div>
-      <div class="content-item">
-        <div class="label-wrap">
-          <span class="icon">email</span>
-          <span class="label">이메일</span>
+      <div class="profile-content">
+        <div class="content-item">
+          <div class="label-wrap">
+            <span class="icon">shield</span>
+            <span class="label">{{ user.level }}레벨</span>
+          </div>
+          <div class="exp-container">
+            <div class="exp-bar">
+              <div class="exp-progress" :style="{ width: progressWidth + '%' }"></div>
+            </div>
+            <span class="exp-value">{{ user.exp }} / 100</span>
+          </div>
         </div>
-        <p>{{ user.email }}</p>
-      </div>
-      <div class="content-item">
-        <div class="label-wrap">
-          <span class="icon">male</span>
-          <span class="label">성별</span>
-        </div>
-        <div class="value-wrap">
-          <p>{{ formattedGender }}</p>
-          <button class="btn-edit">
-            <span class="icon">edit</span>
-          </button>
-        </div>
-      </div>
-      <div class="content-item">
-        <div class="label-wrap">
-          <span class="icon">cake</span>
-          <span class="label">생년월일</span>
-        </div>
-        <div class="value-wrap">
-          <p>{{ user.birthday }}</p>
-          <button class="btn-edit">
-            <span class="icon">edit</span>
-          </button>
-          <span class="until-bday">{{ daysUntilBirthday }}</span>
-        </div>
-      </div>
-      <div class="content-item">
-        <div class="label-wrap">
-          <span class="icon">person_add</span>
-          <span class="label">가입일자</span>
-        </div>
-        <p>{{ user.createdAt }}</p>
-      </div>
-      <div class="content-item">
-        <div class="label-wrap">
-          <span class="icon">update</span>
-          <span class="label">마지막 로그인 시간</span>
-        </div>
-        <p>{{ user.lastLoginedAt }}</p>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -87,7 +111,10 @@
           birthday: '',
           createdAt: '',
           lastLoginedAt: '',
+          level: 1,
+          exp: 0,
         },
+        progressWidth: 0,
       };
     },
     created() {
@@ -123,6 +150,14 @@
 
         return `생일까지 앞으로 ${daysLeft}일 남으셨네요!`;
       },
+      progressWidth() {
+        return this.user.exp; // NOTE: 흠...
+      }
+    },
+    mounted() {
+      setTimeout(() => {
+        this.progressWidth = this.user.exp;
+      }, 100);
     },
     methods: {
     },
@@ -130,11 +165,14 @@
 </script>
 
 <style scoped>
-  .profile-container {
-    padding: 0;
+  .profile-detail {
     width: 90%;
+  }
+
+  .profile-container {
     border: 1px solid var(--theme);
     border-radius: 8px;
+    margin-bottom: 2rem;
   }
 
   .profile-title {
@@ -183,5 +221,29 @@
     margin-left: 1.5rem;
     font-size: 0.85rem;
     font-weight: bold;
+  }
+
+  .exp-container {
+    width: 100%;
+    padding: 0 10px;
+    margin-top: 10px;
+  }
+  .exp-bar {
+    width: 100%;
+    height: 20px;
+    background-color: lightgray;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .exp-progress {
+    height: 100%;
+    background-color: var(--theme);
+    transition: width 2s ease-in-out; /* TODO: 왜 애니메이션이 안 되는 것이지.... FUCK */
+    border-radius: 10px;
+  }
+  .exp-value {
+    margin-top: 50px;
+    color: dimgray;
   }
 </style>
