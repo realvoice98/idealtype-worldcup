@@ -1,4 +1,6 @@
 <template>
+  <LoadingSpinner :visible="isLoading" />
+
   <div class="modal-overlay" v-if="isVisible">
     <div class="header">
       <span class="image-index">{{ currentImageIndex + 1 }} / {{ selectedImages.length }}</span>
@@ -76,10 +78,12 @@
   import { formatDate } from "@/common";
   import CommonModal2 from "@/components/modals/CommonModal2.vue";
 import {updateImage, updateWldcupImages, uploadImage} from "@/services/firebase/db";
+import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 
   export default {
     name: 'ImageRegistModal',
     components: {
+      LoadingSpinner,
       CommonModal2,
       VueCropper,
     },
@@ -114,6 +118,7 @@ import {updateImage, updateWldcupImages, uploadImage} from "@/services/firebase/
         cropperImage: null,
         currentImageIndex: 0,
         isConfirmModalVisible: false,
+        isLoading: false,
       };
     },
     computed: {
@@ -319,6 +324,7 @@ import {updateImage, updateWldcupImages, uploadImage} from "@/services/firebase/
       },
       async confirmUpdateImages() {
         try {
+          this.isLoading = true;
           const updateImages = await Promise.all(
               this.selectedImages.map(async (image) => {
                 const imagePath = await updateImage(image.file, this.creatorId, this.title);
@@ -341,6 +347,7 @@ import {updateImage, updateWldcupImages, uploadImage} from "@/services/firebase/
           this.errorMessage = `오류: ${e.message}`;
           console.error('이미지 업데이트 중 오류 발생:', e);
         } finally {
+          this.isLoading = false;
           this.closeModal();
         }
       },

@@ -1,4 +1,5 @@
 <template>
+  <LoadingSpinner :visible="isLoading" />
   <div class="mypage-container">
     <div class="mypage-contents">
       <ul v-if="wldcups.length > 0" class="record-list">
@@ -36,7 +37,7 @@
             <span class="icon">menu</span>
           </button>
           <div
-            v-if="activeMenuIndex === index"
+            v-if="activeMenuIndex === index && !isRegistModalVisible && !isConfirmModalVisible"
             class="dropdown-menu"
           >
             <button @click.stop="editWldcup(data)">편집</button>
@@ -55,6 +56,7 @@
   import {fetchUserWldcups, deleteWldcup, deleteImages, fetchWldcup} from '@/services/firebase/db.js';
   import CommonModal2 from "@/components/modals/CommonModal2.vue";
   import ImageRegistModal from "@/components/modals/worldcup/ImageRegistModal.vue";
+  import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 
   function extractFileNameFromUrl(url) {
     const urlParts = url.split('/');
@@ -65,7 +67,7 @@
 
   export default {
     name: 'WorldcupList',
-    components: {ImageRegistModal, CommonModal2},
+    components: {LoadingSpinner, ImageRegistModal, CommonModal2},
     data() {
       return {
         user: null,
@@ -78,6 +80,7 @@
         deletedImages: [],
         wldcupId: null,
         wldcupTitle: null,
+        isLoading: false,
       };
     },
     created() {
@@ -117,42 +120,47 @@
       toggleMenu(index) {
         this.activeMenuIndex = this.activeMenuIndex === index ? null : index;
       },
-      editWldcup(data) {
+
+      async editWldcup(data) {
         if (this.isRegistModalVisible) return;
+
         this.isRegistModalVisible = true;
+        this.isLoading = true; // 데이터 로딩 시작
+
         console.log('편집 기능 실행:', data.wldcupId, data.title, data.creatorId);
 
-        fetchWldcup(data.wldcupId)
-            .then(async wldcupData => {
-              if (wldcupData && wldcupData.images) {
-                console.log('가져온 이미지 데이터:', wldcupData.images);
+        try {
+          const wldcupData = await fetchWldcup(data.wldcupId);
 
-                const filePromises = wldcupData.images.map(async (image, index) => {
-                  const response = await fetch(image.path);
-                  const blob = await response.blob();
-                  const url = extractFileNameFromUrl(image.path);
-                  const fileName = url.substring(url.lastIndexOf('/') + 1);
-                  const customName = image.customName;
-                  const file = new File([blob], fileName, { type: blob.type });
-                  console.log(fileName)
+          if (wldcupData && wldcupData.images) {
+            console.log('가져온 이미지 데이터:', wldcupData.images);
 
-                  return {
-                    customName: customName,
-                    fileName: fileName,
-                    path: image.path,
-                    file: file,
-                  };
-                });
+            const filePromises = wldcupData.images.map(async (image) => {
+              const response = await fetch(image.path);
+              const blob = await response.blob();
+              const url = extractFileNameFromUrl(image.path);
+              const fileName = url.substring(url.lastIndexOf('/') + 1);
+              const customName = image.customName;
+              const file = new File([blob], fileName, { type: blob.type });
+              console.log(fileName);
 
-
-                this.existingImages = await Promise.all(filePromises);
-              } else {
-                console.log('이미지 데이터가 없습니다.');
-              }
-            })
-            .catch(error => {
-              console.error('월드컵 데이터를 가져오는 중 오류 발생:', error);
+              return {
+                customName,
+                fileName,
+                path: image.path,
+                file,
+              };
             });
+
+            this.existingImages = await Promise.all(filePromises);
+          } else {
+            console.log('이미지 데이터가 없습니다.');
+          }
+        } catch (error) {
+          console.error('월드컵 데이터를 가져오는 중 오류 발생:', error);
+        } finally {
+          this.isLoading = false; // 데이터 로딩 끝
+        }
       },
 
       async deleteWldcup() {
@@ -174,7 +182,6 @@
       openModal(data) {
         this.wldcupId = data.wldcupId;
         this.wldcupTitle = data.title;
-        console.log(this.wldcupId, this.wldcupTitle, this.user.uid);
         this.isConfirmModalVisible = true;
       },
       closeModal() {
