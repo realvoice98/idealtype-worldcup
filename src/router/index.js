@@ -23,6 +23,7 @@ import WorldcupManagement from "@/components/admin/WorldcupManagement.vue";
 import ReportReceive from '@/components/admin/ReportReceive.vue';
 import Questions from '@/components/admin/Questions.vue';
 import Settings from '@/components/admin/Settings.vue';
+import CreatedWorldcups from '@/components/admin/CreatedWorldcups.vue';
 
 const routes = [
   // views
@@ -99,6 +100,13 @@ const routes = [
         path: 'user-list',
         name: 'UsersList',
         component: UserList,
+        children: [
+          {
+            path: 'created-wldcups',
+            name: 'CreatedWorldcups',
+            component: CreatedWorldcups,
+          },
+        ],
       },
       {
         path: 'wldcup-management',
