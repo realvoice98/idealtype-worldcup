@@ -45,6 +45,7 @@
           <button class="btn-edit">
             <span class="icon">edit</span>
           </button>
+          <span class="until-bday">{{ daysUntilBirthday }}</span>
         </div>
       </div>
       <div class="content-item">
@@ -102,6 +103,26 @@
       formattedGender() {
         return this.user.gender === 'M' ? '남자' : this.user.gender === 'F' ? '여자' : '알 수 없음';
       },
+      daysUntilBirthday() {
+        if (!this.user.birthday) return;
+
+        const today = new Date();
+        const [year, month, day] = this.user.birthday.split('-').map(Number);
+
+        // 올해의 생일 날짜
+        let birthdayThisYear = new Date(today.getFullYear(), month - 1, day);
+
+        // 오늘보다 이전인 경우, 내년의 생일로 계산
+        if (today > birthdayThisYear) {
+          birthdayThisYear = new Date(today.getFullYear() + 1, month - 1, day);
+        }
+
+        // 남은 날짜
+        const differenceInTime = birthdayThisYear - today;
+        const daysLeft = Math.ceil(differenceInTime / (1000 * 60 * 60 * 24));
+
+        return `생일까지 앞으로 ${daysLeft}일 남으셨네요!`;
+      },
     },
     methods: {
     },
@@ -156,9 +177,11 @@
     display: flex;
     flex-direction: row;
   }
+
   .until-bday {
     color: var(--theme);
     margin-left: 1.5rem;
     font-size: 0.85rem;
+    font-weight: bold;
   }
 </style>
