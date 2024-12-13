@@ -563,9 +563,10 @@ export async function deleteWldcup(wldcupId) {
 }
 
 /**
- * @param {number} index - 인덱스 번호
- * @param {string} wldcupId - 월드컵 ID
- * @param {Array<{ path: string, customName: string }>} images - 업데이트할 이미지 배열
+ * 월드컵 수정 및 업데이트 함수
+ * @param {number} index 인덱스 번호
+ * @param {string} wldcupId 월드컵 ID
+ * @param {Array<{ path: string, customName: string }>} images 업데이트할 이미지 배열
  * @returns {Promise<void>}
  */
 export async function updateWldcupImages(index, wldcupId, images) {
@@ -608,6 +609,24 @@ export async function updateWldcupImages(index, wldcupId, images) {
   }
 }
 
+/**
+ * 유저 프로필 수정 함수
+ * @param {string} uid 사용자 ID
+ * @param {String} updateType 업데이트할 프로필
+ * @param {String} updateContent 업데이트할 내용
+ * @returns {Promise<void>}
+ */
+export async function updateProfile(uid, updateType,updateContent){
+  const usersRef = dbRef(db, `users/${uid}`);
+
+  try {
+    await update(usersRef, {
+      [updateType]: updateContent,
+    });
+  }catch (e){
+    console.error(e);
+  }
+}
 
 /**
  * Firebase Storage
