@@ -101,6 +101,9 @@ html {
 /* Button START */
 [class*="btn"] {
   cursor: pointer;
+  background-color: transparent;
+  border: none;
+  padding: 0;
 }
 
 /* Button END */
