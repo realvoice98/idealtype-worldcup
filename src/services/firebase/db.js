@@ -43,7 +43,8 @@ export async function createUser(user) {
       gender: user.gender,
       createdAt: formatDate(new Date(user.metadata.creationTime)),
       lastLoginedAt: formatDate(new Date(user.metadata.lastSignInTime)),
-      emailVerified: true,// TODO: 이메일 인증
+      level: 1,
+      exp: 0,
       role: 'user', // 일반 사용자
     });
     alert("회원가입 완료!");
@@ -107,7 +108,6 @@ export async function getUser(user) {
       return {
         ...userData,
         email: restoreToOriginalString(userData.email),
-        emailVerified: userData.emailVerified ? 'Y' : 'N',
       };
     } else {
       return null;
@@ -129,10 +129,10 @@ export async function getAllUsers() {
 
     if (snapshot.exists()) {
       const usersData = snapshot.val();
+
       return Object.keys(usersData).map(uid => ({
         ...usersData[uid], // 모든 데이터를 object 형식으로 먼저 뿌리고, 포맷이 필요한 값들만 오버라이딩
         email: restoreToOriginalString(usersData[uid].email),
-        emailVerified: usersData[uid].emailVerified ? 'Y' : 'N',
       }));
     } else {
       return [];

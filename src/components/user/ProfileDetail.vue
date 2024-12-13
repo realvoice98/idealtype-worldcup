@@ -106,7 +106,6 @@
         user: {
           nickname: '',
           email: '',
-          emailVerified: '',
           gender: '',
           birthday: '',
           createdAt: '',

@@ -8,7 +8,7 @@
         <div class="profile-container">
           <ProfileButton :src="user.profileImage" width="160" height="160" :onclick="changeImage" />
           <p class="user-nickname">{{ user.nickname }}
-            <span v-if="user.emailVerified" class="icon" style="color: var(--theme)">verified</span>
+            <span class="icon" style="color: var(--theme)">verified</span>
           </p>
           <p class="user-email">{{ user.email }}</p>
         </div>
@@ -56,7 +56,6 @@
           profileImage: '',
           nickname: '',
           email: '',
-          emailVerified: '',
         },
       };
     },
