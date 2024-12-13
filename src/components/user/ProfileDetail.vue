@@ -9,7 +9,12 @@
           <span class="icon">abc</span>
           <span class="label">닉네임</span>
         </div>
-        <p>{{ user.nickname }}</p>
+        <div class="value-wrap">
+          <p>{{ user.nickname }}</p>
+          <button class="btn-edit">
+            <span class="icon">edit</span>
+          </button>
+        </div>
       </div>
       <div class="content-item">
         <div class="label-wrap">
@@ -23,14 +28,24 @@
           <span class="icon">male</span>
           <span class="label">성별</span>
         </div>
-        <p>{{ formattedGender }}</p>
+        <div class="value-wrap">
+          <p>{{ formattedGender }}</p>
+          <button class="btn-edit">
+            <span class="icon">edit</span>
+          </button>
+        </div>
       </div>
       <div class="content-item">
         <div class="label-wrap">
           <span class="icon">cake</span>
           <span class="label">생년월일</span>
         </div>
-        <p>{{ user.birthday }}</p>
+        <div class="value-wrap">
+          <p>{{ user.birthday }}</p>
+          <button class="btn-edit">
+            <span class="icon">edit</span>
+          </button>
+        </div>
       </div>
       <div class="content-item">
         <div class="label-wrap">
@@ -51,11 +66,16 @@
 </template>
 
 <script>
-import { auth, onAuthStateChanged } from "@/services/firebase/auth";
-import { getUser } from "@/services/firebase/db";
+  import { auth, onAuthStateChanged } from "@/services/firebase/auth";
+  import { getUser } from "@/services/firebase/db";
 
-export default {
+  import CommonButton from "@/components/buttons/CommonButton.vue";
+
+  export default {
     name: 'ProfileDetail',
+    components: {
+      CommonButton,
+    },
     data() {
       return {
         user: {
@@ -115,24 +135,27 @@ export default {
   .content-item p {
     text-align: left;
     padding: 0;
-    margin: 0;
+    margin: 0 0.7rem 0 0;
   }
 
   .label-wrap {
-    flex-direction: row;
     display: flex;
+    flex-direction: row;
     margin-bottom: 0.5rem;
   }
   .icon {
     font-size: 1.3rem;
     color: dimgray;
-    margin-right: 0.5rem;
   }
   .label {
-    margin-right: 20px;
+    margin-left: 0.5rem;
     color: dimgray;
   }
 
+  .value-wrap {
+    display: flex;
+    flex-direction: row;
+  }
   .until-bday {
     color: var(--theme);
     margin-left: 1.5rem;
