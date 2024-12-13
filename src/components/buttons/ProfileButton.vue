@@ -48,8 +48,6 @@
 
 <style scoped>
   .btn-profile {
-    background-color: transparent;
-    border: none;
     border-radius: 50%
   }
   .btn-profile > img {
