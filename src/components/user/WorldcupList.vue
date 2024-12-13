@@ -1,6 +1,9 @@
 <template>
   <LoadingSpinner :visible="isLoading" />
   <div class="mypage-container">
+    <div class="page-title">
+      <strong>내가 만든 월드컵</strong>
+    </div>
     <div class="mypage-contents">
       <ul v-if="wldcups.length > 0" class="record-list">
         <li
@@ -199,6 +202,13 @@ a {
 
 .mypage-container {
   text-align: left;
+}
+
+.page-title {
+  padding: 10px 0;
+  background-color: var(--theme);
+  border-radius: 8px 8px 0 0;
+  text-align: center;
 }
 
 .mypage-contents {

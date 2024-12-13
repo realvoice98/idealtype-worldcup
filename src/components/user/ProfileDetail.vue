@@ -1,6 +1,5 @@
 <template>
   <div class="profile-detail">
-
     <div class="profile-container">
       <div class="profile-title">
         <strong>내 프로필 정보</strong>
@@ -12,9 +11,13 @@
             <span class="label">닉네임</span>
           </div>
           <div class="value-wrap">
-            <p>{{ user.nickname }}</p>
-            <button class="btn-edit">
+            <p v-if="!isEditingNickname">{{ user.nickname }}</p>
+            <button v-if="!isEditingNickname" class="btn-edit" @click="edit('nickname')">
               <span class="icon">edit</span>
+            </button>
+            <input v-if="isEditingNickname" v-model="editedNickname" type="text" class="input-field" />
+            <button v-if="isEditingNickname" class="btn-save" @click="save('nickname')">
+              확인
             </button>
           </div>
         </div>
@@ -31,9 +34,26 @@
             <span class="label">성별</span>
           </div>
           <div class="value-wrap">
-            <p>{{ formattedGender }}</p>
-            <button class="btn-edit">
+            <p v-if="!isEditingGender">{{ formattedGender }}</p>
+            <button v-if="!isEditingGender" class="btn-edit" @click="edit('gender')">
               <span class="icon">edit</span>
+            </button>
+            <div v-if="isEditingGender" class="signup-line gender">
+              <div class="gender-list">
+                <button
+                    type="button"
+                    :class="['gender-btn', { selected: gender === 'M' }]"
+                    @click="selectGender('M')"
+                >남성</button>
+                <button
+                    type="button"
+                    :class="['gender-btn', { selected: gender === 'F'}]"
+                    @click="selectGender('F')"
+                >여성</button>
+              </div>
+            </div>
+            <button v-if="isEditingGender" class="btn-save" @click="save('gender')">
+              확인
             </button>
           </div>
         </div>
@@ -43,11 +63,15 @@
             <span class="label">생년월일</span>
           </div>
           <div class="value-wrap">
-            <p>{{ user.birthday }}</p>
-            <button class="btn-edit">
+            <p v-if="!isEditingBirthday">{{ user.birthday }}</p>
+            <button v-if="!isEditingBirthday" class="btn-edit" @click="edit('birthday')">
               <span class="icon">edit</span>
             </button>
-            <span class="until-bday">{{ daysUntilBirthday }}</span>
+            <span v-if="!isEditingBirthday" class="until-bday">{{ daysUntilBirthday }}</span>
+            <input v-if="isEditingBirthday" v-model="editedBirthday" @input="autoHyphen" type="text" class="input-field" placeholder="YYYY-MM-DD" maxlength="10"/>
+            <button v-if="isEditingBirthday" class="btn-save" @click="save('birthday')">
+              확인
+            </button>
           </div>
         </div>
         <div class="content-item">
@@ -114,6 +138,12 @@
           exp: 0,
         },
         progressWidth: 0,
+        isEditingNickname: false,
+        isEditingGender: false,
+        isEditingBirthday: false,
+        editedNickname: "",
+        editedGender: "",
+        editedBirthday: "",
       };
     },
     created() {
@@ -159,6 +189,43 @@
       }, 100);
     },
     methods: {
+      edit(type) {
+        if (type === "nickname") {
+          this.isEditingNickname = true;
+          this.editedNickname = this.user.nickname;
+        } else if (type === "gender") {
+          this.isEditingGender = true;
+        } else if (type === "birthday") {
+          this.isEditingBirthday = true;
+          this.editedBirthday = this.user.birthday;
+        }
+      },
+      save(type) {
+        if (type === "nickname") {
+          this.isEditingNickname = false;
+          console.log(this.editedNickname);
+        } else if (type === "gender") {
+          this.isEditingGender = false;
+          console.log(this.editedGender)
+        } else if (type === "birthday") {
+          this.isEditingBirthday = false;
+          console.log(this.editedBirthday)
+        }
+      },
+      selectGender(gender) {
+        this.editedGender = gender; // 성별 버튼 선택 시 데이터 바인딩, 'M' 또는 'F'
+      },
+      autoHyphen(e) {
+        let value = e.target.value.replace(/\D/g, '');
+
+        if (value.length > 4) {
+          value = value.slice(0, 4) + '-' + value.slice(4);
+        }
+        if (value.length > 7) {
+          value = value.slice(0, 7) + '-' + value.slice(7);
+        }
+        this.editedBirthday = value;
+      },
     },
   };
 </script>
@@ -244,5 +311,31 @@
   .exp-value {
     margin-top: 50px;
     color: dimgray;
+  }
+
+  .gender-btn {
+    flex: 1;
+    padding: 0.4rem;
+    border: 2px solid #ececec;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    transition: border-color 0.5s ease;
+  }
+  .gender-btn:first-child {
+    border-radius: 4px 0 0 4px;
+    border-right-width: 1px;
+  }
+  .gender-btn:last-child {
+    border-radius: 0 4px 4px 0;
+    border-left-width: 1px;
+  }
+  .gender-btn.selected:first-child {
+    border-color: var(--theme);
+    border-right-width: 2px;
+  }
+  .gender-btn.selected:last-child {
+    border-color: var(--theme);
+    border-left-width: 2px;
   }
 </style>
