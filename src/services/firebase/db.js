@@ -647,6 +647,23 @@ export async function increaseInViews(wldcupId) {
   }
 }
 
+export async function createReport(uid, wldcupId, reportComment) {
+  const reportsRef = dbRef(db, `wldcups/${wldcupId}/reports`);
+
+  try {
+    const newReportRef = push(reportsRef);
+
+    await set(newReportRef, {
+      uid: uid,
+      reportComment: reportComment,
+      timestamp: formatDate(new Date()),
+    });
+  } catch (e) {
+    alert("신고 작성에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    console.error('신고 작성 실패:', e);
+  }
+}
+
 /**
  * 월드컵 새로시작 시, 최대 라운드 설정 및 초기 데이터를 삽입하는 함수
  * @param {Object} user 유저 정보

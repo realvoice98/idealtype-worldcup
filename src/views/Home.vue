@@ -12,6 +12,14 @@
         :key="cardIndex"
         :data="card"
         :user="user"
+        @open-modal="showReportModal = true; wldcupId = card.wldcupId"
+      />
+      <ReportModal
+          v-if="showReportModal"
+          :message="'신고 내용을 입력하세요.\n신고한 월드컵은 표시되지 않아요.'"
+          :wldcupId="wldcupId"
+          @confirm="handleReport"
+          @close="showReportModal = false"
       />
     </div>
   </div>
@@ -20,8 +28,9 @@
 <script>
   import WorldcupCard from '@/components/worldcup/WorldcupCard.vue';
   import GlobalNavBar from '@/components/GlobalNavBar.vue';
+  import ReportModal from "@/components/modals/ReportModal.vue";
 
-  import { fetchAllWldcups } from '@/services/firebase/db.js';
+  import {createReport, fetchAllWldcups} from '@/services/firebase/db.js';
   import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
   import {auth, onAuthStateChanged} from "@/services/firebase/auth";
 
@@ -31,6 +40,7 @@
       LoadingSpinner,
       WorldcupCard,
       GlobalNavBar,
+      ReportModal,
     },
     data() {
       return {
@@ -41,17 +51,20 @@
         windowWidth: window.innerWidth, // 화면 크기 저장
         currentFilter: 'popular', // 초기값은 인기순
         isLoading: false,
+        showReportModal: false,
+        wldcupId: null,
       };
     },
 
     async created() {
-      await this.initWldcups();
-      window.addEventListener('resize', this.updateWindowWidth); // 화면 크기 변경 이벤트 리스너 추가
       onAuthStateChanged(auth, (user) => { // 안에다 비동기 요청 넣으면 await (user) =>
         if (user) {
           this.user = user;
         }
       });
+      await this.initWldcups();
+      window.addEventListener('resize', this.updateWindowWidth); // 화면 크기 변경 이벤트 리스너 추가
+
     },
     beforeUnmount() {
       window.removeEventListener('resize', this.updateWindowWidth); // 이벤트 리스너 제거
@@ -111,6 +124,19 @@
           );
         }
 
+        result = result.filter((item) => {  //본인이 신고했거나 신고회수가 3회 이상인 경우 보여지지 않음
+          if (!item.reports) {
+            return true;
+          }
+
+          const reportKeys = Object.keys(item.reports);
+
+          return (
+              reportKeys.length <= 3 &&
+              !reportKeys.some((key) => item.reports[key].uid === this.user.uid)
+          );
+        });
+
         if (this.currentFilter === 'popular') {
           result.sort((a, b) => Number(b.views) - Number(a.views)); // 인기순 정렬
         } else if (this.currentFilter === 'latest') {
@@ -129,6 +155,18 @@
         });
 
         this.filteredWldcups = result;
+      },
+      handleReport(inputValue) {
+        this.reportWldcupAndHide(inputValue);
+      },
+      reportWldcupAndHide(reportComment) {
+        try {
+          createReport(this.user.uid, this.wldcupId, reportComment);  // 신고하기
+          this.showReportModal = false;
+          window.location.reload();
+        } catch (e) {
+          console.warn("신고하기 오류 : " + e);
+        }
       }
     },
     computed: {

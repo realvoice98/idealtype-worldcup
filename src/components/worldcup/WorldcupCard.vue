@@ -21,17 +21,20 @@
     <div class="card-description">
       <span>조회수 {{ views }}회 · {{ updatedAt }} 업데이트됨</span>
       <LikeButton :user="user" :wldcupId="data.wldcupId"/>
+      <ReportButton :user="user" :wldcupId="data.wldcupId" @open-modal="openReportModal" />
     </div>
   </div>
 </template>
 
 <script>
 import LikeButton from '@/components/buttons/LikeButton.vue';
+import ReportButton from '@/components/buttons/ReportButton.vue';
 
   export default {
     name: 'WorldcupCard',
     components: {
       LikeButton,
+      ReportButton,
     },
     props: {
       data: {
@@ -57,6 +60,11 @@ import LikeButton from '@/components/buttons/LikeButton.vue';
       },
       wldcupLink() {
         return `/wldcup/${this.data.wldcupId}`;
+      }
+    },
+    methods: {
+      openReportModal() {
+        this.$emit('open-modal', this.data.wldcupId);
       }
     },
   };
