@@ -86,10 +86,10 @@
        * 현재 월드컵의 조회수 1 증가
        */
       async increaseInViews() {
-        const user = auth.currentUser;
+        // TODO: 현재 IP를 대상으로 조회수 대기 시간 부여
         const wldcupId = this.$route.params.id;
 
-        await increaseInViews(user, wldcupId);
+        await increaseInViews(wldcupId);
       },
       /**
        * 현재 월드컵에 대한 진행 이력이 존재하는지 체크

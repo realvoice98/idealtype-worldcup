@@ -626,13 +626,11 @@ export async function getLikedWorldcups(user) {
 
 /**
  * 월드컵 조회수를 1 증가시키는 함수
- * @param {Object} user 유저 정보
  * @param {string} wldcupId 월드컵 ID
  * @returns {Promise<void>} 현재 월드컵의 조회수 1 증가
  */
 export async function increaseInViews(wldcupId) {
-  // TODO: 어뷰징 방지를 위해 기진입 USER 세션의 경우 3분의 대기 시간을 부여
-  //  (firebase 가 아닌 vue 단에서 로컬 스토리지 or 쿠키를 통해 관리하는 게 좋을 듯)
+  // TODO: 어뷰징 방지를 위해 기진입 IP에 대해 3분의 대기 시간 부여
 
   const wldcupViewsRef = dbRef(db, `wldcups/${wldcupId}/views`);
 
