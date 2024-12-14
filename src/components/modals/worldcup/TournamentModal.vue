@@ -114,11 +114,18 @@
         const wldcup = await fetchWldcup(wldcupId);
 
         this.title = wldcup.title;
+        this.images = wldcup.images;
         this.description = wldcup.description;
         this.hashtags = wldcup.hashtags;
         this.totalItemCnt = wldcup.images.length;
         this.enterItemCnt = Math.pow(2, Math.floor(Math.log2(this.totalItemCnt))); // 가장 가까운 2의 제곱수
         this.rounds = this.calcRounds(this.totalItemCnt); // 라운드 배열 연산
+
+        // 부모 컴포넌트로 데이터 전달
+        this.$emit('loadWldcupData', {
+          title: this.title,
+          items: this.images,
+        });
       },
       /**
        * 총 후보 수를 기준으로 최대 라운드부터 최소 라운드(4강)까지 배열 원소를 추가하는 연산 함수
