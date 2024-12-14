@@ -150,11 +150,16 @@
        * 선택한 토너먼트 라운드 수로 UI 업데이트
        */
       selectTournamentCnt(e) {
+        const innerText = e.target.innerText;
+
         const selectItem = document.querySelector('.btn-dropdown');
         selectItem.style.borderWidth = '1.5px';
         selectItem.style.backgroundColor = 'white';
         selectItem.style.borderColor = '#98B7D4';
-        selectItem.innerHTML = e.target.innerText;
+        selectItem.innerHTML = innerText;
+
+        const enterItemCnt = parseInt(innerText.replace('강', ''), 10);
+        this.enterItemCnt = enterItemCnt * 2; // n강 === n * 2 매치
 
         // 드랍박스 하단 화살표 아이콘 업데이트
         const iconSpan = document.createElement('span');
@@ -247,6 +252,7 @@
     text-decoration: none;
     font-size: 15px;
     padding: 12px 16px;
+    color: black; /* 다크모드에 영향을 받지 않도록 고유 속성을 강제 */
   }
   .dropdown-content span:hover {
     background-color: #ddd;
