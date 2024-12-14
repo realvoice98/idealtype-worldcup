@@ -13,7 +13,7 @@
         <router-link class="nav-link" to="/bo/user-list">사용자 목록</router-link>
       </li>
       <li class="nav-item">
-        <router-link class="nav-link" to="/bo/worldcup-management">월드컵 관리</router-link>
+        <router-link class="nav-link" to="/bo/wldcup-management">월드컵 관리</router-link>
       </li>
       <li class="nav-item">
         <router-link class="nav-link" to="/bo/report-receive">신고접수</router-link>
