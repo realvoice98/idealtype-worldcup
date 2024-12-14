@@ -15,10 +15,15 @@
             <button v-if="!isEditingNickname" class="btn-edit" @click="edit('nickname')">
               <span class="icon">edit</span>
             </button>
-            <input v-if="isEditingNickname" v-model="editedNickname" type="text" class="input-field" />
-            <button v-if="isEditingNickname" class="btn-save" @click="save('nickname')">
-              확인
-            </button>
+            <div v-if="isEditingNickname">
+              <input v-model="editedNickname" type="text" class="input-field" />
+              <button class="btn-edit" @click="save('nickname')">
+                <span class="icon">check</span>
+              </button>
+              <button class="btn-edit" @click="close('nickname')">
+                <span class="icon">close</span>
+              </button>
+            </div>
           </div>
         </div>
         <div class="content-item">
@@ -38,23 +43,24 @@
             <button v-if="!isEditingGender" class="btn-edit" @click="edit('gender')">
               <span class="icon">edit</span>
             </button>
-            <div v-if="isEditingGender" class="signup-line gender">
-              <div class="gender-list">
-                <button
-                    type="button"
-                    :class="['gender-btn', { selected: gender === 'M' }]"
-                    @click="selectGender('M')"
-                >남성</button>
-                <button
-                    type="button"
-                    :class="['gender-btn', { selected: gender === 'F'}]"
-                    @click="selectGender('F')"
-                >여성</button>
+            <div v-if="isEditingGender" class="editBox">
+              <div class="signup-line gender">
+                <div class="gender-list">
+                  <button type="button"
+                          :class="['gender-btn', { selected: editedGender === 'M' }]"
+                          @click="selectGender('M')">남성</button>
+                  <button type="button"
+                          :class="['gender-btn', { selected: editedGender === 'F'}]"
+                          @click="selectGender('F')">여성</button>
+                </div>
               </div>
+              <button class="btn-edit" @click="save('gender')">
+                <span class="icon">check</span>
+              </button>
+              <button class="btn-edit" @click="close('gender')">
+                <span class="icon">close</span>
+              </button>
             </div>
-            <button v-if="isEditingGender" class="btn-save" @click="save('gender')">
-              확인
-            </button>
           </div>
         </div>
         <div class="content-item">
@@ -68,10 +74,15 @@
               <span class="icon">edit</span>
             </button>
             <span v-if="!isEditingBirthday" class="until-bday">{{ daysUntilBirthday }}</span>
-            <input v-if="isEditingBirthday" v-model="editedBirthday" @input="autoHyphen" type="text" class="input-field" placeholder="YYYY-MM-DD" maxlength="10"/>
-            <button v-if="isEditingBirthday" class="btn-save" @click="save('birthday')">
-              확인
-            </button>
+            <div v-if="isEditingBirthday">
+              <input v-model="editedBirthday" @input="autoHyphen" type="text" class="input-field" placeholder="YYYY-MM-DD" maxlength="10"/>
+              <button class="btn-edit" @click="save('birthday')">
+                <span class="icon">check</span>
+              </button>
+              <button class="btn-edit" @click="close('birthday')">
+                <span class="icon">close</span>
+              </button>
+            </div>
           </div>
         </div>
         <div class="content-item">
@@ -206,21 +217,32 @@
       },
       async save(type) {
         try {
-          if (type === "nickname") {
-            this.isEditingNickname = false;
-            await updateProfile(this.uid, type, this.editedNickname);
-          } else if (type === "gender") {
-            this.isEditingGender = false;
-            await updateProfile(this.uid, type, this.editedGender);
-          } else if (type === "birthday") {
-            this.isEditingBirthday = false;
-            await updateProfile(this.uid, type, this.editedBirthday);
-          }
+          const editMapping = {
+            nickname: { isEditing: 'isEditingNickname', edited: this.editedNickname, original: this.user.nickname },
+            gender: { isEditing: 'isEditingGender', edited: this.editedGender, original: this.user.gender },
+            birthday: { isEditing: 'isEditingBirthday', edited: this.editedBirthday, original: this.user.birthday },
+          };
 
-          // 업데이트 후 사용자 데이터 갱신
+          const { isEditing, edited, original } = editMapping[type] || {};
+
+          this[isEditing] = false;
+
+          if (!isEditing || edited === original) return;
+
+          await updateProfile(this.uid, type, edited);
+
           this.user = await getUser({ uid: this.uid });
         } catch (error) {
-          console.error("Error saving profile:", error);
+          console.error("프로필 수정 중 오류 발생", error);
+        }
+      },
+      close(type){
+        if (type === "nickname") {
+          this.isEditingNickname = false;
+        } else if (type === "gender") {
+          this.isEditingGender = false;
+        } else if (type === "birthday") {
+          this.isEditingBirthday = false;
         }
       },
       selectGender(gender) {
@@ -242,6 +264,7 @@
 </script>
 
 <style scoped>
+
   .profile-detail {
     width: 90%;
   }
@@ -322,6 +345,25 @@
   .exp-value {
     margin-top: 50px;
     color: dimgray;
+  }
+
+  .editBox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .input-field{
+    padding: 0.3rem;
+    border: 2px solid #ececec;
+    border-radius: 8px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
   }
 
   .gender-btn {
