@@ -53,11 +53,16 @@ button {
   cursor: pointer;
 }
 button:first-child {
-  background-color: #007bff;
+  background-color: var(--theme);
   color: white;
 }
 button:last-child {
   background-color: #f5f5f5;
   color: #333;
+}
+
+p {
+  color: black; /* 다크모드 전환 시 변환되지 않도록 고유 색 할당 */
+  white-space: pre-line; /* \n 문자 인식하여 줄바꿈 가능하게 처리 */
 }
 </style>
