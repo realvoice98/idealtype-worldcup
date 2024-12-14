@@ -4,7 +4,7 @@
   <div v-if="!isModalVisible" class="wldcup-details">
     <div class="match-container">
       <div class="match-title">
-        <h2>{{ wldcup.title }} <span>{{ selectedRound }}강</span></h2> <!-- "결승전" 분기 -->
+        <h2>{{ wldcup.title }} <span>{{ currentRound }}강</span></h2> <!-- TODO: "결승전" 분기 -->
       </div>
       <div class="match-content">
         <div class="item-container">
@@ -56,7 +56,7 @@
       return {
         isModalVisible: true,
         isNextRoundLoaded: false,
-        selectedRound: null,
+        currentRound: null,
         wldcup: {
           title: '',
           items: [],
@@ -68,11 +68,49 @@
     methods: {
       async startWldcup() {
         this.isModalVisible = false;
+
+        // 로그인 상태인 경우, 진행도 저장 공간에 현재 월드컵 매치 정보 초기 데이터 세팅
+        const user = auth.currentUser;
+        if (user) {
+          const wldcupId = this.$route.params.id;
+          const round = this.currentRound;
+          const matches = createMatches(this.wldcup.items, round);
+
+          await initWldcupProgress(user, wldcupId, round, matches);
+        }
+
         this.loading(1500);
+
+        /**
+         * 1:1 매치 대진 구조 생성 함수
+         * @param {Object} wldcupItems 현재 잔향즁안 월드컵 내 전체 아이템 수
+         * @param {number} currentRound 현재 라운드
+         * @returns {Object} 현재 라운드의 전체 대진 구조
+         */
+        function createMatches(wldcupItems, currentRound) {
+          const matches = {};
+          let itemIndex = 0;
+
+          for (let i = 0; i < currentRound / 2; i++) {
+            matches[`match${i}`] = {
+              item0: {
+                title: wldcupItems[itemIndex]?.customName || '',
+                path: wldcupItems[itemIndex]?.path || '',
+              },
+              item1: {
+                title: wldcupItems[itemIndex + 1]?.customName || '',
+                path: wldcupItems[itemIndex + 1]?.path || '',
+              },
+            };
+            itemIndex += 2;
+          }
+
+          return matches;
+        }
       },
       roundSelection(round) {
         // 토너먼트 모달에서 선택한 라운드 수 저장
-        this.selectedRound = round;
+        this.currentRound = round;
       },
       loadWldcupData(data) {
         // 토너먼트 모달에서 전달받은 월드컵 데이터 저장

@@ -669,14 +669,14 @@ export async function createReport(uid, wldcupId, reportComment) {
  * @param {Object} user 유저 정보
  * @param {string} wldcupId 월드컵 ID
  * @param {number} round n강
- * @param {string} matches 1:1 매치
+ * @param {Object} matches 모든 1:1 매치
  * @returns {Promise<void>}
  */
 export async function initWldcupProgress(user, wldcupId, round, matches) {
-  const inProgressWldcupRef = dbRef(db, `inProgressWldcup/${wldcupId}/${user.uid}`);
+  const inPrgrsWldcupRef = dbRef(db, `inPrgrsWldcups/${wldcupId}/${user.uid}`);
 
   try {
-    await set(inProgressWldcupRef, {
+    await set(inPrgrsWldcupRef, {
       round,
       matches: { [round]: matches }, // 초기 라운드 매치 정보 삽입
     });
