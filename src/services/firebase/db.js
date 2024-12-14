@@ -72,7 +72,6 @@ export async function updateLastLogin(uid) {
   }
 }
 
-
 /**
  * 레벨 업 함수
  * @param {String} uid 사용자 아이디
@@ -415,6 +414,7 @@ export async function fetchUserWldcups(uid) {
     };
   }
 }
+
 /**
  * 특정 월드컵에 대한 통계 데이터를 받아오는 함수
  * @param {string} wldcupId 월드컵 ID
@@ -601,7 +601,6 @@ export async function toggleLike(user, wldcupId) {
   }
 }
 
-
 /**
  * 특정 유저의 월드컵 좋아요 데이터를 불러오는 함수
  * @param {Object} user 유저 정보
@@ -631,7 +630,7 @@ export async function getLikedWorldcups(user) {
  * @param {string} wldcupId 월드컵 ID
  * @returns {Promise<void>} 현재 월드컵의 조회수 1 증가
  */
-export async function increaseInViews(user, wldcupId) {
+export async function increaseInViews(wldcupId) {
   // TODO: 어뷰징 방지를 위해 기진입 USER 세션의 경우 3분의 대기 시간을 부여
   //  (firebase 가 아닌 vue 단에서 로컬 스토리지 or 쿠키를 통해 관리하는 게 좋을 듯)
 
@@ -659,8 +658,6 @@ export async function increaseInViews(user, wldcupId) {
  * @returns {Promise<void>}
  */
 export async function initWldcupProgress(user, wldcupId, round, matches) {
-  // FIXME: initWldcupProgress ?? 피로감에 이상해진 함수 작명 > 좀 더 직관적으로
-
   const inProgressWldcupRef = dbRef(db, `inProgressWldcup/${wldcupId}/${user.uid}`);
 
   try {
@@ -683,8 +680,6 @@ export async function initWldcupProgress(user, wldcupId, round, matches) {
  * @returns {Promise<void>}
  */
 export async function processMatchResult(user, wldcupId, round, matchId, winnerName) {
-  // TODO: 빌어먹을 데모 로직을 테스트 가능한 수준으로 제대로 수정해!!!!!!!!!!
-
   const inProgressWldcupRef = dbRef(db, `inProgressWldcup/${wldcupId}/${user.uid}`);
   const winnerPath = `matches/${round}/${matchId}/${winnerName}`;
   const nextRound = round === "final" ? null : String(round / 2);
@@ -692,14 +687,14 @@ export async function processMatchResult(user, wldcupId, round, matchId, winnerN
   // 승리 카운트 증가
   const updates = {};
   updates[`${winnerPath}/winCnt`] = 1;
-  if (round === 2) { // FIXME: 2 ? 'final' ??? 마지막 라운드를 어떻게 생성해서 보내줄 것인지 고민이 필요... 아... 머리 끝까지 화가 난다
+  if (round === 2) { // FIXME: 2 ? 'final' ??? 마지막 라운드를 어떻게 생성해서 보내줄 것인지
     updates[`${winnerPath}/champCnt`] = 1;
   }
 
   // 다음 라운드 매치로 승리자 이동
   if (nextRound) {
     const nextMatchId = `match${Math.ceil(matchId / 2)}`;
-    updates[`matches/${nextRound}/${nextMatchId}/${winnerName}`] = { ...winnerData }; // TODO: 구조분해할당이 제대로 이루어지는지? FUCK FUCK FUCK FUCK FUCK
+    updates[`matches/${nextRound}/${nextMatchId}/${winnerName}`] = { ...winnerData }; // TODO: 구조분해할당이 제대로 이루어지는지?
   }
 
   await update(inProgressWldcupRef, updates);
