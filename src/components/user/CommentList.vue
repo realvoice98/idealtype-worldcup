@@ -6,7 +6,7 @@
     <div class="comment-contents">
       <div v-if="comments.length > 0" class="comments-list">
         <div
-            v-for="(comment, index) in comments"
+            v-for="(comment) in comments"
             :key="comment.id"
             class="comment"
         >
@@ -19,6 +19,9 @@
             </div>
             <div class="text">{{ comment.text }}</div>
           </router-link>
+          <button class="delete-button" @click="confirmDelete(comment)">
+            X
+          </button>
         </div>
       </div>
       <p v-else class="no-comments-message">아직 작성한 댓글이 없습니다!</p>
@@ -27,8 +30,8 @@
 </template>
 
 <script>
-import { auth, onAuthStateChanged } from "@/services/firebase/auth";
-import { fetchMyComments } from "@/services/firebase/db";
+import {auth, onAuthStateChanged} from "@/services/firebase/auth";
+import {fetchMyComments, deleteComment} from "@/services/firebase/db";
 import ProfileButton from "@/components/buttons/ProfileButton.vue";
 
 export default {
@@ -54,6 +57,23 @@ export default {
         this.comments = await fetchMyComments(uid);
       } catch (error) {
         console.error("댓글 데이터를 가져오는 중 오류 발생:", error);
+      }
+    },
+    confirmDelete(comment) {
+      if (confirm("정말 삭제하시겠습니까?")) {
+        this.deleteComment(comment);
+      }
+    },
+    async deleteComment(comment) {
+      try {
+        console.log(this.user)
+        console.log(comment.wldcupId)
+        console.log(comment)
+        await deleteComment(this.user, comment.wldcupId, comment.commentId);
+        this.comments = this.comments.filter((item) => item.commentId !== comment.commentId);
+      } catch (error) {
+        alert("댓글 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.");
+        console.error("댓글 삭제 실패:", error);
       }
     },
   },
@@ -88,6 +108,7 @@ export default {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 1rem;
+  position: relative;
 }
 
 .comment-link {
@@ -126,5 +147,16 @@ export default {
 .no-comments-message {
   text-align: center;
   color: #888;
+}
+
+.delete-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: red;
+  font-size: 1.2rem;
+  cursor: pointer;
 }
 </style>

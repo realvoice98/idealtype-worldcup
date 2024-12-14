@@ -452,6 +452,26 @@ export async function createComment(user, wldcupId, commentText) {
 }
 
 /**
+ * 월드컵에 작성된 댓글을 삭제하는 함수
+ * @param {Object} user 유저 정보
+ * @param {string} wldcupId 월드컵 ID
+ * @param {string} commentId 삭제할 댓글의 ID
+ * @returns {Promise<void>} 댓글 데이터와 관련 유저 데이터를 삭제
+ */
+export async function deleteComment(user, wldcupId, commentId) {
+  const commentRef = dbRef(db, `comments/${wldcupId}/${commentId}`);
+  const userCommentRef = dbRef(db, `users/${user.uid}/myCommentList/${wldcupId}/${commentId}`);
+
+  try {
+    await rm(commentRef);
+    await rm(userCommentRef);
+  } catch (e) {
+    alert("댓글 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    console.error('댓글 삭제 실패:', e);
+  }
+}
+
+/**
  * 내가 단 모든 댓글들을 가져오는 함수
  * @param {Object} user 유저 정보
  * @returns {Promise<Array>} 댓글 목록
