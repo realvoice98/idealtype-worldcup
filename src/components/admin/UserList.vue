@@ -66,9 +66,14 @@
       }
     },
     async created() {
-      this.isLoading = true;
-      this.users = await getAllUsers(); // 컴포넌트 생성 시점에 유저 정보 조회
-      this.isLoading = false;
+      try {
+        this.isLoading = true;
+        this.users = await getAllUsers(); // 컴포넌트 생성 시점에 유저 정보 조회
+      } catch (error) {
+        console.error('유저 정보 조회 실패:', error);
+      } finally {
+        this.isLoading = false;
+      }
     },
     methods: {
       formattedGender(gender) {
