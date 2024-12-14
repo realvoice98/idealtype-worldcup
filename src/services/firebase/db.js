@@ -177,6 +177,7 @@ export async function getAllUsers() {
       const usersData = snapshot.val();
 
       return Object.keys(usersData).map(uid => ({
+        uid,
         ...usersData[uid], // 모든 데이터를 object 형식으로 먼저 뿌리고, 포맷이 필요한 값들만 오버라이딩
         email: restoreToOriginalString(usersData[uid].email),
       }));

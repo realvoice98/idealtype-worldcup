@@ -1,4 +1,5 @@
 <template>
+  <LoadingSpinner :visible="isLoading" />
   <div>
     <h1>사용자 목록</h1>
     <table>
@@ -22,14 +23,19 @@
           <td>{{ index + 1 }}</td>
           <td>{{ user.nickname }}</td>
           <td>{{ user.email }}</td>
-          <td>{{ user.level }}</td>
-          <td>{{ user.exp }}</td>
+          <td>{{ user.level || 0 }}</td>
+          <td>{{ user.exp || 0 }}</td>
           <td>{{ user.role }}</td>
           <td>{{ user.birthday }}</td>
           <td>{{ user.createdAt }}</td>
           <td>{{ user.lastLoginedAt }}</td>
           <td>{{ formattedGender(user.gender) }}</td>
-          <td><router-link to="/bo/user-list/created-wldcups">{{ calcWldcupCnt(user.myWldcups) }}</router-link></td>
+          <td>
+            <router-link
+                :to="{ path: '/bo/user-list/created-wldcups', query: { uid: user.uid } }">
+              {{ calcWldcupCnt(user.myWldcups) }}
+            </router-link>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -45,19 +51,24 @@
   import { toRaw } from "vue";
 
   import CreatedWorldcups from '@/components/admin/CreatedWorldcups.vue';
+  import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 
   export default {
     name: 'UserList',
     components: {
+      LoadingSpinner,
       CreatedWorldcups,
     },
     data() {
       return {
         users: [],
+        isLoading: false,
       }
     },
     async created() {
+      this.isLoading = true;
       this.users = await getAllUsers(); // 컴포넌트 생성 시점에 유저 정보 조회
+      this.isLoading = false;
     },
     methods: {
       formattedGender(gender) {
