@@ -234,6 +234,7 @@
   li {
     padding: 10px 15px;
     list-style-type: none;
+    color: black;
   }
   li.logo {
     padding-left: 100px;
