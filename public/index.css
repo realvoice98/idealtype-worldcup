@@ -90,6 +90,7 @@ html {
 
 .error-message {
   color: crimson;
+  white-space: pre-line;
 }
 
 /* Dark color scheme */

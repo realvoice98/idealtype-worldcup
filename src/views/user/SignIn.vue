@@ -52,7 +52,7 @@
 
         } catch (e) {
           if (e.code === 'auth/invalid-credential') {
-            this.errorMessage = '유효하지 않은 정보입니다. 이메일과 비밀번호를 다시 확인해주세요.';
+            this.errorMessage = '유효하지 않은 정보입니다.\n이메일과 비밀번호를 다시 확인해주세요.';
           } else {
             this.errorMessage = `오류: ${e.message}`;
           }
