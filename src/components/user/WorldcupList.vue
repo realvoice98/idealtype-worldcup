@@ -168,7 +168,7 @@
 
       async deleteWldcup() {
         try {
-          await deleteWldcup(this.wldcupId);
+          await deleteWldcup(this.user.uid, this.wldcupId);
           console.log('월드컵 삭제 완료');
 
           await deleteImages(this.user.uid, this.wldcupTitle);

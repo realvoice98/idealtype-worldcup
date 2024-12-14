@@ -744,13 +744,15 @@ export async function checkInProgressWldcup(user, wldcupId) {
  * 월드컵 삭제 함수
  * @param {string} wldcupId 현재 진입한 월드컵의 UID
  */
-export async function deleteWldcup(wldcupId) {
+export async function deleteWldcup(uid,wldcupId) {
   const wldcupRef = dbRef(db, `wldcups/${wldcupId}`);
   const commentsRef = dbRef(db, `comments/${wldcupId}`);
+  const myWldcupsRef = dbRef(db, `users/${uid}/myWldcups/${wldcupId}`);
 
   try {
     await rm(wldcupRef);
     await rm(commentsRef); //TODO: 댓글 삭제되는지 테스트 필요
+    await rm(myWldcupsRef);
   }catch (e){
     console.error('오류: 월드컵을 삭제하지 못했습니다.', e)
   }

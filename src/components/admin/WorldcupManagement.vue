@@ -93,7 +93,7 @@ export default {
 
         const {creatorId, wldcupId, title} = this.wldcupToDelete;
 
-        await deleteWldcup(wldcupId);
+        await deleteWldcup(creatorId, wldcupId);
         await deleteImages(creatorId, title);
 
         this.wldcups = this.wldcups.filter(wldcup => wldcup.wldcupId !== wldcupId);
