@@ -593,7 +593,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 
 .cropper-buttons {
   position: absolute;
-  bottom: 5vh;
+  top: 71vh;
   display: flex;
   justify-content: space-evenly;
   width: 100%;

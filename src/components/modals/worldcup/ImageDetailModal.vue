@@ -465,6 +465,40 @@ export default {
   opacity: 1;
 }
 
+.cropper-container {
+  margin-top: 1vh;
+  width: 80vw;
+  height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vue-cropper {
+  width: 70vw;
+  height: 70vh;
+}
+
+.cropper-buttons {
+  position: absolute;
+  top: 71vh;
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  gap: 2vw;
+}
+
+.cropper-buttons button {
+  padding: 1vh 2vw;
+  font-size: 1.2vw;
+  cursor: pointer;
+  border: none;
+  border-radius: 0.5vw;
+}
+
+.cropper-buttons button:hover {
+  background-color: #0056b3;
+}
 
 .error-message {
   color: red;
