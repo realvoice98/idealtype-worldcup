@@ -31,7 +31,7 @@
       <div class="modal-buttons">
         <div class="dropdown-container">
           <button class="btn-dropdown">
-            {{ enterItemCnt }}강 <span class="icon">arrow_drop_down</span>
+            {{ enterItemCnt / 2 }}강 <span class="icon">arrow_drop_down</span>
           </button>
           <div class="dropdown-content">
             <span v-for="(round, index) in rounds" :key="index" @click="selectTournamentCnt">
@@ -100,6 +100,9 @@
         if (user === null) {
           // 세션이 존재하지 않으면 무조건 진행 이력 없는 것으로 취급
           this.isProgress = false;
+          setTimeout(() => {
+            this.isLoading = false;
+          }, 1000);
           return;
         }
 
