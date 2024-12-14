@@ -106,12 +106,6 @@
 </script>
 
 <style scoped>
-  /*
-    TODO: 추가 구현 필요 사항
-      1. 아이템명을 img 태그 하단에 붙히고 상단으로 늘어나게끔 처리
-      2. 이미지는 반드시 부모 영역의 전체 width를 모두 차지 (?)
-  */
-
   .wldcup-details {
     display: flex;
     flex-direction: column;
@@ -143,19 +137,28 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex: 1; /* 양 영역을 동일한 비율로 구분 */
     text-align: center;
+    position: relative;
   }
   .item-image {
     width: 100%;
     height: 100%;
-    max-height: 550px;
-    margin-bottom: 1rem;
+    max-height: 500px;
   }
   .item-name {
-    font-size: 1.3rem;
-    font-weight: bold;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: whitesmoke;
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 35px 35px 0 0;
+    box-sizing: border-box;
+    bottom: 0; /* 이미지 하단에 배치 */
+    font-size: 1.2rem;
+    word-wrap: break-word; /* 긴 문자는 줄바꿈 */
+    white-space: normal; /* 여러 줄로 표시 */
   }
 
   .button-container {
