@@ -16,6 +16,7 @@
           <img class="item-image" :src="wldcup.items[lIdx].path" alt="" />
           <span class="item-name">{{ wldcup.items[lIdx].customName }}</span>
         </div>
+        <img class="versus" src="@/assets/vs.png" alt="" />
         <div class="item-container">
           <img class="item-image" :src="wldcup.items[rIdx].path" alt="" />
           <span class="item-name">{{ wldcup.items[rIdx].customName }}</span>
@@ -130,7 +131,9 @@
 
   .match-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+    position: relative;
     width: 100%;
   }
   .item-container {
@@ -144,12 +147,12 @@
   }
   .item-image {
     width: 100%;
-    height: 100%;
-    max-height: 500px;
+    height: 500px; /* 각 이미지 별로 상이한 문제가 있으므로 반드시 고정 폭으로 할당 */
+    object-fit: cover; /* 이미지가 영역을 채우되, 비율은 유지 */
   }
   .item-name {
     position: absolute;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.3);
     color: whitesmoke;
     width: 100%;
     padding: 0.8rem;
@@ -159,6 +162,15 @@
     font-size: 1.2rem;
     word-wrap: break-word; /* 긴 문자는 줄바꿈 */
     white-space: normal; /* 여러 줄로 표시 */
+  }
+
+  .versus {
+    position: absolute;
+    z-index: 1;
+    width: 350px;
+    height: auto;
+    left: 50%;
+    transform: translate(-50%); /* 중앙 위치 */
   }
 
   .button-container {
