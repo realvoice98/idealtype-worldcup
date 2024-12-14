@@ -22,8 +22,8 @@
         <div>
         <div class="signup-line phoneNumber">
           <div class="left">전화번호</div>
-          <div class="right">
-            <input style="border:none" v-model="phoneNumber" @input="autoPhoneHyphen" placeholder="010-0000-0000" maxlength="15" />
+          <div class="content-wrap">
+            <input class="right" style="border:none" v-model="phoneNumber" @input="autoPhoneHyphen" placeholder="010-0000-0000" maxlength="15" />
             <button class="submit-btn" id="verificationPhone" @click="submitPhone">발송</button>
           </div>
         </div>
@@ -32,9 +32,9 @@
       <div>
         <div class="signup-line verification">
           <div class="left">인증번호</div>
-          <div class="right">
-            <input style="border:none" placeholder="인증번호 6자리" v-model="verification" @input="updateVerification" maxlength="6" />
-          <button class="confirm-btn" id="confirmVerification" @click="confirmVerification">확인</button>
+          <div class="content-wrap">
+            <input class="right" style="border:none" placeholder="인증번호 6자리" v-model="verification" @input="updateVerification" maxlength="6" />
+            <button class="confirm-btn" id="confirmVerification" @click="confirmVerification">확인</button>
           </div>
         </div>
         <div class="submit-status" v-if="verificationMessage">{{ verificationMessage }}</div>
@@ -45,11 +45,13 @@
               type="button"
               :class="['gender-btn', { selected: gender === 'M' }]"
               @click="selectGender('M')"
+              style="color: inherit"
             >남성</button>
             <button
               type="button"
               :class="['gender-btn', { selected: gender === 'F'}]"
               @click="selectGender('F')"
+              style="color: inherit"
             >여성</button>
           </div>
         </div>
@@ -363,6 +365,20 @@
       /* color: black; */
       color: var(--theme);
     }
+  }
+
+  .content-wrap {
+    display: flex;
+    gap: 10px; /* input과 button 간격 */
+    align-items: center;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+  }
+  .content-wrap input {
+    width: 128.5px; /* NOTE: 당장 고쳐야 해서 급하게 하드코딩 */
+  }
+  .content-wrap button {
+    margin-right: 4px;
   }
 
   .submit-btn, .confirm-btn {
