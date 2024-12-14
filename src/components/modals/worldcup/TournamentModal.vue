@@ -178,6 +178,10 @@
 </script>
 
 <style scoped>
+  h2, p {
+    color: black; /* 다크모드에 영향을 받지 않도록 고유 속성을 강제 */
+  }
+
   .modal-description {
     color: dimgray;
   }

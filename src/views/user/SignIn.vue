@@ -15,7 +15,7 @@
       </form>
       <div class="bottom-container">
       <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
-      이상형 월드컵에 처음 오셨나요? <router-link class= "go-signup" to="/sign-up">회원가입하기</router-link>
+      이상형 월드컵에 처음 오셨나요? <router-link class= "go-signup" to="/sign-up" style="color: var(--theme)">회원가입하기</router-link>
     </div>
     </div>
   </div>
