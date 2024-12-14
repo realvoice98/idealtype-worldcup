@@ -124,18 +124,20 @@
           );
         }
 
-        result = result.filter((item) => {  //본인이 신고했거나 신고회수가 3회 이상인 경우 보여지지 않음
-          if (!item.reports) {
-            return true;
-          }
+        if (this.user) {
+          result = result.filter((item) => {  //본인이 신고했거나 신고회수가 3회 이상인 경우 보여지지 않음
+            if (!item.reports) {
+              return true;
+            }
 
-          const reportKeys = Object.keys(item.reports);
+            const reportKeys = Object.keys(item.reports);
 
-          return (
-              reportKeys.length <= 3 &&
-              !reportKeys.some((key) => item.reports[key].uid === this.user.uid)
-          );
-        });
+            return (
+                reportKeys.length <= 3 &&
+                !reportKeys.some((key) => item.reports[key].uid === this.user.uid)
+            );
+          });
+        }
 
         if (this.currentFilter === 'popular') {
           result.sort((a, b) => Number(b.views) - Number(a.views)); // 인기순 정렬
