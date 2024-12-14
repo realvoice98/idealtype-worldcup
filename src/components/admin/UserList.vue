@@ -103,4 +103,9 @@
   th {
     background-color: var(--theme);
   }
+
+  a {
+    color: var(--theme);
+    text-decoration: none;
+  }
 </style>
