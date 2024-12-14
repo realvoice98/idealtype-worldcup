@@ -44,6 +44,7 @@ export async function createUser(user) {
       createdAt: formatDate(new Date(user.metadata.creationTime)),
       lastLoginedAt: formatDate(new Date(user.metadata.lastSignInTime)),
       level: 1,
+      levelReq: 100,
       exp: 0,
       role: 'user', // 일반 사용자
     });
@@ -68,6 +69,51 @@ export async function updateLastLogin(uid) {
     });
   } catch (e) {
     console.error('lastLoginedAt 업데이트 실패:', e);
+  }
+}
+
+
+/**
+ * 레벨 업 함수
+ * @param {String} uid 사용자 아이디
+ * @param {Number} exp 경험치
+ */
+export async function updateLevel(uid, exp) {
+  const userRef = dbRef(db, `users/${uid}`);
+
+  try {
+    const userSnapshot = await get(userRef);
+    if (!userSnapshot.exists()) {
+      console.error("사용자를 찾을 수 없습니다.");
+      return;
+    }
+
+    const user = userSnapshot.val();
+    let { level, levelReq, exp: currentExp } = user;
+
+    currentExp += exp;
+
+    const calculateRequiredExp = (level, baseExp = 100, expFactor = 1.2) => {
+      return Math.floor(baseExp * Math.pow(expFactor, level - 1));
+    };
+
+    while (currentExp >= levelReq) {
+      currentExp -= levelReq;
+      level++;
+
+      levelReq = calculateRequiredExp(level);
+    }
+
+    const updates = {
+      'level': level,
+      'exp': currentExp,
+      'levelReq': levelReq,
+    };
+
+    await update(userRef, updates);
+
+  } catch (error) {
+    console.error("레벨 업데이트 중 오류 발생:", error);
   }
 }
 
@@ -174,6 +220,9 @@ export async function createWldcup(user, wldcup) {
     const wldcupId = newWldcupRef.key;
     const myWldcupsRef = dbRef(db, `users/${user.uid}/myWldcups/${wldcupId}`);
     await set(myWldcupsRef, true); // Object.key() 통해서 실제 데이터 경로 참조위한 key 값만 사용할 것이므로 value는 flag로 주입
+
+    const exp = 50
+    await updateLevel(user.uid, exp);
 
     alert("월드컵 생성 완료!");
     console.log('월드컵 정보를 저장하였습니다.', wldcup);
