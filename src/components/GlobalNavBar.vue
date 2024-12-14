@@ -21,7 +21,7 @@
           </button>
         </li>
         <div :class="['auth-container', { 'em': !isLoggedIn }]">
-          <li v-if="!isLoggedIn">
+          <li v-if="!isLoggedIn || this.$route.path === '/sign-up'">
             <router-link to="/sign-in">로그인</router-link>
           </li>
           <li v-else>
