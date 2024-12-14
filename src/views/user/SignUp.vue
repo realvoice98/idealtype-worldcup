@@ -24,7 +24,7 @@
           <div class="left">전화번호</div>
           <div class="right">
             <input style="border:none" v-model="phoneNumber" @input="autoPhoneHyphen" placeholder="010-0000-0000" maxlength="15" />
-            <button class="submit-btn" id="verificationPhone" @click="submitPhone">발송</button>  
+            <button class="submit-btn" id="verificationPhone" @click="submitPhone">발송</button>
           </div>
         </div>
         <div class="submit-status" v-if="submitStatus">{{ submitStatus }}</div>
@@ -366,12 +366,13 @@
   }
 
   .submit-btn, .confirm-btn {
-    background-color: var(--theme);
-    border: none;
-    border-radius: 3px;
+    background-color: white;
+    border: 2px solid var(--theme);
+    border-radius: 5px;
     font-size: 13px;
     padding: 2px 10px;
     cursor: pointer;
+    width: 3.2rem;
   }
 
   .submit-status {
