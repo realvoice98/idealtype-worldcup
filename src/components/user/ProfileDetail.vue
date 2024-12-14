@@ -114,9 +114,9 @@
           </div>
           <div class="exp-container">
             <div class="exp-bar">
-              <div class="exp-progress" :style="{ width: progressWidth + '%' }"></div>
+              <div class="exp-progress" :style="{ width: animatedWidth + '%' }"></div>
             </div>
-            <span class="exp-value">{{ user.exp }} / 100</span>
+            <span class="exp-value">{{ user.exp }} / {{ user.levelReq }}</span>
           </div>
         </div>
       </div>
@@ -127,7 +127,7 @@
 
 <script>
   import { auth, onAuthStateChanged } from "@/services/firebase/auth";
-  import {getUser, updateProfile} from "@/services/firebase/db";
+  import {getUser, updateLevel, updateProfile} from "@/services/firebase/db";
 
   import CommonButton from "@/components/buttons/CommonButton.vue";
 
@@ -147,9 +147,10 @@
           lastLoginedAt: '',
           level: 1,
           exp: 0,
+          levelReq: 0,
         },
         uid:"",
-        progressWidth: 0,
+        animatedWidth: 0,
         isEditingNickname: false,
         isEditingGender: false,
         isEditingBirthday: false,
@@ -164,7 +165,8 @@
       //   ㄴ 개인정보를 url param에 담는 건 너무 상남자 코딩 같은데, sessionStorage 같은 공간에 담는 방향으로 진행
       onAuthStateChanged(auth, async (user) => {
         if (user) {
-          this.user = await getUser(user)
+          const newUserData = await getUser(user);
+          Object.assign(this.user, newUserData); // 속성별로 업데이트
           this.uid = user.uid;
         }
       });
@@ -195,13 +197,22 @@
         return `생일까지 앞으로 ${daysLeft}일 남으셨네요!`;
       },
       progressWidth() {
-        return this.user.exp; // NOTE: 흠...
+        if (this.user.levelReq === 0) return 0; // 나눗셈 방지
+        return Math.min(Math.floor((this.user.exp / this.user.levelReq) * 100), 100);
       }
     },
     mounted() {
       setTimeout(() => {
-        this.progressWidth = this.user.exp;
+        this.animatedWidth = this.progressWidth;
       }, 100);
+    },
+    watch: {
+      user: {
+        handler() {
+          this.animatedWidth = this.progressWidth; // 변경 시 프로그레스 업데이트
+        },
+        deep: true
+      }
     },
     methods: {
       edit(type) {
