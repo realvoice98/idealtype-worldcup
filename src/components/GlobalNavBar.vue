@@ -20,7 +20,7 @@
             <img class="btn-toggle-theme" :src="isDarkMode ? require('@/assets/dark-mode-icon.png') : require('@/assets/light-mode-icon.png')" alt="" />
           </button>
         </li>
-        <div class="auth-container">
+        <div :class="['auth-container', { 'em': !isLoggedIn }]">
           <li v-if="!isLoggedIn">
             <router-link to="/sign-in">로그인</router-link>
           </li>
@@ -215,9 +215,13 @@
   }
 
   .auth-container {
+    padding-right: 10px;
     margin-left: auto;
     display: flex;
-    gap: 1rem;
+  }
+  .em {
+    background-color: var(--theme);
+    border-radius: 5px;
   }
 
   .gnb-nav-filter {
