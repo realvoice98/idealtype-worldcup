@@ -124,7 +124,7 @@
         this.enterItemCnt = Math.pow(2, Math.floor(Math.log2(this.totalItemCnt))); // 가장 가까운 2의 제곱수
         this.rounds = this.calcRounds(this.totalItemCnt); // 라운드 배열 연산
 
-        // 부모 컴포넌트로 데이터 전달
+        // 부모 컴포넌트로 월드컵 데이터 전달
         this.$emit('loadWldcupData', {
           title: this.title,
           items: this.images,
@@ -147,16 +147,14 @@
         return rounds; // ex. [ 128, 64, 32, 16, 8, 4 ]
       },
       /**
-       * 선택한 토너먼트 라운드 수로 업데이트
+       * 선택한 토너먼트 라운드 수로 UI 업데이트
        */
       selectTournamentCnt(e) {
-        const innerText = e.target.innerText;
-
         const selectItem = document.querySelector('.btn-dropdown');
         selectItem.style.borderWidth = '1.5px';
         selectItem.style.backgroundColor = 'white';
         selectItem.style.borderColor = '#98B7D4';
-        selectItem.innerHTML = innerText;
+        selectItem.innerHTML = e.target.innerText;
 
         // 드랍박스 하단 화살표 아이콘 업데이트
         const iconSpan = document.createElement('span');
@@ -165,15 +163,17 @@
         iconSpan.style.float = 'right';
         iconSpan.innerText = 'arrow_drop_down';
         selectItem.appendChild(iconSpan);
-
-        // 부모 컴포넌트에 선택한 라운드 값 전달
-        const selectedRound = parseInt(innerText.replace('강', ''), 10);
-        this.$emit('roundSelected', selectedRound);
       },
       /**
-       * 부모 컴포넌트로 모달 종료 이벤트 전달
+       * 부모 컴포넌트로 선택한 라운드 데이터 및 모달 종료 이벤트 전달
        */
       startWldcup() {
+        // 선택한 라운드 값 전달
+        const $round = document.querySelector('.btn-dropdown');
+        const selectedRound = parseInt($round.innerText.replace('강', ''), 10);
+        this.$emit('roundSelected', selectedRound);
+
+        // 모달 종료 이벤트 전달
         this.$emit('startWldcup');
       },
     },

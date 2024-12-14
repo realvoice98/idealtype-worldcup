@@ -4,7 +4,7 @@
   <div v-if="!isModalVisible" class="wldcup-details">
     <div class="match-container">
       <div class="match-title">
-        <h2>{{ wldcup.title }}</h2>
+        <h2>{{ wldcup.title }} <span>{{ selectedRound }}강</span></h2> <!-- "결승전" 분기 -->
       </div>
       <div class="match-content">
         <div class="item-container">
@@ -35,7 +35,8 @@
 </template>
 
 <script>
-  import { processMatchResult } from '@/services/firebase/db';
+  import { auth } from '@/services/firebase/auth';
+  import { initWldcupProgress, processMatchResult } from '@/services/firebase/db';
 
   import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
   import TournamentModal from '@/components/modals/worldcup/TournamentModal.vue';
@@ -64,11 +65,8 @@
         rIdx: 1,
       }
     },
-    created() {
-      const wldcupId = this.$route.params.id;
-    },
     methods: {
-      startWldcup() {
+      async startWldcup() {
         this.isModalVisible = false;
         this.loading(1500);
       },
@@ -87,7 +85,8 @@
       selectWinner(selectedIndex) {
         this.loading(2300);
 
-        console.log('승리한 후보:', this.wldcup.items[selectedIndex].customName);
+        const winner = this.wldcup.items[selectedIndex];
+        // 승리자를 다음 라운드 배열에 추가
 
         // 다음 매치로 이동
         this.lIdx += 2;
