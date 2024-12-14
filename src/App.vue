@@ -1,6 +1,6 @@
 <template>
   <div id="app" :class="{ 'dark-mode': isDarkMode, 'light-mode': !isDarkMode }">
-    <GlobalNavBar v-if="isGnbVisible" :isDarkMode="isDarkMode" @toggleTheme="toggleTheme" />
+    <GlobalNavBar v-if="isGnbVisible" :isDarkMode="isDarkMode" />
     <CustomModal v-if="isModalVisible" :visible="isModalVisible" @close="closeModal" />
     <router-view />
   </div>

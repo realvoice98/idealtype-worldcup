@@ -39,7 +39,7 @@ export default {
     return {
       newComment: "",
       comments: [],
-      wldcupId: "-ODZrawWKjChdBdCOhAR", //TODO 월드컵ID 받아와야함
+      wldcupId: "-ODGtqUWkTAX5HSE7Ixx", //TODO 월드컵ID 받아와야함
       user: null,
     };
   },

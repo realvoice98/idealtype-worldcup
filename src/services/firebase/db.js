@@ -247,6 +247,70 @@ export async function fetchWldcup(wldcupId) {
 }
 
 /**
+ * 특정 사용자가 좋아요한 월드컵 데이터를 가져오는 함수
+ * @param {string} uid 사용자 UID
+ * @returns {Promise<Array>} 좋아요한 월드컵 리스트
+ */
+export async function fetchLikedWldcups(uid) {
+  try {
+    // 유저 좋아요 데이터 경로 참조
+    const userLikesRef = dbRef(db, `users/${uid}/myLikesWldcups`);
+
+    // 유저 좋아요 데이터 조회
+    const userSnapshot = await get(userLikesRef);
+
+    if (!userSnapshot.exists()) {
+      console.warn("좋아요한 월드컵이 없습니다.");
+      return [];
+    }
+
+    const userLikes = userSnapshot.val();
+    const likedWorldcupIds = Object.keys(userLikes);
+
+    if (likedWorldcupIds.length === 0) {
+      console.warn("좋아요한 월드컵이 없습니다.");
+      return [];
+    }
+
+    const wldcupPromises = likedWorldcupIds.map(async (wldcupId) => {
+      const wldcupSnapshot = await get(dbRef(db, `wldcups/${wldcupId}`));
+      if (wldcupSnapshot.exists()) {
+        const wldcupData = wldcupSnapshot.val();
+        return {
+          wldcupId,
+          ...wldcupData,
+          title: restoreToOriginalString(wldcupData.title),
+          views: Number(wldcupData.views),
+          updatedAt: new Date(wldcupData.updatedAt),
+          thumbnails: wldcupData.images.slice(0, 2),
+        };
+      } else {
+        return null;
+      }
+    });
+
+    const likedWldcupsArray = (await Promise.all(wldcupPromises)).filter(Boolean);
+
+    likedWldcupsArray.sort((a, b) => b.views - a.views);
+
+    return likedWldcupsArray.map((wldcup) => ({
+      ...wldcup,
+      views: numberFormat.format(wldcup.views),
+      updatedAt: relativeTimeFormat.format(
+          Math.ceil((new Date(wldcup.updatedAt) - new Date()) / (1000 * 60 * 60 * 24)),
+          'day'
+      ),
+    }));
+  } catch (error) {
+    console.error("좋아요한 월드컵 데이터를 가져오는 중 오류가 발생했습니다:", error);
+    return {
+      result: -1,
+      message: '좋아요한 월드컵 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.',
+    };
+  }
+}
+
+/**
  * 특정 사용자가 만든 월드컵 데이터를 가져오는 함수
  * @param {string} uid 사용자 ID
  * @returns {Promise<Object[]>} 사용자가 생성한 월드컵 객체 배열
@@ -378,9 +442,61 @@ export async function createComment(user, wldcupId, commentText) {
       text: commentText,                    // 댓글 내용
       timestamp: formatDate(new Date()),    // 댓글 작성 시간
     });
+
+    await set(dbRef(db, `users/${user.uid}/myCommentList/${wldcupId}/${newCommentRef.key}`), true);
+
   } catch (e) {
     alert("댓글 작성에 실패했습니다. 잠시 후 다시 시도해주세요.");
     console.error('댓글 작성 실패:', e);
+  }
+}
+
+/**
+ * 내가 단 모든 댓글들을 가져오는 함수
+ * @param {Object} user 유저 정보
+ * @returns {Promise<Array>} 댓글 목록
+ */
+export async function fetchMyComments(uid) {
+  const userCommentsRef = dbRef(db, `users/${uid}/myCommentList/`);
+
+  try {
+    const snapshot = await get(userCommentsRef);
+    const myComments = [];
+    const wldcupIds = snapshot.val();
+
+    if (!wldcupIds) {
+      return [];
+    }
+
+    for (const wldcupId in wldcupIds) {
+      const commentIds = wldcupIds[wldcupId];
+
+      for (const commentId in commentIds) {
+        const commentRef = dbRef(db, `comments/${wldcupId}/${commentId}`);
+        const commentSnapshot = await get(commentRef);
+
+        const wldcupRef = dbRef(db, `wldcups/${wldcupId}`);
+        const wldcupSnapshot = await get(wldcupRef);
+
+
+        if (commentSnapshot.exists()) {
+          const commentData = commentSnapshot.val();
+          myComments.push({
+            wldcupId,                                 // 월드컵 ID
+            title: wldcupSnapshot.val().title,        // 월드컵 제목
+            commentId,                                // 댓글 ID
+            nickName: commentData.nickName,           // 닉네임
+            text: commentData.text,                   // 댓글 내용
+            timestamp: commentData.timestamp,         // 댓글 작성 시간
+          });
+        }
+      }
+    }
+
+    return myComments;
+  } catch (e) {
+    console.error("댓글 가져오기 실패:", e);
+    return [];
   }
 }
 
@@ -393,19 +509,28 @@ export async function createComment(user, wldcupId, commentText) {
  */
 export async function toggleLike(user, wldcupId) {
   const likeRef = dbRef(db, `users/${user.uid}/myLikesWldcups/${wldcupId}`);
+  const likeCountRef = dbRef(db, `wldcups/${wldcupId}/likeCount`);
 
   try {
     const snapshot = await get(likeRef);
     if (snapshot.val() === null) {
       await set(likeRef, true);
+      const likeCountSnapshot = await get(likeCountRef);
+      const newLikeCount = (likeCountSnapshot.val() || 0) + 1;
+      await set(likeCountRef, newLikeCount);
     } else {
       await rm(likeRef);
+      const likeCountSnapshot = await get(likeCountRef);
+      const newLikeCount = Math.max(0, (likeCountSnapshot.val() || 0) - 1);  // 0 미만으로 내려가지 않도록 처리
+      await set(likeCountRef, newLikeCount);
     }
+
   } catch (e) {
     alert("좋아요 설정 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
     console.error("좋아요 토글 실패:", e);
   }
 }
+
 
 /**
  * 특정 유저의 월드컵 좋아요 데이터를 불러오는 함수
