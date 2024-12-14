@@ -1,7 +1,12 @@
 <template>
   <div class="wldcup-details">
   </div>
-  <TournamentModal v-if="this.isModalVisible" @close="handleModalState" />
+
+  <TournamentModal
+    v-if="this.isModalVisible"
+    @startWldcup="startWldcup"
+    @roundSelected="roundSelection"
+  />
 </template>
 
 <script>
@@ -28,17 +33,19 @@
     data() {
       return {
         isModalVisible: true,
+        selectedRound: null,
       }
     },
     created() {
       const wldcupId = this.$route.params.id;
     },
     methods: {
-      handleModalState() {
-        this.isModalVisible = !this.isModalVisible;
+      startWldcup() {
+        this.isModalVisible = false;
       },
-      fetchWorldcupData() {
-
+      roundSelection(round) {
+        // 모달에서 선택된 라운드 수 저장
+        this.selectedRound = round;
       },
       selectWinner() {
         // if (다음 경기가 있으면) {

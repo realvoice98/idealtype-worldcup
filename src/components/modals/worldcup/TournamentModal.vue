@@ -39,7 +39,7 @@
             </span>
           </div>
         </div>
-        <CommonButton variant="primary" :onclick="test1">시작하기</CommonButton>
+        <CommonButton variant="primary" :onclick="startWldcup">시작하기</CommonButton>
         <CommonButton variant="white" :onclick="this.moveToPreviousPage">뒤로가기</CommonButton>
       </div>
     </div>
@@ -140,11 +140,13 @@
        * 선택한 토너먼트 라운드 수로 업데이트
        */
       selectTournamentCnt(e) {
+        const innerText = e.target.innerText;
+
         const selectItem = document.querySelector('.btn-dropdown');
-        selectItem.style.borderWidth = '2px';
+        selectItem.style.borderWidth = '1.5px';
         selectItem.style.backgroundColor = 'white';
         selectItem.style.borderColor = '#98B7D4';
-        selectItem.innerHTML = e.target.innerText;
+        selectItem.innerHTML = innerText;
 
         // 드랍박스 하단 화살표 아이콘 업데이트
         const iconSpan = document.createElement('span');
@@ -153,6 +155,16 @@
         iconSpan.style.float = 'right';
         iconSpan.innerText = 'arrow_drop_down';
         selectItem.appendChild(iconSpan);
+
+        // 부모 컴포넌트에 선택한 라운드 값 전달
+        const selectedRound = parseInt(innerText.replace('강', ''), 10);
+        this.$emit('roundSelected', selectedRound);
+      },
+      /**
+       * 부모 컴포넌트로 모달 종료 이벤트 전달
+       */
+      startWldcup() {
+        this.$emit('startWldcup');
       },
     },
   };
