@@ -17,9 +17,9 @@
     </router-link>
     <div class="card-description">
       <ProfileButton width="32" height="32" :src="user.profileImage"/>
-      <span>{{ creator }}</span><!-- // TODO: 레벨 뱃지 아이콘 -->
+      <span class="creator">{{ creator }}</span><!-- // TODO: 레벨 뱃지 아이콘 -->
     </div>
-    <div class="card-description">
+    <div class="card-description detail">
       <span>조회수 {{ views }}회 · {{ updatedAt }} 업데이트됨</span>
       <LikeButton :user="user" :wldcupId="data.wldcupId"/>
       <CommonButton variant="transparent" :onclick="moveToResultPage" style="border: none; font-size: 1.3rem; padding: none;">
@@ -136,12 +136,19 @@
   .card-description {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     width: 100%;
   }
-
   .card-description > span {
     margin-right: 1rem; /* 텍스트가 아무리 길어져도 버튼과 약간의 이격 거리 유지 */
+  }
+  .card-description.detail button {
+    padding: 0;
+    margin-left: 0.5rem;
+  }
+
+  .creator {
+    margin-left: 10px;
   }
 
   a {
