@@ -13,7 +13,7 @@
           <router-link :to="`/wldcup/${comment.wldcupId}/wldcup-result`" class="comment-link">
             <div class="title">{{ comment.title }}</div>
             <div class="profile-box">
-              <ProfileButton width="40" height="40" />
+              <ProfileButton width="40" height="40" :src="user.profileImage"/>
               <div class="nickname">{{ comment.nickName }}</div>
               <div class="timestamp">{{ comment.timestamp }}</div>
             </div>

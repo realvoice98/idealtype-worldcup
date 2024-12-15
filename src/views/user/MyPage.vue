@@ -7,7 +7,7 @@
 
         <div class="profile-container">
           <ProfileButton
-              :src="user.profileImage || defaultProfileImage"
+              :src="user.profileImage"
               width="160"
               height="160"
               @click="changeImage"
@@ -64,7 +64,6 @@
           email: '',
         },
         errorMessage: '',
-        defaultProfileImage: 'https://firebasestorage.googleapis.com/v0/b/undefined-idealtype-worldcup.firebasestorage.app/o/users%2Fdummy%2Fdefault_profile_image.png?alt=media&token=f066a90e-2315-4deb-989d-aeb227628037',
       };
     },
     created() {
