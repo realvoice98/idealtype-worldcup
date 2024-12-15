@@ -418,6 +418,72 @@ export async function fetchUserWldcups(uid) {
 }
 
 /**
+ * 승리한 아이템의 승률 데이터를 업데이트하는 함수<p>
+ * 승리자 선택 시 호출
+ * @param {string} wldcupId 월드컵 ID
+ * @param {string} itemName 아이템명
+ * @param {boolean} win 매치 승리 유무
+ * @param {boolean} champ
+ * @returns {Promise<void>}
+ */
+export async function updateItemStats(wldcupId, itemName, win = false, champ = false) {
+  const imagesRef = dbRef(db, `wldcups/${wldcupId}/images`);
+  // NOTE: wldcups 경로 내 아이템 내장 데이터(이미지 경로, 이름)가 0부터 시작하는 index 안에 담겨 있어,
+  //       이 함수를 호출하는 단에서 실제 index가 몇 번인지 직접적으로 매핑시킬 수 없는 기술적 한계가 있음.
+  //       따라서, 현재 월드컵 내에 방금 선택한 아이템과 일치하는 이름을 가진 아이템이 있는지 뒤져서 실제 index를 추출함
+  //       이 경우, 아이템 명이 중복된 값이 있으면 오류 반환될 수 있음.
+  // TODO: 이미지 생성 모달 내 함수에서 중복이름 할당 못하도록 validation을 하던가 해야할 듯
+
+  try {
+    // 현재 월드컵 내 모든 이미지 아이템 추출 (매핑되는 index 찾기 위해)
+    const snapshot = await get(imagesRef);
+    if (!snapshot.exists()) {
+      return;
+    }
+
+    const images = snapshot.val();
+
+    // 현재 월드컵 내 모든 아이템 중, 현재 선택한 아이템의 이름과 매핑되는 아이템의 index 찾기
+    let selectedIndex = -1;
+    for (let index in images) {
+      if (images[index].customName === itemName) {
+        selectedIndex = index;
+        break;
+      }
+    }
+
+    // 매핑되는 아이템이 없는 경우, 그냥 예외 처리
+    if (selectedIndex === -1) {
+      console.error('아이템 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    // 기존 통계 데이터 불러오기
+    const statsRef = dbRef(db, `wldcups/${wldcupId}/images/${selectedIndex}/stats`);
+    const statsSnapshot = await get(statsRef);
+    let stats = statsSnapshot.val();
+
+    // 기존 데이터가 없는 경우, 기본 값으로 초기화
+    if (!stats) stats = {
+      enterCnt: 0,
+      matchCnt: 0,
+      winCnt: 0,
+      champCnt: 0,
+    };
+
+    stats.enterCnt += 1; // TODO: 중도 하차 했다가 나중에 불러오기로 오면 또 카운트 시키는거라.. 이 부분 트리거를 어떻게 판단해야 할 지... 애매해서 나중에 하는 걸로
+    stats.matchCnt += 1;
+
+    if (win) stats.winCnt += 1;
+    if (champ) stats.champCnt += 1;
+
+    await update(statsRef, stats);
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+/**
  * 특정 월드컵에 대한 통계 데이터를 받아오는 함수
  * @param {string} wldcupId 월드컵 ID
  * @returns {Promise<Object[]> | null} 모든 후보에 대한 승패 통계 데이터 세트
@@ -434,11 +500,6 @@ export async function fetchWldcupStats(wldcupId) {
       return Object.keys(statsData).map(key => ({
         ...statsData[key],
       }));
-      // 기대 return
-      // {
-      //   { name: '프로미스나인 이채영', winCnt: 10, loseCnt: 2, champCnt: 3 },
-      //   { name: '엔믹스 해원', winCnt: 7, loseCnt: 4, champCnt: 1 },
-      // }
     } else {
       return null;
     }
