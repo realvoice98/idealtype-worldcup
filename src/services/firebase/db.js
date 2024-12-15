@@ -484,31 +484,6 @@ export async function updateItemStats(wldcupId, itemName, win = false, champ = f
 }
 
 /**
- * 특정 월드컵에 대한 통계 데이터를 받아오는 함수
- * @param {string} wldcupId 월드컵 ID
- * @returns {Promise<Object[]> | null} 모든 후보에 대한 승패 통계 데이터 세트
- */
-export async function fetchWldcupStats(wldcupId) {
-  const statsRef = dbRef(db, `wldcups/${wldcupId}/stats`);
-
-  try {
-    const snapshot = await get(statsRef);
-    if (snapshot.exists()) {
-      const statsData = snapshot.val();
-
-      // TODO: 테스트
-      return Object.keys(statsData).map(key => ({
-        ...statsData[key],
-      }));
-    } else {
-      return null;
-    }
-  } catch(e) {
-    console.error(e);
-  }
-}
-
-/**
  * 특정 월드컵에 대한 댓글 데이터를 받아오는 함수
  * @param {string} wldcupId 월드컵 ID
  */
@@ -791,53 +766,6 @@ export async function removeWldcupProgress(user, wldcupId) {
 
   try {
     await rm(userProgressRef);
-  } catch(e) {
-    console.error(e);
-  }
-}
-
-/**
- * 매치에서 승리한 후보에 대한 결과 처리 함수
- * @param {Object} user 유저 정보
- * @param {string} wldcupId 월드컵 ID
- * @param {number} round n강
- * @param {string} matchId
- * @param {string} winnerName 승리한 아이템 이름
- * @returns {Promise<void>}
- */
-export async function processMatchResult(user, wldcupId, round, matchId, winnerName) {
-  const inProgressWldcupRef = dbRef(db, `inProgressWldcup/${wldcupId}/${user.uid}`);
-  const winnerPath = `matches/${round}/${matchId}/${winnerName}`;
-  const nextRound = round === "final" ? null : String(round / 2);
-
-  // 승리 카운트 증가
-  const updates = {};
-  updates[`${winnerPath}/winCnt`] = 1;
-  if (round === 2) { // FIXME: 2 ? 'final' ??? 마지막 라운드를 어떻게 생성해서 보내줄 것인지
-    updates[`${winnerPath}/champCnt`] = 1;
-  }
-
-  // 다음 라운드 매치로 승리자 이동
-  if (nextRound) {
-    const nextMatchId = `match${Math.ceil(matchId / 2)}`;
-    updates[`matches/${nextRound}/${nextMatchId}/${winnerName}`] = { ...winnerData }; // TODO: 구조분해할당이 제대로 이루어지는지?
-  }
-
-  await update(inProgressWldcupRef, updates);
-}
-
-/**
- * 월드컵의 현재 진행도를 저장하는 함수
- * @param {Object} user 유저 정보
- * @param {string} wldcupId 월드컵 ID
- * @returns
- */
-export async function saveWldcupProgress(user, wldcupId) {
-  const inProgressWldcupRef = dbRef(db, `users/${user.uid}/inProgressWldcup/${wldcupId}`); // FIXME: 월드컵 상세 관련 함수 작업이 끝나는 대로 경로를 매핑 처리
-
-  try {
-    await set(inProgressWldcupRef, {
-    });
   } catch(e) {
     console.error(e);
   }
