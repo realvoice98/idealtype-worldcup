@@ -16,23 +16,31 @@
       </div>
     </router-link>
     <div class="card-description">
+      <ProfileButton width="32" height="32" :src="user.profileImage"/>
       <span>{{ creator }}</span><!-- // TODO: 레벨 뱃지 아이콘 -->
     </div>
     <div class="card-description">
       <span>조회수 {{ views }}회 · {{ updatedAt }} 업데이트됨</span>
       <LikeButton :user="user" :wldcupId="data.wldcupId"/>
+      <CommonButton variant="transparent" :onclick="moveToResultPage" style="border: none; font-size: 1.3rem; padding: none;">
+        <span class="icon">equalizer</span>
+      </CommonButton>
       <ReportButton :user="user" :wldcupId="data.wldcupId" @open-modal="openReportModal" />
     </div>
   </div>
 </template>
 
 <script>
-import LikeButton from '@/components/buttons/LikeButton.vue';
-import ReportButton from '@/components/buttons/ReportButton.vue';
+  import ProfileButton from '@/components/buttons/ProfileButton.vue';
+  import CommonButton from '@/components/buttons/CommonButton.vue';
+  import LikeButton from '@/components/buttons/LikeButton.vue';
+  import ReportButton from '@/components/buttons/ReportButton.vue';
 
   export default {
     name: 'WorldcupCard',
     components: {
+      ProfileButton,
+      CommonButton,
       LikeButton,
       ReportButton,
     },
@@ -65,6 +73,10 @@ import ReportButton from '@/components/buttons/ReportButton.vue';
     methods: {
       openReportModal() {
         this.$emit('open-modal', this.data.wldcupId);
+      },
+      moveToResultPage() {
+        const wldcupId = this.data.wldcupId;
+        this.$router.push(`wldcup-result/${wldcupId}`);
       }
     },
   };
