@@ -43,7 +43,7 @@
       },
       default: {
         type: String,
-        default: 'https://firebasestorage.googleapis.com/v0/b/undefined-idealtype-worldcup.firebasestorage.app/o/users%2Fdummy%2Fdefault_profile_image.png?alt=media&token=f066a90e-2315-4deb-989d-aeb227628037', // 기본 이미지 URL
+        default: 'https://firebasestorage.googleapis.com/v0/b/undefined-idealtype-worldcup.firebasestorage.app/o/users%2Fdummy%2Fdefault-profile.png?alt=media&token=bcaedd45-cb0f-4a74-ba97-71f8e63e3789', // 기본 이미지 URL
       },
     },
     computed: {
