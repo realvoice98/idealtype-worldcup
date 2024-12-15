@@ -58,7 +58,7 @@
         isModalVisible: true,
         isNextRoundLoaded: false,
         currentRound: null,
-        matchCnt: null,
+        matchCnt: 0,
         wldcup: {
           title: '',
           items: [],
@@ -68,7 +68,7 @@
     },
     computed: {
       currentMatch() {
-        return this.matchCnt + 1;
+        return this.matchCnt + 1; // 현재 진행 중인 매치의 번호
       },
       totalMatches() {
         return this.currentRound / 2; // 이번 라운드의 전체 매치 수 (n강 / 2)
@@ -150,27 +150,57 @@
        * @param selectedIndex 선택한 아이템 좌(0) / 우(1)
        */
       selectWinner(selectedIndex) {
-        this.loading(2100)
+        this.loading(2300)
 
-        // 현재 매치에서 승리자 추출
+        // 현재 매치의 승리자
         const matchKey = `match${this.currentMatch - 1}`;
         const matchData = this.wldcup.matches[matchKey];
-        console.log(matchData)
         const winner =  matchData[`item${selectedIndex}`];
+
+        if (!this.winners) {
+          this.winners = [];
+        }
+        this.winners.push(winner);
 
         // 다음 매치로 이동
         this.matchCnt++;
 
-        // 라운드 종료 처리
+        // 마지막 매치 진행 시, 현재 라운드 종료
         const matchCnt = Object.keys(this.wldcup.matches).length; // 현재 라운드의 총 매치 수
         if (this.currentMatch > matchCnt) {
-          if (this.currentRound !== 2) {
+          if (this.currentRound > 2) {
+            // 다음 라운드
             this.currentRound /= 2;
+            this.matchCnt = 0;
 
-            console.log('다음 라운드');
+            // 다음 라운드의 매치 데이터 생성
+            const currentRoundWinners = [...this.winners];
+            this.wldcup.matches = createNextRoundMatches(currentRoundWinners);
+            this.winners = []; // 현재 라운드의 승리자 목록 초기화
           } else {
-            console.log('결승전');
+            // 결승전
+
           }
+        }
+
+        /**
+         * 현재 라운드의 승리자들로 다음 라운드 매치 구성
+         * @param winners
+         * @returns {{}}
+         */
+        function createNextRoundMatches(winners) {
+          const matches = {};
+          let itemIndex = 0;
+
+          for (let i = 0; i < winners.length / 2; i++) {
+            matches[`match${i}`] = {
+              item0: winners[itemIndex],
+              item1: winners[itemIndex + 1],
+            };
+            itemIndex += 2;
+          }
+
+          return matches;
         }
       },
       async processMatchResult() {
