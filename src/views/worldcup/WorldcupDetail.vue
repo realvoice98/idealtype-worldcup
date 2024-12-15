@@ -7,23 +7,23 @@
         <h2>{{ wldcup.title }} <span class="em">{{ currentRound }}강</span></h2> <!-- TODO: "결승전" 분기 -->
         <p class="match-subtitle"><span class="em">{{ currentMatch }}</span> / {{ totalMatches }}</p>
       </div>
-      <div class="match-content">
+      <div class="match-content" v-if="wldcup.matches && wldcup.matches[`match${currentMatch-1}`]"> <!-- v-if === 데이터 로드까지 대기 -->
         <div class="item-container">
-          <img class="item-image" :src="wldcup.items[lIdx].path" alt="" />
-          <span class="item-name">{{ wldcup.items[lIdx].customName }}</span>
+          <img class="item-image" :src="wldcup.matches[`match${currentMatch-1}`].item0.path" alt="" />
+          <span class="item-name">{{ wldcup.matches[`match${currentMatch-1}`].item0.title }}</span>
         </div>
         <img class="versus" src="@/assets/vs.png" alt="" />
         <div class="item-container">
-          <img class="item-image" :src="wldcup.items[rIdx].path" alt="" />
-          <span class="item-name">{{ wldcup.items[rIdx].customName }}</span>
+          <img class="item-image" :src="wldcup.matches[`match${currentMatch-1}`].item1.path" alt="" />
+          <span class="item-name">{{ wldcup.matches[`match${currentMatch-1}`].item1.title }}</span>
         </div>
       </div>
     </div>
 
     <div class="button-container">
       <!-- :onclick으로 함수 바인딩 시 화면 상에선 모든 데이터 정상 출력 되는데 컴파일은 에러남. WTF -->
-      <CommonButton variant="white" @click="selectWinner(lIdx)">선택</CommonButton>
-      <CommonButton variant="white" @click="selectWinner(rIdx)">선택</CommonButton>
+      <CommonButton variant="white" @click="selectWinner(0)">선택</CommonButton>
+      <CommonButton variant="white" @click="selectWinner(1)">선택</CommonButton>
     </div>
   </div>
 
@@ -58,17 +58,20 @@
         isModalVisible: true,
         isNextRoundLoaded: false,
         currentRound: null,
-        wldcup: {},
-        lIdx: 0,
-        rIdx: 1,
+        matchCnt: null,
+        wldcup: {
+          title: '',
+          items: [],
+          matches: {}
+        },
       }
     },
     computed: {
       currentMatch() {
-        return Math.floor(this.lIdx / 2) + 1; // 현재 진행 중인 매치 번호
+        return this.matchCnt + 1;
       },
       totalMatches() {
-        return this.currentRound; // 이번 라운드의 전체 매치 수 (n강)
+        return this.currentRound / 2; // 이번 라운드의 전체 매치 수 (n강 / 2)
       },
     },
     methods: {
@@ -88,6 +91,7 @@
           const matches = createMatches(this.wldcup.items, round);
 
           await initWldcupProgress(user, wldcupId, round, matches);
+          this.wldcup.matches = matches;
         }
 
         this.loading(1500);
@@ -95,7 +99,7 @@
         /**
          * 1:1 매치 대진 구조 생성 함수
          * @param {Object} wldcupItems 현재 잔향즁안 월드컵 내 전체 아이템 수
-         * @param {number} currentRound 현재 라운드
+         * @param {number} currentRound 현재 라운드 수
          * @returns {Object} 현재 라운드의 전체 대진 구조
          */
         function createMatches(wldcupItems, currentRound) {
@@ -143,23 +147,30 @@
       },
       /**
        * 승리자 선택 시 다음 라운드로 이동 및 현재 진행률 저장
-       * @param selectedIndex
+       * @param selectedIndex 선택한 아이템 좌(0) / 우(1)
        */
       selectWinner(selectedIndex) {
-        this.loading(2300);
+        this.loading(2100)
 
-        const winner = this.wldcup.items[selectedIndex];
-        // 승리자를 다음 라운드 배열에 추가
+        // 현재 매치에서 승리자 추출
+        const matchKey = `match${this.currentMatch - 1}`;
+        const matchData = this.wldcup.matches[matchKey];
+        console.log(matchData)
+        const winner =  matchData[`item${selectedIndex}`];
 
         // 다음 매치로 이동
-        this.lIdx += 2;
-        this.rIdx += 2;
+        this.matchCnt++;
 
         // 라운드 종료 처리
-        if (this.lIdx >= this.wldcup.items.length) {
-          // TODO: 라운드 넘어갈 시 분기 처리
-          //  IF 결승전이 아니면 다음 라운드로 이동
-          //  ELSE 월드컵 종료 처리 및 WorldcupResult로 이동
+        const matchCnt = Object.keys(this.wldcup.matches).length; // 현재 라운드의 총 매치 수
+        if (this.currentMatch > matchCnt) {
+          if (this.currentRound !== 2) {
+            this.currentRound /= 2;
+
+            console.log('다음 라운드');
+          } else {
+            console.log('결승전');
+          }
         }
       },
       async processMatchResult() {
