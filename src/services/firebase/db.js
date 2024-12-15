@@ -739,11 +739,9 @@ export async function saveWldcupProgress(user, wldcupId) {
  * @returns {boolean} 현재 진입한 월드컵에 대한 진행 이력 유무
  */
 export async function checkInProgressWldcup(user, wldcupId) {
-  // NOTE: 진행률 저장 API 생성 후 정상적인 테스트 가능
-  const inProgressWldcupRef = dbRef(db, `users/${user.uid}/inProgressWldcups/${wldcupId}`);
+  const inProgressWldcupRef = dbRef(db, `inPrgrsWldcups/${wldcupId}/${user.uid}`);
 
   try {
-    // TODO: 어쨌든 뭔가 진행도라고 판단가능한 데이터가 있으면 true 처리
     const snapshot = await get(inProgressWldcupRef);
     return snapshot.exists(); // true or false
   } catch (e) {

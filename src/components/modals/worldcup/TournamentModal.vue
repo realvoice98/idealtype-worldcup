@@ -10,8 +10,8 @@
         <p><strong>이어서 진행</strong>하시겠어요?</p>
       </div>
       <div class="modal-buttons">
-        <CommonButton variant="primary" :onclick="test1">불러오기</CommonButton>
-        <CommonButton variant="white" :onclick="test2">새로하기</CommonButton>
+        <CommonButton variant="primary" :onclick="loadWldcup">불러오기</CommonButton>
+        <CommonButton variant="white" :onclick="newWldcup">새로하기</CommonButton>
         <CommonButton variant="white" :onclick="this.moveToPreviousPage">뒤로가기</CommonButton>
       </div>
     </div>
@@ -106,7 +106,7 @@
           return;
         }
 
-        this.isProgress = await checkInProgressWldcup(user, wldcupId);
+        this.isProgress = checkInProgressWldcup(user, wldcupId);
         // Promise resolve 이후 1초 뒤 시점에 로딩 스피너 제거 (부드러운 화면 전환)
         setTimeout(() => {
           this.isLoading = false;
@@ -181,6 +181,19 @@
 
         // 모달 종료 이벤트 전달
         this.$emit('startWldcup');
+      },
+      /**
+       * 진행 이력 존재 > 불러오기
+       */
+      loadWldcup() {
+        // TODO: 기진행 이력 불러오기
+      },
+      /**
+       * 진행 이력 존재 > 새로하기
+       */
+      newWldcup() {
+        this.isProgress = false;
+        // TODO: 기진행 이력 데이터를 지워야?
       },
     },
   };
