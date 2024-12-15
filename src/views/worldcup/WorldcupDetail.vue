@@ -35,6 +35,11 @@
     @roundSelected="roundSelection"
     @loadWldcupData="loadWldcupData"
   />
+
+  <VictoryModal
+    v-if="this.isWldcupOvered"
+    :winner="finalWinner"
+  />
 </template>
 
 <script>
@@ -44,6 +49,7 @@
   import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
   import TournamentModal from '@/components/modals/worldcup/TournamentModal.vue';
   import CommonButton from '@/components/buttons/CommonButton.vue';
+  import VictoryModal from '@/components/modals/worldcup/VictoryModal.vue';
 
   //  4. component\tournamentDetail.vue로 진행률 props & binding (하나의 토너먼트 진행 완료마다 진행률 저장을 위한 POST 요청 필요)
   //  5. views\WorldcupResult.vue에 최종 결과 반환 (통계 데이터 시각화 개발 필요)
@@ -51,6 +57,7 @@
   export default {
     name: 'WorldcupDetail',
     components: {
+      VictoryModal,
       LoadingSpinner,
       TournamentModal,
       CommonButton,
@@ -58,6 +65,7 @@
     data() {
       return {
         isModalVisible: true,
+        isWldcupOvered: false,
         isNextRoundLoaded: false,
         currentRound: null,
         matchCnt: 0,
@@ -66,6 +74,7 @@
           items: [],
           matches: {}
         },
+        finalWinner: null,
       }
     },
     computed: {
@@ -187,7 +196,8 @@
             this.winners = []; // 현재 라운드의 승리자 목록 초기화
           } else {
             // 결승전
-
+            this.isWldcupOvered = true;
+            this.finalWinner = winner;
           }
         }
 

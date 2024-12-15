@@ -75,7 +75,7 @@ const routes = [
     ]
   },
   {
-    path: '/wldcup-result',
+    path: '/wldcup-result/:id',
     name: 'WorldcupResult',
     component: WorldcupResult
   },
