@@ -44,7 +44,7 @@
 
 <script>
   import { auth } from '@/services/firebase/auth';
-  import { initWldcupProgress, updateWldcupProgress, removeWldcupProgress } from '@/services/firebase/db';
+  import { initWldcupProgress, updateWldcupProgress, removeWldcupProgress, updateItemStats } from '@/services/firebase/db';
 
   import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
   import TournamentModal from '@/components/modals/worldcup/TournamentModal.vue';
@@ -178,6 +178,9 @@
         const wldcupId = this.$route.params.id;
         if (user) await updateWldcupProgress(user, wldcupId, this.currentRound, this.currentMatch, winner);
 
+        // 승리자의 승률 데이터 업데이트 > 승리 수 1 증가
+        await updateItemStats(wldcupId, winner.title, true);
+
         // 다음 매치로 이동
         this.matchCnt++;
 
@@ -198,6 +201,10 @@
             this.isWldcupOvered = true;
             this.finalWinner = winner;
 
+            // 우승자 승률 데이터 업데이트 > 승리 수, 우승 수 1 증가
+            await updateItemStats(wldcupId, winner.title, true, true);
+
+            // 기진행 이력 제거
             if (user) await removeWldcupProgress(user, wldcupId);
           }
         }
