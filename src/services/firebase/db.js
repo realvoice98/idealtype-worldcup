@@ -497,6 +497,9 @@ export async function createComment(user, wldcupId, commentText) {
 
     await set(dbRef(db, `users/${user.uid}/myCommentList/${wldcupId}/${newCommentRef.key}`), true);
 
+    const exp = 5;
+    await updateLevel(user.uid, exp);
+
   } catch (e) {
     alert("댓글 작성에 실패했습니다. 잠시 후 다시 시도해주세요.");
     console.error('댓글 작성 실패:', e);
