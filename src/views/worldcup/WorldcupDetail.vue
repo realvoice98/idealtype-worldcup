@@ -4,7 +4,8 @@
   <div v-if="!isModalVisible" class="wldcup-details">
     <div class="match-container">
       <div class="match-title">
-        <h2>{{ wldcup.title }} <span>{{ currentRound }}강</span></h2> <!-- TODO: "결승전" 분기 -->
+        <h2>{{ wldcup.title }} <span class="em">{{ currentRound }}강</span></h2> <!-- TODO: "결승전" 분기 -->
+        <p class="match-subtitle"><span class="em">{{ currentMatch }}</span> / {{ totalMatches }}</p>
       </div>
       <div class="match-content">
         <div class="item-container">
@@ -57,13 +58,18 @@
         isModalVisible: true,
         isNextRoundLoaded: false,
         currentRound: null,
-        wldcup: {
-          title: '',
-          items: [],
-        },
+        wldcup: {},
         lIdx: 0,
         rIdx: 1,
       }
+    },
+    computed: {
+      currentMatch() {
+        return Math.floor(this.lIdx / 2) + 1; // 현재 진행 중인 매치 번호
+      },
+      totalMatches() {
+        return this.currentRound; // 이번 라운드의 전체 매치 수 (n강)
+      },
     },
     methods: {
       async startWldcup() {
@@ -74,6 +80,11 @@
         if (user) {
           const wldcupId = this.$route.params.id;
           const round = this.currentRound;
+
+          // 아이템 순서 셔플
+          this.wldcup.items = shuffleItems(this.wldcup.items);
+
+          // 1:1 매치 생성
           const matches = createMatches(this.wldcup.items, round);
 
           await initWldcupProgress(user, wldcupId, round, matches);
@@ -106,6 +117,20 @@
           }
 
           return matches;
+        }
+
+        /**
+         * 월드컵 전체 아이템 순서 셔플
+         * @param {Array} items 월드컵 전체 아이템
+         * @returns {*[]} 순서가 셔플된 전체 아이템
+         */
+        function shuffleItems(items) {
+          const shuffledItems = [...items]; // 원본 배열 복사
+          for (let i = shuffledItems.length - 1; i > 0; i--) {
+            const randomIndex = Math.floor(Math.random() * (i + 1));
+            [shuffledItems[i], shuffledItems[randomIndex]] = [shuffledItems[randomIndex], shuffledItems[i]];
+          }
+          return shuffledItems;
         }
       },
       roundSelection(round) {
@@ -177,6 +202,14 @@
   .match-title h2 {
     text-align: center;
     margin: 10px 0;
+  }
+  .match-subtitle {
+    font-size: 1.3rem;
+    margin: 0;
+  }
+  .em {
+    color: var(--theme);
+    font-weight: bold;
   }
 
   .match-content {
