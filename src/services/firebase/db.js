@@ -225,8 +225,9 @@ export async function createWldcup(user, wldcup) {
     const exp = 50
     await updateLevel(user.uid, exp);
 
-    alert("월드컵 생성 완료!");
+    // alert("월드컵 생성 완료!");
     console.log('월드컵 정보를 저장하였습니다.', wldcup);
+    return true;
   } catch(e) {
     alert("월드컵 생성 실패! 잠시 후 다시 시도해주세요.");
     console.error('월드컵 정보를 저장하지 못했습니다.', e, wldcup);

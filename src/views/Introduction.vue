@@ -9,7 +9,7 @@
           <img src="@/assets/logo.png" alt="Left Image" class="intro-img"/>
         </div>
         <div class="text-box right">
-          <h1 id="subtitle">Lorem ipsum</h1>
+          <h1 id="subtitle">대충 월드컵 진행하는 짤과 설명</h1>
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.</p>
           <p>Nisl tincidunt eget nullam non.</p>
           <p>Quis hendrerit dolor magna eget est lorem ipsum dolor sit.</p>
@@ -34,58 +34,26 @@
       </section>
       <section class="text-content right" data-scroll>
         <div class="image-container right" data-scroll>
-          <img src="https://v-llage.s3.ap-northeast-2.amazonaws.com/1669707438698_%ED%81%B4%EB%A6%AC%EC%85%B0.png" alt="right Image" class="intro-img"/>
+          <img src="@/assets/create_worldcup_example.png" alt="right Image" class="intro-img"/>
         </div>
         <div class="text-box left">
-          <h1 id="subtitle">Lorem ipsum</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.</p>
-          <p>Nisl tincidunt eget nullam non.</p>
-          <p>Quis hendrerit dolor magna eget est lorem ipsum dolor sit.</p>
-          <p>Volutpat odio facilisis mauris sit amet massa.</p>
-          <p>Commodo odio aenean sed adipiscing diam donec adipiscing tristique.</p>
-          <p>Mi eget mauris pharetra et.</p>
-          <p>Non tellus orci ac auctor augue.</p>
-          <p>Elit at imperdiet dui accumsan sit.</p>
-          <p>Ornare arcu dui vivamus arcu felis.</p>
-          <p>Egestas integer eget aliquet nibh praesent.</p>
-          <p>In hac habitasse platea dictumst quisque sagittis purus.</p>
-          <p>Pulvinar elementum integer enim neque volutpat ac.</p>
-          <p>Senectus et netus et malesuada.</p>
-          <p>Nunc pulvinar sapien et ligula ullamcorper malesuada proin.</p>
-          <p>Neque convallis a cras semper auctor.</p>
-          <p>Libero id faucibus nisl tincidunt eget.</p>
-          <p>Leo a diam sollicitudin tempor id.</p>
-          <p>A lacus vestibulum sed arcu non odio euismod lacinia.</p>
-          <p>In tellus integer feugiat scelerisque.</p>
-          <p>Feugiat in fermentum posuere urna nec tincidunt praesent.</p>
+          <h1 id="subtitle">나만의 월드컵을 만들어보세요!</h1>
+          <p>최소 2강부터 최대 128강까지!</p>
+          <p>카테고리에 상관없이</p>
+          <p>내가 만들고싶은 월드컵을 마음껏 만들어보세요!</p>
+          
         </div>
       </section>
       <section class="text-content left" data-scroll>
         <div class="image-container left" data-scroll>
-          <img src="https://velog.velcdn.com/images%2Fhing%2Fpost%2Fd06f8ff0-f27b-497e-9d5f-06a6706e0d59%2Fimage.png" alt="Left Image" class="intro-img" />
+          <img src="@/assets/mypage_example.png" class="intro-img" />
         </div>
         <div class="text-box right">
-          <h1 id="subtitle">Lorem ipsum</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.</p>
-          <p>Nisl tincidunt eget nullam non.</p>
-          <p>Quis hendrerit dolor magna eget est lorem ipsum dolor sit.</p>
-          <p>Volutpat odio facilisis mauris sit amet massa.</p>
-          <p>Commodo odio aenean sed adipiscing diam donec adipiscing tristique.</p>
-          <p>Mi eget mauris pharetra et.</p>
-          <p>Non tellus orci ac auctor augue.</p>
-          <p>Elit at imperdiet dui accumsan sit.</p>
-          <p>Ornare arcu dui vivamus arcu felis.</p>
-          <p>Egestas integer eget aliquet nibh praesent.</p>
-          <p>In hac habitasse platea dictumst quisque sagittis purus.</p>
-          <p>Pulvinar elementum integer enim neque volutpat ac.</p>
-          <p>Senectus et netus et malesuada.</p>
-          <p>Nunc pulvinar sapien et ligula ullamcorper malesuada proin.</p>
-          <p>Neque convallis a cras semper auctor.</p>
-          <p>Libero id faucibus nisl tincidunt eget.</p>
-          <p>Leo a diam sollicitudin tempor id.</p>
-          <p>A lacus vestibulum sed arcu non odio euismod lacinia.</p>
-          <p>In tellus integer feugiat scelerisque.</p>
-          <p>Feugiat in fermentum posuere urna nec tincidunt praesent.</p>
+          <h1 id="subtitle">내 정보를 한눈에!</h1>
+          <p>내 프로필을 통한 나의 정보를 확인할 수 있어요!</p>
+          <p>내 월드컵을 통해 내가만든 월드컵 관리할 수 있어요!</p>
+          <p>내 활동에서 좋아요한 월드컵, 내가 단 댓글을 확인할 수 있어요!</p>
+          <p></p>
         </div>
       </section>
     </div>

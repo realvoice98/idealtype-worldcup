@@ -27,5 +27,6 @@
   .bo-content {
     flex: 7;
     padding: 1rem;
+    margin-left: 40px;
   }
 </style>

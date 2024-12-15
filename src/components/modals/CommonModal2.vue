@@ -5,10 +5,12 @@
         <h2>{{ title }}</h2>
       </div>
       <div class="btn-modal">
-        <p>{{ content }}</p>
+        <div class="content">{{ content }}</div>
+        <div class="btn-box">
         <span v-for="(button, index) in buttons" :key="index">
           <CommonButton variant="primary" @click="button.callback">{{ button.text }}</CommonButton>
         </span>
+        </div>
       </div>
     </div>
   </div>
@@ -47,4 +49,23 @@
 </script>
 
 <style scoped>
+
+.btn-modal{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.content{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size:20px;
+}
+.btn-box{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  
+}
 </style>

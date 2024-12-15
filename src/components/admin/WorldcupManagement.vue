@@ -124,15 +124,42 @@ th {
   background-color: var(--theme);
 }
 
+/* 각 열의 너비를 비율로 설정 */
+th:nth-child(1) {
+  width: 5%; /* 번호 */
+}
+th:nth-child(2) {
+  width: 20%; /* 월드컵 제목 */
+}
+th:nth-child(3) {
+  width: 25%; /* 설명 */
+}
+th:nth-child(4) {
+  width: 10%; /* 조회수 */
+}
+th:nth-child(5) {
+  width: 10%; /* 좋아요 수 */
+}
+th:nth-child(6) {
+  width: 10%; /* 작성자 */
+}
+th:nth-child(7) {
+  width: 15%; /* 업데이트 시간 */
+}
+th:nth-child(8) {
+  width: 5%; /* 삭제 */
+}
+
 button {
   padding: 5px 10px;
   color: red;
   border: none;
   cursor: pointer;
   font-size: 18px;
-  width: 30px;
+  width: 100%;
   height: 30px;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 </style>

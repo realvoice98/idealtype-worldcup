@@ -440,12 +440,15 @@ import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 }
 
 .header .button {
-  background: none;
-  border: none;
   font-size: 2vw;
-  color: white;
   cursor: pointer;
   transition: all 0.3s ease;
+  transform: scale(1.05);
+  padding: 5px 15px;
+  border-radius: 12px;
+  background: none;
+  border: 1px solid white;
+  color: white;
 }
 
 .header .button-group {
@@ -462,6 +465,8 @@ import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 .header .button:hover {
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
   transform: scale(1.05);
+  border: 1px solid #98B7D4;
+  color: #98B7D4;
 }
 
 .header .button:active {

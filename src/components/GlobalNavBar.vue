@@ -274,6 +274,7 @@
     background-color: var(--theme);
     color: white;
     cursor: pointer;
+    border-radius: 6px;
   }
 
   .btn-toggle.active {

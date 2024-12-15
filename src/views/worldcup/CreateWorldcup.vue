@@ -44,6 +44,14 @@
       </div>
       <p class="error-message" v-if="errorMessage">{{ errorMessage }}</p>
 
+      <CommonModal2
+        v-if="isConfirmModalVisible"
+        :visible="isConfirmModalVisible"
+        content="저장되었습니다."
+        :buttons="confirmButtons"
+        @update:visible="isConfirmModalVisible = $event"
+    />
+
       <ImageRegistModal
         :is-visible="isRegistModalVisible"
         @update:isVisible="isRegistModalVisible = $event"
@@ -56,6 +64,7 @@
         :modelValue="imagesCopy"
         @update:modelValue="updateImages"
       />
+
     </div>
   </div>
 </template>
@@ -67,6 +76,7 @@
   import ImageRegistModal from '@/components/modals/worldcup/ImageRegistModal.vue';
   import ImageDetailModal from '@/components/modals/worldcup/ImageDetailModal.vue';
   import CommonButton from '@/components/buttons/CommonButton.vue';
+import CommonModal2 from '@/components/modals/CommonModal2.vue';
 
   export default {
     name: 'CreateWorldcup',
@@ -74,6 +84,7 @@
       ImageRegistModal,
       ImageDetailModal,
       CommonButton,
+      CommonModal2
     },
     data() {
       return {
@@ -89,6 +100,7 @@
         warnMessage: '',
         errorMessage: '',
         selectedImageIndex: 0,
+        isConfirmModalVisible: false,
       };
     },
     created() {
@@ -106,6 +118,16 @@
         //   }
         // }
       });
+    },
+    computed:{
+      confirmButtons() {
+      return [
+        {
+          text: "확인",
+          callback: () => this.moveRoot(),
+        },
+      ];
+    }
     },
     mounted() {
       document.title = '이상형 월드컵 : 월드컵 만들기';
@@ -176,6 +198,10 @@
       updateImages(updatedImages) {
         this.images = JSON.parse(JSON.stringify(updatedImages));  // 자식에서 변경된 배열을 받아서 업데이트
       },
+      moveRoot() {
+      this.isConfirmModalVisible = false;
+      this.$router.push('/');
+    },
       /**
        * 월드컵 생성 요청 함수
        */
@@ -223,8 +249,12 @@
             images: uploadedImages,
           }
 
-          await createWldcup(user, worldcup);
-          this.$router.push('/');
+          const create_result = await createWldcup(user, worldcup);
+          if(create_result){
+            this.isConfirmModalVisible = true;
+            // this.$router.push('/');
+          }
+          
         } catch (e) {
           this.errorMessage = `오류: ${e.message}`;
         }
