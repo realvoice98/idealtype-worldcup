@@ -47,6 +47,7 @@ export async function createUser(user) {
       levelReq: 100,
       exp: 0,
       role: 'user', // 일반 사용자
+      profileImage:'',
     });
     alert("회원가입 완료!");
     console.log('유저 정보를 저장하였습니다.', user);
@@ -834,6 +835,22 @@ export async function updateProfile(uid, updateType,updateContent){
 }
 
 /**
+ * 유저 프로필 이미지 수정 함수
+ * @param {string} uid 사용자 ID
+ * @param {string} path 이미지 경로
+ * @returns {Promise<void>}
+ */
+export async function updateProfileImage(uid, path){
+  const usersRef = dbRef(db, `users/${uid}`);
+
+  try {
+    await update(usersRef, {profileImage: path});
+  }catch (e){
+    console.error(e);
+  }
+}
+
+/**
  * Firebase Storage
  *
  * 이미지, 오디오, 동영상의 원본 데이터는 Storage에 보관하고,
@@ -858,6 +875,34 @@ export async function uploadImage(image, userId, wldcupTitle) {
   try {
     await uploadBytes(wldcupsRef, image);
     return await getDownloadURL(wldcupsRef);
+  } catch (e) {
+    console.error('이미지 업로드 실패:', e);
+    throw new Error('이미지 업로드 중 오류가 발생했습니다.');
+  }
+}
+
+/**
+ * 프로필 이미지 업로드 처리 후 경로 반환 함수
+ * @param {File} image 이미지 파일 객체
+ * @param {String} userId 사용자 UID
+ * @return {Promise<string>} 업로드된 이미지의 참조 경로
+ */
+export async function uploadProfile(image, userId) {
+  const userRef = stRef(st, `users/${userId}/profileImage`);
+
+  try {
+    try {
+      await deleteObject(userRef);
+      console.log('기존 이미지 삭제 완료');
+    } catch (deleteError) {
+      if (deleteError.code === 'storage/object-not-found') {
+        console.log('삭제 대상 파일이 없습니다. 스킵합니다.');
+      } else {
+        throw deleteError;
+      }
+    }
+    await uploadBytes(userRef, image);
+    return await getDownloadURL(userRef);
   } catch (e) {
     console.error('이미지 업로드 실패:', e);
     throw new Error('이미지 업로드 중 오류가 발생했습니다.');
@@ -891,14 +936,10 @@ export async function deleteImages(userId, wldcupTitle) {
  */
 export async function updateImage(image, userId, wldcupTitle) {
   const basePath = `wldcups/${userId}/${wldcupTitle}`;
-  const fileName = image.customName ? `${image.customName}` : image.name;  // 기존 파일 이름 그대로 사용
+  const fileName = image.customName ? `${image.customName}` : image.name;
   const filePath = `${basePath}/${fileName}`;
 
-  // 경로 로그 출력
-  console.log("최종 파일 경로:", filePath);
-
   try {
-    // Firebase Storage 참조 생성
     const wldcupsRef = stRef(st, filePath);
 
     // 기존 파일 삭제 (존재하는 경우에만)
@@ -909,7 +950,7 @@ export async function updateImage(image, userId, wldcupTitle) {
       if (deleteError.code === 'storage/object-not-found') {
         console.log('삭제 대상 파일이 없습니다. 스킵합니다.');
       } else {
-        throw deleteError; // 다른 에러는 다시 throw
+        throw deleteError;
       }
     }
 

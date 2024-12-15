@@ -6,7 +6,12 @@
       <div class="header-container">
 
         <div class="profile-container">
-          <ProfileButton :src="user.profileImage" width="160" height="160" :onclick="changeImage" />
+          <ProfileButton
+              :src="user.profileImage || defaultProfileImage"
+              width="160"
+              height="160"
+              @click="changeImage"
+          />
           <p class="user-nickname">{{ user.nickname }}
             <span class="icon" style="color: var(--theme)">verified</span>
           </p>
@@ -38,10 +43,11 @@
 
 <script>
   import { auth, onAuthStateChanged } from '@/services/firebase/auth';
-  import { getUser } from '@/services/firebase/db.js';
+  import {getUser, uploadProfile, updateProfileImage} from '@/services/firebase/db.js';
 
   import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
   import ProfileButton from '@/components/buttons/ProfileButton.vue';
+  import {formatDate} from "@/common";
 
   export default {
     name: 'MyPage',
@@ -57,6 +63,8 @@
           nickname: '',
           email: '',
         },
+        errorMessage: '',
+        defaultProfileImage: 'https://firebasestorage.googleapis.com/v0/b/undefined-idealtype-worldcup.firebasestorage.app/o/users%2Fdummy%2Fdefault_profile_image.png?alt=media&token=f066a90e-2315-4deb-989d-aeb227628037',
       };
     },
     created() {
@@ -76,11 +84,45 @@
       document.title = '이상형 월드컵 : 마이페이지';
     },
     methods: {
-      changeImage() {
+      async changeImage() {
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
         fileInput.accept = 'image/png, image/jpeg';
-        // TODO: fileInput.addEventListener('change', this.onFileChange);
+        fileInput.multiple = false;
+
+        fileInput.addEventListener('change', async (event) => {
+          const file = event.target.files[0];
+
+          if (!file) {
+            this.errorMessage = '파일을 선택하지 않았습니다.';
+            return;
+          }
+
+          const allowedExtensions = ['png', 'jpg', 'jpeg'];
+          const fileExtension = file.name.split('.').pop().toLowerCase();
+
+          if (!allowedExtensions.includes(fileExtension)) {
+            this.errorMessage = '유효하지 않은 파일 형식입니다. PNG 또는 JPG/JPEG 파일만 업로드 가능합니다.';
+            return;
+          }
+
+          try {
+            this.isLoading = true;
+            const userId = auth.currentUser.uid;
+
+            const path = await uploadProfile(file, userId);
+
+            await updateProfileImage(userId, path);
+
+            this.user.profileImage = path;
+          } catch (error) {
+            console.error('이미지 업로드 오류:', error);
+            this.errorMessage = '이미지 업로드 중 오류발생';
+          } finally {
+            this.isLoading = false;
+          }
+        });
+
         fileInput.click();
       },
     },
