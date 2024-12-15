@@ -4,8 +4,10 @@
   <div v-if="!isModalVisible" class="wldcup-details">
     <div class="match-container">
       <div class="match-title">
-        <h2>{{ wldcup.title }} <span class="em">{{ currentRound }}강</span></h2> <!-- TODO: "결승전" 분기 -->
-        <p class="match-subtitle"><span class="em">{{ currentMatch }}</span> / {{ totalMatches }}</p>
+        <h2>{{ wldcup.title }} <span class="em">{{ currentRoundText }}</span></h2>
+        <p v-if="showMatchProgress" class="match-subtitle">
+          <span class="em">{{ currentMatch }}</span> / {{ totalMatches }}
+        </p>
       </div>
       <div class="match-content" v-if="wldcup.matches && wldcup.matches[`match${currentMatch-1}`]"> <!-- v-if === 데이터 로드까지 대기 -->
         <div class="item-container">
@@ -73,6 +75,12 @@
       totalMatches() {
         return this.currentRound / 2; // 이번 라운드의 전체 매치 수 (n강 / 2)
       },
+      currentRoundText() {
+        return this.currentRound === 2 ? "결승전" : `${this.currentRound}강`;
+      },
+      showMatchProgress() {
+        return this.currentRound !== 2; // 결승전인 경우 매치 현황은 숨김 처리
+      },
     },
     methods: {
       async startWldcup() {
@@ -94,7 +102,7 @@
           this.wldcup.matches = matches;
         }
 
-        this.loading(1500);
+        this.loading(0);
 
         /**
          * 1:1 매치 대진 구조 생성 함수
@@ -150,7 +158,7 @@
        * @param selectedIndex 선택한 아이템 좌(0) / 우(1)
        */
       selectWinner(selectedIndex) {
-        this.loading(2300)
+        this.loading(0)
 
         // 현재 매치의 승리자
         const matchKey = `match${this.currentMatch - 1}`;
