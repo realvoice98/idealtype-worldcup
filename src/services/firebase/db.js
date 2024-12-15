@@ -176,15 +176,17 @@ export async function getAllUsers() {
     if (snapshot.exists()) {
       const usersData = snapshot.val();
 
-      return Object.keys(usersData).map(uid => ({
-        uid,
-        ...usersData[uid], // 모든 데이터를 object 형식으로 먼저 뿌리고, 포맷이 필요한 값들만 오버라이딩
-        email: restoreToOriginalString(usersData[uid].email),
-      }));
+      return Object.keys(usersData)
+          .filter(uid => uid !== 'anonymous-uid')
+          .map(uid => ({
+            uid,
+            ...usersData[uid],
+            email: restoreToOriginalString(usersData[uid].email),
+          }));
     } else {
       return [];
     }
-  } catch(e) {
+  } catch (e) {
     console.error('유저 정보를 가져오는 중 오류가 발생하였습니다.', e);
     return [];
   }
@@ -584,8 +586,10 @@ export async function createComment(user, wldcupId, commentText) {
 
     await set(dbRef(db, `users/${user.uid}/myCommentList/${wldcupId}/${newCommentRef.key}`), true);
 
-    const exp = 5;
-    await updateLevel(user.uid, exp);
+    if (user.uid !== 'anonymous-uid') {
+      const exp = 5;
+      await updateLevel(user.uid, exp);
+    }
 
   } catch (e) {
     alert("댓글 작성에 실패했습니다. 잠시 후 다시 시도해주세요.");
