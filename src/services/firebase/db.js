@@ -828,35 +828,50 @@ export async function updateWldcupImages(index, wldcupId, images) {
   const wldcupImageRef = dbRef(db, `wldcups/${wldcupId}/images/${index}`);
 
   try {
-    // Firebase에서 현재 인덱스의 데이터 가져오기
+    const extractFileName = (url) => {
+      try {
+        const urlObject = new URL(url);
+        const pathname = urlObject.pathname;
+        return decodeURIComponent(pathname.substring(pathname.lastIndexOf('/') + 1));
+      } catch (error) {
+        console.error('URL 파싱 중 오류:', error);
+        return '';
+      }
+    };
+
     const snapshot = await get(wldcupImageRef);
 
+    //이미 존재하면
     if (snapshot.exists()) {
       const existingData = snapshot.val();
       const { path: existingPath, customName: existingCustomName } = existingData;
 
-      // 새 데이터와 기존 데이터 비교
+      const existingFileName = extractFileName(existingPath);
+      const newFileName = extractFileName(images[index].path);
+
       const newPath = images[index].path;
       const newCustomName = images[index].customName;
 
-      if (newPath === existingPath) {
-        if (newCustomName !== existingCustomName) {
+      //파일명이 같고
+      //NOTE: 파일명으로 구분하는게 맞나 싶은데 마땅한게 안떠오름
+      if (newFileName === existingFileName) {
+        if (newCustomName !== existingCustomName) { //커스텀네임은 다르다면
           await update(wldcupImageRef, { customName: newCustomName });
-          console.log(`인덱스 ${index}: 커스텀 네임 업데이트 완료.`);
+          console.log(`인덱스 ${index}: 커스텀 네임 업데이트`);
         } else {
           console.log(`인덱스 ${index}: 변경 사항 없음.`);
         }
       } else {
-        // 경로가 다르면 경로와 커스텀 네임 모두 업데이트
+        // 둘 다 다르면 모두 업데이트
         await update(wldcupImageRef, { path: newPath, customName: newCustomName });
-        console.log(`인덱스 ${index}: 경로 및 커스텀 네임 업데이트 완료.`);
+        console.log(`인덱스 ${index}: 경로 및 커스텀 네임 업데이트`);
       }
     } else {
       // 인덱스 번호가 없으면 새로 추가
       const newPath = images[index].path;
       const newCustomName = images[index].customName;
       await set(wldcupImageRef, { path: newPath, customName: newCustomName });
-      console.log(`인덱스 ${index}: 새 이미지 추가 완료.`);
+      console.log(`인덱스 ${index}:이미지 추가`);
     }
   } catch (error) {
     console.error(`인덱스 ${index} 업데이트 중 오류 발생:`, error);

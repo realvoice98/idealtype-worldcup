@@ -77,7 +77,7 @@
   import 'cropperjs/dist/cropper.css';
   import { formatDate } from "@/common";
   import CommonModal2 from "@/components/modals/CommonModal2.vue";
-import {updateImage, updateWldcupImages, uploadImage} from "@/services/firebase/db";
+import {updateImage, updateWldcupImages} from "@/services/firebase/db";
 import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 
   export default {
