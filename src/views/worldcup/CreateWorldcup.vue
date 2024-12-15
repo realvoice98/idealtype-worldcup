@@ -286,6 +286,8 @@ import CommonModal2 from '@/components/modals/CommonModal2.vue';
     input {
       border: none;
       outline: none;
+      background-color: inherit; /* 다크모드 대응 */
+      color: inherit; /* 다크모드 대응 */
     }
 
     .content-box{

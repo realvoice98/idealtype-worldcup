@@ -65,9 +65,11 @@
     overflow: hidden;
     text-overflow: ellipsis; /* 초과 내용은 ...으로 표시 */
     white-space: normal; /* 줄바꿈 가능 */
+    color: black; /* 다크모드 대응 */
   }
 
   img {
+    max-width: 480px;
     height: 350px;
   }
 
