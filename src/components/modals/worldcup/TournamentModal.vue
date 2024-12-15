@@ -31,7 +31,7 @@
       <div class="modal-buttons">
         <div class="dropdown-container">
           <button class="btn-dropdown">
-            {{ enterItemCnt / 2 }}강 <span class="icon">arrow_drop_down</span>
+            {{ enterItemCnt }}강 <span class="icon">arrow_drop_down</span>
           </button>
           <div class="dropdown-content">
             <span v-for="(round, index) in rounds" :key="index" @click="selectTournamentCnt">
@@ -140,8 +140,7 @@
        */
       calcRounds(totalItemCnt) {
         const rounds = [];
-        // 가장 가까운 2의 제곱수의 1/2 (최대 라운드)
-        let current = Math.pow(2, Math.floor(Math.log2(totalItemCnt / 2))); // ex) 35명의 후보 === 16강
+        let current = Math.pow(2, Math.floor(Math.log2(totalItemCnt))); // 가장 가까운 2의 제곱수 (최대 라운드)
 
         // 라운드의 최소값은 4강
         while (current >= 4) {
@@ -163,7 +162,7 @@
         selectItem.innerHTML = innerText;
 
         const enterItemCnt = parseInt(innerText.replace('강', ''), 10);
-        this.enterItemCnt = enterItemCnt * 2; // n강 === n * 2 매치
+        this.enterItemCnt = enterItemCnt; // n강 === n아이템 === n/2 매치
 
         // 드랍박스 하단 화살표 아이콘 업데이트
         const iconSpan = document.createElement('span');
