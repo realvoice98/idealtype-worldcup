@@ -498,6 +498,43 @@ export async function updateItemStats(wldcupId, itemName, win = false, champ = f
 }
 
 /**
+ * 승리한 아이템의 승률 데이터를 가져오는 함수
+ * 승리자 선택 시 호출
+ * @param {string} wldcupId 월드컵 ID
+ * @param {string} itemName 아이템명
+ * @returns {Promise<void>}
+ */
+
+export async function fetchItemStats(wldcupId) {
+  const imagesRef = dbRef(db, `wldcups/${wldcupId}/images`);
+
+  try {
+    const snapshot = await get(imagesRef);
+
+    if (snapshot.exists()) {
+      const allData = snapshot.val(); // 전체 데이터 가져오기
+      console.log("snapshot.val()", allData);
+
+      // stats가 있는 항목만 필터링
+      const filteredData = allData.filter(item => item.stats !== undefined);
+
+      // stats가 있는 항목이 하나도 없으면 false 반환
+      if (filteredData.length === 0) {
+        return false;
+      }
+
+      // stats가 있는 데이터 반환
+      return filteredData;
+    } else {
+      return false; // 데이터가 존재하지 않으면 false 반환
+    }
+  } catch (e) {
+    console.error("데이터 가져오는 중 오류 발생:", e);
+    return false; // 에러 발생 시 false 반환
+  }
+}
+
+/**
  * 특정 월드컵에 대한 댓글 데이터를 받아오는 함수
  * @param {string} wldcupId 월드컵 ID
  */
