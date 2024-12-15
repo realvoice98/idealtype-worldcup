@@ -137,7 +137,8 @@
        */
       calcRounds(totalItemCnt) {
         const rounds = [];
-        let current = Math.pow(2, Math.floor(Math.log2(totalItemCnt))); // 가장 가까운 2의 제곱수 (최대 라운드)
+        // 가장 가까운 2의 제곱수의 1/2 (최대 라운드)
+        let current = Math.pow(2, Math.floor(Math.log2(totalItemCnt / 2))); // ex) 35명의 후보 === 16강
 
         // 라운드의 최소값은 4강
         while (current >= 4) {
