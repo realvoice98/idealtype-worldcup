@@ -20,7 +20,6 @@
     props: {
       src: {
         type: String,
-        default: 'https://firebasestorage.googleapis.com/v0/b/undefined-idealtype-worldcup.firebasestorage.app/o/users%2Fdummy%2Fdummy-menhera-girl.png?alt=media&token=23481b1a-b6e5-45bc-98a8-db39c94b333f',
       },
       disabled: {
         type: Boolean,
