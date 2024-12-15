@@ -48,7 +48,7 @@
 
 <script>
   import { auth } from '@/services/firebase/auth';
-  import { checkInProgressWldcup, increaseInViews, fetchWldcup } from '@/services/firebase/db';
+  import { checkInProgressWldcup, increaseInViews, fetchWldcup, fetchInProgressWldcup } from '@/services/firebase/db';
   
   import CommonButton from '@/components/buttons/CommonButton.vue';
   import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
@@ -187,8 +187,22 @@
       /**
        * 진행 이력 존재 > 불러오기
        */
-      loadWldcup() {
-        // TODO: 기진행 이력 불러오기
+      async loadWldcup() {
+        const wldcupId = this.$route.params.id;
+        const user = auth.currentUser;
+
+        // 진행 중인 월드컵 데이터 가져오기
+        const inProgressWldcup = await fetchInProgressWldcup(user, wldcupId);
+
+        const round = inProgressWldcup.round;
+
+        // FIXME: 이 데이터 묶음이 WorldcupDetail에 바인딩 될 수 있게 수정 필요 (기존의 새로하기 로직과 구분이 되어야 함)
+        if (inProgressWldcup) {
+          this.$emit('loadWldcupData', inProgressWldcup.matches[round]);
+          this.$emit('roundSelected', inProgressWldcup.round)
+        } else {
+          alert('알 수 없는 오류'); // TODO: CommonModal2로 교체
+        }
       },
       /**
        * 진행 이력 존재 > 새로하기

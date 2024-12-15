@@ -844,6 +844,29 @@ export async function checkInProgressWldcup(user, wldcupId) {
 }
 
 /**
+ * 특정 월드컵에 대한 진행 이력 데이터를 불러오는 함수
+ * @param {Object} user 유저 정보
+ * @param {string} wldcupId 월드컵 ID
+ * @returns {Promise<void>}
+ */
+export async function fetchInProgressWldcup(user, wldcupId) {
+  const inProgressWldcupRef = dbRef(db, `inPrgrsWldcups/${wldcupId}/${user.uid}`);
+
+  try {
+    const snapshot = await get(inProgressWldcupRef);
+
+    if (snapshot.exists()) {
+      return snapshot.val(); // 진행 데이터를 객체 형태로 반환
+    } else {
+      return null; // 진행 데이터가 없으면 null 반환
+    }
+  } catch(e) {
+    console.error(e);
+    throw e; // 오류를 상위 호출자에게 전달
+  }
+}
+
+/**
  * 월드컵 삭제 함수
  * @param {string} wldcupId 현재 진입한 월드컵의 UID
  */
