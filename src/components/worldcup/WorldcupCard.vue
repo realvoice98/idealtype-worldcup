@@ -16,7 +16,7 @@
       </div>
     </router-link>
     <div class="card-description">
-      <ProfileButton width="32" height="32" :src="user.profileImage"/>
+<!--      <ProfileButton width="32" height="32" :src="user.profileImage"/>-->
       <span class="creator">{{ creator }}</span><!-- // TODO: 레벨 뱃지 아이콘 -->
     </div>
     <div class="card-description detail">
