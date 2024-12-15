@@ -11,6 +11,7 @@
         v-for="(card, cardIndex) in record"
         :key="cardIndex"
         :data="card"
+        :profileImage="card.profileImage"
         :user="user"
         @open-modal="showReportModal = true; wldcupId = card.wldcupId"
       />

@@ -240,7 +240,6 @@ export async function createWldcup(user, wldcup) {
  */
 export async function fetchAllWldcups() {
   const wldcupsRef = dbRef(db, "wldcups");
-
   const wldcupsQuery = query(wldcupsRef, orderByChild("views")); //초기값은 인기순 정렬
 
   try {
@@ -249,15 +248,30 @@ export async function fetchAllWldcups() {
     if (snapshot.exists()) {
       const wldcupsData = snapshot.val();
 
-      // 데이터를 배열로 변환
-      return Object.keys(wldcupsData).map((key) => ({
-        wldcupId: key,
-        ...wldcupsData[key], // child node data
-        thumbnails: wldcupsData[key].images.slice(0, 2), // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
-        title: restoreToOriginalString(wldcupsData[key].title),
-        updatedAt: new Date(wldcupsData[key].updatedAt).getTime()
-      }));
+      // 데이터를 배열로 변환하며 creator의 프로필 이미지를 가져옴
+      const promises = Object.keys(wldcupsData).map(async (key) => {
+        const wldcup = wldcupsData[key];
 
+        let profileImage = null;
+        if (wldcup.creator) {
+          try {
+            const userSnapshot = await get(dbRef(db, `users/${wldcup.creatorId}/profileImage`));
+            profileImage = userSnapshot.exists() ? userSnapshot.val() : null;
+          } catch (e) {
+            console.error(`사용자 프로필 이미지를 불러오는 중 오류 발생: ${wldcup.creator}`, e);
+          }
+        }
+        return {
+          wldcupId: key,
+          ...wldcup, // child node data
+          thumbnails: wldcup.images.slice(0, 2), // TODO: 사용자가 선택한 대표 이미지 1, 2 (현재는 전체 중 0, 1 idx)
+          title: restoreToOriginalString(wldcup.title),
+          updatedAt: new Date(wldcup.updatedAt).getTime(),
+          profileImage,
+        };
+      });
+
+      return Promise.all(promises);
     } else {
       return [];
     }
