@@ -35,7 +35,9 @@
         <li>
           <div class="search-container">
             <input v-model="searchQuery" type="text" class="search-input" placeholder="검색어 입력" @keyup.enter="searchWldcups" />
-            <button v-if="searchQuery" class="btn-clear" @click="clearSearch">x</button>
+            <button v-if="searchQuery" class="btn-clear" @click="clearSearch">
+              <span class="icon">close</span>
+            </button>
           </div>
         </li>
         <li><CommonButton variant="white" :onclick="searchWldcups" style="border: 2px solid var(--theme)">검색</CommonButton></li>
