@@ -44,7 +44,7 @@
 
 <script>
   import { auth } from '@/services/firebase/auth';
-  import { initWldcupProgress, updateWldcupProgress } from '@/services/firebase/db';
+  import { initWldcupProgress, updateWldcupProgress, removeWldcupProgress } from '@/services/firebase/db';
 
   import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
   import TournamentModal from '@/components/modals/worldcup/TournamentModal.vue';
@@ -91,6 +91,7 @@
     methods: {
       async startWldcup() {
         this.isModalVisible = false;
+        this.loading(2300);
 
         // 로그인 상태인 경우, 진행도 저장 공간에 현재 월드컵 매치 정보 초기 데이터 세팅
         const user = auth.currentUser;
@@ -107,8 +108,6 @@
           await initWldcupProgress(user, wldcupId, round, matches);
           this.wldcup.matches = matches;
         }
-
-        this.loading(2100);
 
         /**
          * 1:1 매치 대진 구조 생성 함수
@@ -171,17 +170,13 @@
         const matchData = this.wldcup.matches[matchKey];
         const winner =  matchData[`item${selectedIndex}`];
 
-        if (!this.winners) {
-          this.winners = [];
-        }
+        if (!this.winners) this.winners = [];
         this.winners.push(winner);
 
         // 로그인 상태인 경우, 진행 이력 저장 > RTDB에 승리자 데이터 업데이트
         const user = auth.currentUser;
         const wldcupId = this.$route.params.id;
-        if (user) {
-          await updateWldcupProgress(user, wldcupId, this.currentRound, this.currentMatch, winner);
-        }
+        if (user) await updateWldcupProgress(user, wldcupId, this.currentRound, this.currentMatch, winner);
 
         // 다음 매치로 이동
         this.matchCnt++;
@@ -199,9 +194,11 @@
             this.wldcup.matches = createNextRoundMatches(currentRoundWinners);
             this.winners = []; // 현재 라운드의 승리자 목록 초기화
           } else {
-            // 결승전
+            // 결승전 우승자 선택 완료
             this.isWldcupOvered = true;
             this.finalWinner = winner;
+
+            if (user) await removeWldcupProgress(user, wldcupId);
           }
         }
 

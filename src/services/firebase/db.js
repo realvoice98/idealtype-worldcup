@@ -691,13 +691,14 @@ export async function initWldcupProgress(user, wldcupId, round, matches) {
 }
 
 /**
- * 매치에서 승자가 결정될 때 호출하여 월드컵 진행 상태를 업데이트하는 함수
+ * 월드컵 진행 상태를 업데이트하는 함수<p>
+ * 특정 유저가 각 매치 별로 승자를 결정할 때 호출
  * @param {Object} user 유저 정보
  * @param {string} wldcupId 월드컵 ID
  * @param {any} currentRound 현재 라운드
  * @param {any} currentMatch 현재 매치
- * @param {any} selectedWinner 현재 매치 승자
- * @returns {Promise<void>}
+ * @param {any} selectedWinner 현재 매치의 승자
+ * @returns {Promise<void>} 월드컵 진행 상태 업데이트 (현재 매치의 승자 데이터 적재)
  */
 export async function updateWldcupProgress(user, wldcupId, currentRound, currentMatch, selectedWinner) {
   const matchKey = `match${currentMatch - 1}`;
@@ -712,6 +713,23 @@ export async function updateWldcupProgress(user, wldcupId, currentRound, current
     const matchRef = dbRef(db, `inPrgrsWldcups/${wldcupId}/${user.uid}/matches/${currentRound}/${matchKey}`);
 
     await update(matchRef, winnerData);
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+/**
+ * 현재 월드컵에 대한 진행 이력을 제거하는 함수<p>
+ * 특정 유저가 월드컵 우승자를 결정했을 때 호출
+ * @param {Object} user 유저 정보
+ * @param {string} wldcupId 월드컵 ID
+ * @returns {Promise<void>} 기진행 이력 제거
+ */
+export async function removeWldcupProgress(user, wldcupId) {
+  const userProgressRef = dbRef(db, `inPrgrsWldcups/${wldcupId}/${user.uid}`);
+
+  try {
+    await rm(userProgressRef);
   } catch(e) {
     console.error(e);
   }
