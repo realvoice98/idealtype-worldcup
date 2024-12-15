@@ -72,13 +72,13 @@
   </div>
 </template>
 
-<script>// TODO: 변경사항 경고 모달 추가하기
+<script>
   import VueCropper from 'vue-cropperjs';
   import 'cropperjs/dist/cropper.css';
   import { formatDate } from "@/common";
   import CommonModal2 from "@/components/modals/CommonModal2.vue";
-import {updateImage, updateWldcupImages} from "@/services/firebase/db";
-import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
+  import {updateImage, updateWldcupImages} from "@/services/firebase/db";
+  import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 
   export default {
     name: 'ImageRegistModal',
@@ -298,6 +298,13 @@ import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
       },
 
       handleButtonClick() {
+        if (this.isDuplicateCustomName('', -1)) {
+          this.errorMessage =
+              '이미지 이름에 중복된 값이 있습니다. 모든 이미지 이름을 고유하게 설정해주세요.';
+          return;
+        }
+
+        // 중복이 없으면 기존 로직 실행
         if (this.isWldcupsPage) {
           this.confirmUpdateImages();
         } else {
@@ -405,10 +412,24 @@ import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
         }
       },
 
+      isDuplicateCustomName(value) {
+        return this.selectedImages.some(
+            (image, index) =>
+                image.customName === value && index !== this.currentImageIndex
+        );
+      },
+
+      // customName 업데이트
       updateCustomName(value) {
-        if (this.selectedImages[this.currentImageIndex]) {
-          this.selectedImages[this.currentImageIndex].customName = value;
+        if (!this.selectedImages[this.currentImageIndex]) return;
+
+        if (this.isDuplicateCustomName(value)) {
+          this.errorMessage = `'${value}'는 이미 사용 중입니다. 다른 이름을 입력해주세요.`;
+          return;
         }
+
+        this.errorMessage = ''; // 에러 메시지 초기화
+        this.selectedImages[this.currentImageIndex].customName = value;
       },
     },
   };
