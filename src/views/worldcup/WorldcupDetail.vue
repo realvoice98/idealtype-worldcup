@@ -44,15 +44,12 @@
 
 <script>
   import { auth } from '@/services/firebase/auth';
-  import { initWldcupProgress, processMatchResult } from '@/services/firebase/db';
+  import { initWldcupProgress, updateWldcupProgress } from '@/services/firebase/db';
 
   import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
   import TournamentModal from '@/components/modals/worldcup/TournamentModal.vue';
   import CommonButton from '@/components/buttons/CommonButton.vue';
   import VictoryModal from '@/components/modals/worldcup/VictoryModal.vue';
-
-  //  4. component\tournamentDetail.vue로 진행률 props & binding (하나의 토너먼트 진행 완료마다 진행률 저장을 위한 POST 요청 필요)
-  //  5. views\WorldcupResult.vue에 최종 결과 반환 (통계 데이터 시각화 개발 필요)
 
   export default {
     name: 'WorldcupDetail',
@@ -111,7 +108,7 @@
           this.wldcup.matches = matches;
         }
 
-        this.loading(0);
+        this.loading(2100);
 
         /**
          * 1:1 매치 대진 구조 생성 함수
@@ -166,8 +163,8 @@
        * 승리자 선택 시 다음 라운드로 이동 및 현재 진행률 저장
        * @param selectedIndex 선택한 아이템 좌(0) / 우(1)
        */
-      selectWinner(selectedIndex) {
-        this.loading(0)
+      async selectWinner(selectedIndex) {
+        this.loading(2100)
 
         // 현재 매치의 승리자
         const matchKey = `match${this.currentMatch - 1}`;
@@ -178,6 +175,13 @@
           this.winners = [];
         }
         this.winners.push(winner);
+
+        // 로그인 상태인 경우, 진행 이력 저장 > RTDB에 승리자 데이터 업데이트
+        const user = auth.currentUser;
+        const wldcupId = this.$route.params.id;
+        if (user) {
+          await updateWldcupProgress(user, wldcupId, this.currentRound, this.currentMatch, winner);
+        }
 
         // 다음 매치로 이동
         this.matchCnt++;

@@ -683,8 +683,35 @@ export async function initWldcupProgress(user, wldcupId, round, matches) {
   try {
     await set(inPrgrsWldcupRef, {
       round,
-      matches: { [round]: matches }, // 초기 라운드 매치 정보 삽입
+      matches: { [round]: matches },
     });
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+/**
+ * 매치에서 승자가 결정될 때 호출하여 월드컵 진행 상태를 업데이트하는 함수
+ * @param {Object} user 유저 정보
+ * @param {string} wldcupId 월드컵 ID
+ * @param {any} currentRound 현재 라운드
+ * @param {any} currentMatch 현재 매치
+ * @param {any} selectedWinner 현재 매치 승자
+ * @returns {Promise<void>}
+ */
+export async function updateWldcupProgress(user, wldcupId, currentRound, currentMatch, selectedWinner) {
+  const matchKey = `match${currentMatch - 1}`;
+  const winnerData = {
+    winner: {
+      title: selectedWinner.title,
+      path: selectedWinner.path,
+    },
+  };
+
+  try {
+    const matchRef = dbRef(db, `inPrgrsWldcups/${wldcupId}/${user.uid}/matches/${currentRound}/${matchKey}`);
+
+    await update(matchRef, winnerData);
   } catch(e) {
     console.error(e);
   }
