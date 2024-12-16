@@ -369,7 +369,6 @@
 
   .content-wrap {
     display: flex;
-    gap: 10px; /* input과 button 간격 */
     align-items: center;
     border-radius: 3px;
     border: 1px solid #ccc;
