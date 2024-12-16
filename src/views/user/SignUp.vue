@@ -373,6 +373,7 @@
     align-items: center;
     border-radius: 3px;
     border: 1px solid #ccc;
+    width : 215px;
   }
   .content-wrap input {
     width: 128.5px; /* NOTE: 당장 고쳐야 해서 급하게 하드코딩 */
